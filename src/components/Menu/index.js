@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Responsive, Menu } from 'semantic-ui-react';
+import { Responsive, Menu, Icon } from 'semantic-ui-react';
 
 export default class MenuBar extends Component {
     render() {
@@ -7,7 +7,9 @@ export default class MenuBar extends Component {
             <Menu size='large'>          
 
                 <Menu.Menu position='left'>
-                    <Responsive as={Menu.Item} {...Responsive.onlyMobile}>Mobile</Responsive>
+                    <Responsive as={Menu.Item} {...Responsive.onlyMobile}>
+                       <Icon name='content' onClick={this.props.toggleVisibility}></Icon>
+                    </Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyTablet}>Tablet</Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyComputer}>Computer</Responsive>
                 </Menu.Menu>
