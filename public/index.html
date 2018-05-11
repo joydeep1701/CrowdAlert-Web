@@ -4,7 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
-    <!-- <meta name="theme-color" content="#ffffff"> -->
+    <script>
+      // Redirect to HTTPS
+      if (location.hostname === 'crowdalert.herokuapp.com' && location.protocol !== 'https:') {
+        location.href = location.href.replace('http:','https:')
+      }
+    </script>
+
+
+    <!-- Semantic UI CSS -->   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css"></link>
     <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
@@ -29,11 +38,20 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>CrowdAlert</title>
-    <!-- Semantic UI CSS -->
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css"></link>
-
   </head>
-  <body>
+  <body class="dimmed dimmable">
+    <div class="ui active page dimmer" id="docs-loading-dimmer">
+      <div class="content">
+        <div class="center">
+         
+          <div class="ui large text loader">
+            <div class="ui inverted teal header">
+              Loading
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>

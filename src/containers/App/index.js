@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
-import { Container } from 'semantic-ui-react'
+import { Responsive, Container, Image } from 'semantic-ui-react'
 import logo from '../../logo.svg'
+import MenuBar from '../../components/Menu'
 
 class App extends Component {
     render() {
         return (
-            <Container>
-                 <img src={logo} className="App-logo" alt="logo" />
-            </Container>
+            <div>
+                <MenuBar></MenuBar>
+                <Container>                
+                    <Image src={logo} size='small'/>
+                    {console.log({...Responsive})}
+                </Container>
+            </div>
+
         )
     }
 }
