@@ -13,8 +13,9 @@ export default class MenuBar extends Component {
                     <Responsive as={Menu.Item} {...Responsive.onlyTablet}>Tablet</Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyComputer}>Computer</Responsive>
                 </Menu.Menu>
+                {this.props.children}
                 <Menu.Menu position='right'>
-                    <Responsive as={Menu.Item} {...Responsive.onlyMobile}>Mobile</Responsive>
+                    {/* <Responsive as={Menu.Item} {...Responsive.onlyMobile}>Mobile</Responsive> */}
                     <Responsive as={Menu.Item} {...Responsive.onlyTablet}>Tablet</Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyLargeScreen}>Large Screen</Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyWidescreen}>Widescreen</Responsive>
