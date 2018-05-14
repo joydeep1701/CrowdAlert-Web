@@ -111,10 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Collectstatic will copy js & css files
 STATICFILES_DIRS = [
   os.path.join(BASE_DIR, 'build/static'),
-<<<<<<< HEAD
 #   os.path.join(BASE_DIR, 'build/'),
-=======
->>>>>>> d6acbf3c6710bc6650d22b516e778884755fbe8b
 ]
 
 # Internationalization
