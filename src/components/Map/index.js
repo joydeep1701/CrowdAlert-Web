@@ -11,12 +11,15 @@ export class MapContainer extends Component {
     //alert('Not Yet Implemented');
   }
   render() {
+    console.log("MAP", this.props);
     if (!this.props.loaded) {
       return (
         <div>Loading..</div>
       )
     }
+    
     return (
+      
       <div>
         <Map google={this.props.google}
           zoom={14}

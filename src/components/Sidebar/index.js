@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Sidebar, Segment, Button, Menu, Icon, Container, Image } from 'semantic-ui-react'
 import logo from '../../logo.svg'
+import { Link } from 'react-router-dom';
 
 export default class LeftSidebar extends Component {
     render() { 
@@ -12,10 +13,12 @@ export default class LeftSidebar extends Component {
                   <Image src={logo} size='small' bordered centered />
                     
                   </Menu.Item>
+                <Link to="/"  onClick={this.props.visible?this.props.toggleVisibility:null}>
                   <Menu.Item name='home'>
                     <Icon name='home' />
                     Home
                   </Menu.Item>
+                </Link>
                   <Menu.Item name='camera'>
                     <Icon name='camera' />
                     Report
@@ -24,6 +27,15 @@ export default class LeftSidebar extends Component {
                     <Icon name='user circle' />
                     Profile
                   </Menu.Item>
+                  
+                  <Link to="/view/aa"  onClick={this.props.visible?this.props.toggleVisibility:null}>
+                    <Menu.Item name='user'>                      
+                      <Icon name='browser' />
+                      Sample Incident
+                      </Menu.Item>
+                  </Link>
+
+                  
                   <Menu.Item name='logout'>
                     <Icon name='sign out' />
                     Sign out

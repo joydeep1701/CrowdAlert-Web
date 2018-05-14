@@ -6,7 +6,7 @@ import LeftSidebar from '../../components/Sidebar'
 import { database } from '../../utils/firebase'
 import MapContainer from '../../components/Map';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
-
+import Viewevent from '../Viewevent'
 class App extends Component {
     state = { visible: false, dimmed: false }
     constructor(props) {
@@ -49,7 +49,7 @@ class App extends Component {
                                     <MapContainer />    
                                  </div>
                             )} />     
-                            <Route exact path="/a" render={props => (<p>absolute</p>)} />                         
+                            <Route exact path="/view/:eventid" component={Viewevent} />       
 
 
                                                     
