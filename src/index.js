@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * CrowdAlert
  * index.js: main entry point of the app
@@ -49,3 +50,13 @@ registerServiceWorker();
 
     window.addEventListener('load', removeDimmer)
 }())
+=======
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import registerServiceWorker from './registerServiceWorker';
+
+ReactDOM.render(<App />, document.getElementById('root'));
+registerServiceWorker();
+>>>>>>> d6acbf3c6710bc6650d22b516e778884755fbe8b
