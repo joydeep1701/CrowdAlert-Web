@@ -28,7 +28,7 @@ export default class LeftSidebar extends Component {
                     Profile
                   </Menu.Item>
                   
-                  <Link to="/view/aa"  onClick={this.props.visible?this.props.toggleVisibility:null}>
+                  <Link to="/view/-L6MrTH7NgTawjN-LOsd"  onClick={this.props.visible?this.props.toggleVisibility:null}>
                     <Menu.Item name='user'>                      
                       <Icon name='browser' />
                       Sample Incident
@@ -41,7 +41,7 @@ export default class LeftSidebar extends Component {
                     Sign out
                   </Menu.Item>
                 </Sidebar>
-                <Sidebar.Pusher dimmed={this.props.visible} style={{height: '99.9%', 'overflowY':'hidden'}} onClick={this.props.visible?this.props.toggleVisibility:null}>                
+                <Sidebar.Pusher dimmed={this.props.visible} onClick={this.props.visible?this.props.toggleVisibility:null}>                
                   {this.props.children}
                 </Sidebar.Pusher>
               </Sidebar.Pushable>

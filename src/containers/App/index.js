@@ -36,23 +36,26 @@ class App extends Component {
         console.log(this.state)
         return (
             <Router>            
-                <div>
+                <div>                    
                     <Responsive maxWidth={990}>
-                        <LeftSidebar toggleVisibility={this.toggleVisibility} visible={this.state.visible}>                           
-                                            
+                    
+                        <LeftSidebar toggleVisibility={this.toggleVisibility} visible={this.state.visible}> 
                             <div style={{marginLeft:10,marginRight:10, marginTop: 10}}>
                                 <MenuBar toggleVisibility={this.toggleVisibility}>            
                                 </MenuBar>
                             </div>
+
                             <Route exact path="/" render={props => (
-                                <div style={{position:'absolute',width:'100%',height:'100%', top: '0px', zIndex: -1}}>
-                                    <MapContainer />    
-                                 </div>
+                                <div>
+
+                                    <div style={{position:'absolute',width:'100%',height:'100%', top: '0px', zIndex: -1}}>
+                                        <MapContainer />    
+                                    </div>
+                                </div>
+
                             )} />     
-                            <Route exact path="/view/:eventid" component={Viewevent} />       
-
-
-                                                    
+                            <Route exact path="/view/:eventid" component={Viewevent}/>      
+                
                         </LeftSidebar>
                     </Responsive>
                     
