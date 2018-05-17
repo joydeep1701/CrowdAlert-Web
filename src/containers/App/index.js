@@ -37,7 +37,7 @@ class App extends Component {
         return (
             <Router>            
                 <div>                    
-                    <Responsive maxWidth={990}>
+                    <Responsive maxWidth={900}>
                     
                         <LeftSidebar toggleVisibility={this.toggleVisibility} visible={this.state.visible}> 
                             <div style={{marginLeft:10,marginRight:10, marginTop: 10}}>
@@ -59,11 +59,19 @@ class App extends Component {
                         </LeftSidebar>
                     </Responsive>
                     
-                    <Responsive {...Responsive.onlyComputer}>
+                    <Responsive minWidth={901}>
                         <MenuBar toggleVisibility={this.toggleVisibility}></MenuBar>
-                        <Container>             
-
-                        </Container>
+                           
+                            <Route exact path="/view/:eventid" component={Viewevent}/>
+                            <Route exact path="/" render={props => (
+                                <div>
+                                    <div style={{position:'absolute',width:'100%',height:'100%', top: '0px',left:'0px', zIndex: -1}}>
+                                        <MapContainer />    
+                                    </div>
+                                </div>
+                        )} />
+                        
+                        
                     </Responsive>
 
                 </div>
