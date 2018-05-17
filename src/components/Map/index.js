@@ -11,7 +11,7 @@ export class MapContainer extends Component {
     //alert('Not Yet Implemented');
   }
   render() {
-    console.log("MAP", this.props);
+    //console.log("MAP", this.props);
     if (!this.props.loaded) {
       return (
         <div>Loading..</div>
@@ -22,7 +22,7 @@ export class MapContainer extends Component {
       
       <div>
         <Map google={this.props.google}
-          zoom={14}
+          zoom={16}
           initialCenter={this.props.location}
         //    style={MapStyle}
           >
