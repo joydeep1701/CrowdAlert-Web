@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Responsive, Card, Item, Image, Feed, Icon, Divider, Dimmer, Loader, Grid, Menu, Dropdown, Label } from 'semantic-ui-react'
+import { Responsive, Card, Item, Image, Feed, Icon, Divider, Dimmer, Loader, Grid, Menu, Dropdown, Label, Button } from 'semantic-ui-react'
 import  MapContainer  from '../../components/Map'
 import ShareModal from '../../components/Share'
 import ImageModal from '../../components/Image'
@@ -40,7 +40,7 @@ const EventFooter = (props) => (
             <Dropdown icon='bars'>
                 <Dropdown.Menu>
                     <Dropdown.Item>                        
-                        <ShareModal>                                                            
+                        <ShareModal title={props.title}>                                                            
                             <p> <Icon color='black' name='external share' /> Share</p>
                         </ShareModal>
                     </Dropdown.Item>
@@ -93,7 +93,7 @@ export default class Viewevent extends Component {
         }, (err) => {console.log('err')})
     }
     render() {
-        console.log(this.state);
+        console.log(this.state,this.props);
         return (
             <div>
                 <Responsive maxWidth={900}>
@@ -145,7 +145,7 @@ export default class Viewevent extends Component {
                                             </Item.Extra>
                                         </Item.Content>
                                     </Card>
-                                    <EventFooter />
+                                    <EventFooter title={this.state.event.title}/>
                                 </div>
                                
                             }
@@ -210,7 +210,8 @@ export default class Viewevent extends Component {
                                             <Item.Description>
                                                 {this.state.event.comments}
                                             </Item.Description>
-                                            
+
+
                                             <Divider section />
                                             <Item.Extra>
                                             <ImageModal image_base64={this.state.event.image_base64} />
@@ -218,7 +219,9 @@ export default class Viewevent extends Component {
                                             </Item.Extra>
                                         </Item.Content>
                                     </Card>
-                                    <EventFooter />
+                                   
+
+                                    <EventFooter title={this.state.event.title}/>
                                 </div>
                                
                             }

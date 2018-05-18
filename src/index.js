@@ -1,12 +1,12 @@
-/**
- * CrowdAlert
- * index.js: main entry point of the app
- */
+// /**
+//  * CrowdAlert
+//  * index.js: main entry point of the app
+//  */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-// import { ConnectedRouter } from 'react-router-redux';
+import { ConnectedRouter } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -19,11 +19,13 @@ const history = createHistory();
 const store = configureStore(initialState, history);
 const ROOT_NODE = document.getElementById('root');
 
+
+
 ReactDOM.render(
     <Provider store={store}>
-        {/* <ConnectedRouter history={history}> */}
+        <ConnectedRouter history={history}>
             <App />
-        {/* </ConnectedRouter> */}
+        </ConnectedRouter>
     </Provider>,    
      ROOT_NODE
 );

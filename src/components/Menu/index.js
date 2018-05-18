@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-import { Responsive, Menu, Icon } from 'semantic-ui-react';
+import { Responsive, Menu, Icon, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+
+import logo from '../../logo.svg'
+
 export default class MenuBar extends Component {
     render() {
         return (
-            <Menu size='small'>          
+            <Menu size='small'>         
 
                 <Menu.Menu position='left'>
                     <Responsive as={Menu.Item} {...Responsive.onlyMobile}>
@@ -12,23 +15,20 @@ export default class MenuBar extends Component {
                     </Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyTablet}>Tablet</Responsive>
                     <Responsive as={Menu.Item} {...Responsive.onlyComputer}>
-                        <Link to="/"  onClick={this.props.visible?this.props.toggleVisibility:null}>
-                        <Menu.Item>
-                            <Icon name='browser' />
-                                Feed
-                        </Menu.Item>
 
-
-                        
+                            <Image src={logo} style={{height:'4vh'}}/>
+ 
+                        <Link to="/">
+                            <Menu.Item>
+                                <Icon name='browser' />
+                                    Feed
+                            </Menu.Item>                        
                         </Link>
-                        <Link to="/view/-L6MrTH7NgTawjN-LOsd"  onClick={this.props.visible?this.props.toggleVisibility:null}>
-                        <Menu.Item>
-                        <Icon name='browser' />
-                                Sample Incident
-                        </Menu.Item>
-
-                               
-                            
+                        <Link to="/view/-L6MrTH7NgTawjN-LOsd">
+                            <Menu.Item>
+                            <Icon name='browser' />
+                                    Sample Incident
+                            </Menu.Item>                              
                         </Link>
                         <Menu.Item></Menu.Item>
 
