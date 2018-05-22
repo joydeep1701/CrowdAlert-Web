@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 
 const MapStyle = {
@@ -13,29 +13,18 @@ export class MapContainer extends Component {
   render() {
     //console.log("MAP", this.props);
     if (!this.props.loaded) {
-      return (
-        <div>Loading..</div>
-      )
+      return (<div>Loading..</div>)
     }
-    
-    return (
-      
-      <div>
-        <Map google={this.props.google}
-          zoom={16}
-          initialCenter={this.props.location}
-        //    style={MapStyle}
-          >
-            {this.props.children}
-          <Marker onClick={() => console.log(this)}
-                  name={'Current location'} />
-        </Map>
-      </div>
 
-    )
+    return (<div>
+      <Map google={this.props.google} zoom={16} initialCenter={this.props.location}
+        //    style={MapStyle}
+      >
+        {this.props.children}
+        <Marker onClick={() => console.log(this)} name={'Current location'}/>
+      </Map>
+    </div>)
   }
 }
 
-export default GoogleApiWrapper({
-  apiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY,
-})(MapContainer)
+export default GoogleApiWrapper({apiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY})(MapContainer)
