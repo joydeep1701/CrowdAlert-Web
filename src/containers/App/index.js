@@ -20,22 +20,35 @@ class App extends Component {
     super(props);
     this.state = {
       visible: false,
-      events: {}
+      events: {},
+      location: null,
     }
   }
   componentDidMount() {
     // console.log(this.state)
-    var ref = database.ref('incidents/-L6MqB-dyiY-uFmYF3Ba');
-    ref.on("value", snapshot => {
-      let event = snapshot.val();
-      //console.log(event)
+    // var ref = database.ref('incidents/-L6MqB-dyiY-uFmYF3Ba');
+    // ref.on("value", snapshot => {
+    //   let event = snapshot.val();
+    //   //console.log(event)
+    //   this.setState({
+    //     ...this.state,
+    //     events: {
+    //       event
+    //     }
+    //   })
+    // }, () => {})
+    fetch('https://ipinfo.io/json').then(resp => resp.json()).then((resp) => {
+      
       this.setState({
         ...this.state,
-        events: {
-          event
-        }
+        location: {
+          ...resp,
+          lat: parseFloat(resp.loc.split(',')[0]),
+          long: parseFloat(resp.loc.split(',')[1]),
+        },
+        
       })
-    }, () => {})
+    })
   }
   // shouldComponentUpdate(nextProps, nextState) {
   //     console.log(nextProps, nextState);
@@ -67,7 +80,15 @@ class App extends Component {
                 top: '0px',
                 zIndex: -1
               }}>
-              <MapContainer/>
+              {
+                this.state.location?
+                  <MapContainer location={{
+                    lat: this.state.location.lat,
+                    lng: this.state.location.long,
+                  }} zoom={11}/>
+                :null
+              }
+             
             </div>)}/>
 
         </LeftSidebar>
@@ -84,7 +105,14 @@ class App extends Component {
                 left: '0px',
                 zIndex: -1
               }}>
-              <MapContainer/>
+              {
+                this.state.location?
+                  <MapContainer location={{
+                    lat: this.state.location.lat,
+                    lng: this.state.location.long,
+                  }} zoom={11}/>
+                :null
+              }
             </div>)}/>
           <Route exact path="/view/:eventid" component={Viewevent}/>
         </Container>

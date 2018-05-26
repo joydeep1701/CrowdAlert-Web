@@ -17,7 +17,7 @@ export class MapContainer extends Component {
     }
 
     return (<div>
-      <Map google={this.props.google} zoom={16} initialCenter={this.props.location}
+      <Map google={this.props.google} zoom={this.props.zoom || 16} initialCenter={this.props.location}
         //    style={MapStyle}
       >
         {this.props.children}
