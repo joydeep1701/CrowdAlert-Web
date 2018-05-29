@@ -54,13 +54,7 @@ export default class Viewevent extends Component {
           <div>
               <Responsive maxWidth={900}>
                   <div
-                      style={{
-                        position: 'absolute',
-                        width: '100%',
-                        height: '50vh',
-                        top: '0px',
-                        zIndex: -1,
-                    }}
+                      style={}
                     >
                       {this.state.loading
                             ? null
@@ -74,31 +68,11 @@ export default class Viewevent extends Component {
                     </div>
 
                   <Item
-                      style={{
-                        margin: '10px',
-                        paddingTop: '30vh',
-                        paddingBottom: '8vh',
-                        width: '100%',
-                    }}
+                      style={}
                     >
                       {this.state.loading
-                            ? <Card
-                              style={{
-                                    width: '95%',
-                                    height: '25vh',
-                                }}
-                            >
-                              <Item.Content>
-                                      <Item.Description>
-                                          <Image
-                                              src="https://react.semantic-ui.com/assets/images/wireframe/paragraph.png" 
-                                            />
-                                          <Dimmer active={this.state.loading} inverted>
-                                              <Loader />
-                                            </Dimmer>
-                                        </Item.Description>
-                                    </Item.Content>
-                            </Card>
+                            ? 
+                            null
                             : <div>
                               <Card
                                   style={{
@@ -116,13 +90,9 @@ export default class Viewevent extends Component {
                                       <Label
                                           color="blue"
                                           ribbon
-                                          style={{
-                                            marginTop: '7px',
-                                            marginBottom: '7px',
-                                        }}
+                                          style={}
                                         >Health
                                         </Label>
-                                      {/* <Item.Meta>Description</Item.Meta> */}
 
                                       <Item.Description>
                                           {this.state.event.comments}
@@ -148,12 +118,7 @@ export default class Viewevent extends Component {
                       <Grid.Row>
                           <Grid.Column>
                               <div
-                                  style={{
-                                    position: 'absolute',
-                                    width: '100%',
-                                    height: '90vh',
-                                    left: '0px',
-                                }}
+                                  style={}
                                 >
                                   {this.state.loading
                                         ? null
@@ -169,29 +134,10 @@ export default class Viewevent extends Component {
                             </Grid.Column>
                           <Grid.Column>
                               <Item
-                                  style={{
-                                    margin: '10px',
-                                    width: '100%',
-                                }}
+                                  style={}
                                 >
                                   {this.state.loading
-                                        ? <Card
-                                          style={{
-                                                width: '95%',
-                                                height: '50vh',
-                                            }}
-                                        >
-                                          <Item.Content>
-                                                  <Item.Description>
-                                                      <Image
-                                                          src="https://react.semantic-ui.com/assets/images/wireframe/paragraph.png" 
-                                                        />
-                                                      <Dimmer active={this.state.loading} inverted>
-                                                          <Loader />
-                                                        </Dimmer>
-                                                    </Item.Description>
-                                                </Item.Content>
-                                          </Card>
+                                        ? 
                                         : <div>
                                           <Card
                                               style={{
@@ -209,10 +155,7 @@ export default class Viewevent extends Component {
                                                   <Label
                                                       color="blue"
                                                       ribbon
-                                                      style={{
-                                                        marginTop: '7px',
-                                                        marginBottom: '7px',
-                                                    }}
+                                                      style={}
                                                     >Health
                                                     </Label>
                                                   <Item.Meta>Description</Item.Meta>
