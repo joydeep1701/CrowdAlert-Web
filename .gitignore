@@ -125,3 +125,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Firebase config
+serviceAccountCredentials.json

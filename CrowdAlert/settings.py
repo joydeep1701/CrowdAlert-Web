@@ -11,7 +11,30 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import json
 import dj_database_url
+import pyrebase
+
+# Generate the Firebase Service Account Credential json file
+with open('serviceAccountCredentials.json','w') as f:
+    jsonData = {}
+    for key in os.environ.keys():
+        if 'DJANGO_FIREBASE_' in key:
+            jsonData[key.strip('DJANGO_FIREBASE_')] = os.environ[key].replace("\\n",'\n')
+    # print(jsonData)
+    f.writelines(json.dumps(jsonData))
+
+config = {
+  "apiKey": os.environ['REACT_APP_FIREBASE_API_KEY'],
+  "authDomain": os.environ['REACT_APP_FIREBASE_AUTH_DOMAIN'],
+  "databaseURL": os.environ['REACT_APP_FIREBASE_DATABASE_URL'],
+  "storageBucket": os.environ['REACT_APP_FIREBASE_PROJECT_ID'] + ".appspot.com",
+  "serviceAccount": "./serviceAccountCredentials.json"
+}
+
+FIREBASE = pyrebase.initialize_app(config)
+
+print(FIREBASE)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,8 +61,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'events',
-    'location',
+    'api.events',
+    'api.location',
+    'api.images',
 ]
 
 MIDDLEWARE = [
