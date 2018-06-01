@@ -14,6 +14,7 @@ import os
 import json
 import dj_database_url
 import pyrebase
+import googlemaps
 
 # Generate the Firebase Service Account Credential json file
 with open('serviceAccountCredentials.json','w') as f:
@@ -32,9 +33,10 @@ config = {
   "serviceAccount": "./serviceAccountCredentials.json"
 }
 
+# Instantiate a Firebase - Pyrebase object so that we can import later
 FIREBASE = pyrebase.initialize_app(config)
+GMAPS = googlemaps.Client(key=os.environ['REACT_APP_GOOGLE_MAPS_KEY'])
 
-# print(FIREBASE)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
