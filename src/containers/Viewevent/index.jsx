@@ -1,21 +1,81 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Responsive,
   Card,
   Item,
+  Image,
+  Feed,
+  Icon,
   Divider,
   Dimmer,
   Loader,
   Grid,
+  Menu,
+  Dropdown,
   Label,
-} from 'semantic-ui-react';
-import {
-  Map,
-  Image,
-  Event,
-} from '../../components';
-// import { database } from '../../utils/firebase';
-import { calcAge } from '../../utils/time';
+  Button
+} from 'semantic-ui-react'
+import MapContainer from '../../components/Map'
+import ShareModal from '../../components/Share'
+import ImageModal from '../../components/Image'
+import {database} from '../../utils/firebase';
+import {calcAge} from '../../utils/time';
+
+const EventHeader = (props) => (<Feed style={{
+    paddingTop: '10px',
+    paddingLeft: '10px'
+  }}>
+  <Feed.Event>
+    <Feed.Label>
+      <Image src='https://react.semantic-ui.com/assets/images/avatar/small/jenny.jpg'/>
+    </Feed.Label>
+    <Feed.Content>
+      <Feed.Date>
+        {calcAge(props.datetime)}
+      </Feed.Date>
+      <Feed.Summary>
+        <a>{props.user_id}</a>
+        reported an incident
+      </Feed.Summary>
+      <br/>
+      <Label as='a' basic={true} color='orange'>Serampore</Label>
+      <Label as='a' basic={true} color='blue'>West Bengal</Label>
+    </Feed.Content>
+  </Feed.Event>
+</Feed>)
+
+const EventFooter = (props) => (<Menu style={{
+    width: '95%'
+  }} widths={3}>
+  <Menu.Item active={true}>
+    <Icon color='red' name='thumbs up'/>
+    <Label color='red' floating={true}>12</Label>
+    Upvoted
+  </Menu.Item>
+  <Menu.Item>
+    <Dropdown icon='bars'>
+      <Dropdown.Menu>
+        <Dropdown.Item>
+          <ShareModal title={props.title}>
+            <p>
+              <Icon color='black' name='external share'/>
+              Share</p>
+          </ShareModal>
+        </Dropdown.Item>
+        <Dropdown.Item>
+          <Icon color='black' name='warning circle'/>Mark as Spam
+        </Dropdown.Item>
+
+      </Dropdown.Menu>
+
+    </Dropdown>
+  </Menu.Item>
+  <Menu.Item >
+    <Icon color='blue' name='comments outline'/>
+    <Label color='blue' floating={true}>5</Label>
+    Comment
+  </Menu.Item>
+</Menu>)
 
 export default class Viewevent extends Component {
   constructor(props) {
@@ -27,162 +87,183 @@ export default class Viewevent extends Component {
         location: {
           coords: {
             latitude: null,
-            longitude: null,
-          },
-        },
-      },
-    };
+            longitude: null
+          }
+        }
+      }
+    }
   }
   componentDidMount() {
     // eventid is passed as a prop
-    const ref = database.ref(`incidents/${this.state.eventid}`);
-    ref.on('value', (snapshot) => {
-      const event = snapshot.val();
+    var ref = database.ref(`incidents/${this.state.eventid}`);
+    ref.on("value", snapshot => {
+      let event = snapshot.val();
       console.log(event);
       this.setState({
         ...this.state,
         loading: false,
-        event,
-      });
+        event
+      })
     }, (err) => {
-      console.log(err);
-    });
+      console.log('err')
+    })
   }
   render() {
     console.log(this.state, this.props);
-    return (
-          <div>
-              <Responsive maxWidth={900}>
-                  <div
-                      style={}
-                    >
-                      {this.state.loading
-                            ? null
-                            : <MapContainer
-                              location={{
-                                lat: this.state.event.location.coords.latitude,
-                                lng: this.state.event.location.coords.longitude,
-                            }} 
-                            />
-}
-                    </div>
+    return (<div>
+      <Responsive maxWidth={900}>
+        <div style={{
+            position: 'absolute',
+            width: '100%',
+            height: '50vh',
+            top: '0px',
+            zIndex: -1
+          }}>
+          {
+            this.state.loading
+              ? null
+              : <MapContainer location={{
+                    lat: this.state.event.location.coords.latitude,
+                    lng: this.state.event.location.coords.longitude
+                  }}/>
+          }
+        </div>
 
-                  <Item
-                      style={}
-                    >
-                      {this.state.loading
-                            ? 
-                            null
-                            : <div>
-                              <Card
-                                  style={{
-                                    width: '95%',
-                                }}
-                                >
-                                  <EventHeader
-                                      user_id={this.state.event.user_id}
-                                      datetime={this.state.event.datetime} 
-                                    />
+        <Item style={{
+            margin: '10px',
+            paddingTop: '30vh',
+            paddingBottom: '8vh',
+            width: '100%'
+          }}>
+          {
+            this.state.loading
+              ? <Card style={{
+                    width: '95%',
+                    height: '25vh'
+                  }}>
+                  <Item.Content>
+                    <Item.Description>
+                      <Image src='https://react.semantic-ui.com/assets/images/wireframe/paragraph.png'/>
+                      <Dimmer active={this.state.loading} inverted={true}>
+                        <Loader/>
+                      </Dimmer>
+                    </Item.Description>
+                  </Item.Content>
+                </Card>
+              : <div>
+                  <Card style={{
+                      width: '95%'
+                    }}>
+                    <EventHeader user_id={this.state.event.user_id} datetime={this.state.event.datetime}/>
 
-                                  <Item.Content>
+                    <Item.Content>
 
-                                      <Item.Header as="a">{this.state.event.title}</Item.Header>
-                                      <Label
-                                          color="blue"
-                                          ribbon
-                                          style={}
-                                        >Health
-                                        </Label>
+                      <Item.Header as='a'>{this.state.event.title}</Item.Header>
+                      <Label color='blue' ribbon style={{
+                          marginTop: '7px',
+                          marginBottom: '7px'
+                        }}>Health</Label>
+                      {/* <Item.Meta>Description</Item.Meta> */}
 
-                                      <Item.Description>
-                                          {this.state.event.comments}
-                                        </Item.Description>
+                      <Item.Description>
+                        {this.state.event.comments}
+                      </Item.Description>
 
-                                      <Divider section />
-                                      <Item.Extra>
-                                          <ImageModal image_base64={this.state.event.image_base64} />
+                      <Divider section={true}/>
+                      <Item.Extra>
+                        <ImageModal image_base64={this.state.event.image_base64}/>
 
-                                        </Item.Extra>
-                                    </Item.Content>
-                                </Card>
-                              <EventFooter title={this.state.event.title} />
-                              </div>
-}
+                      </Item.Extra>
+                    </Item.Content>
+                  </Card>
+                  <EventFooter title={this.state.event.title}/>
+                </div>
 
-                    </Item>
+          }
 
-                </Responsive>
-              <Responsive minWidth={901}>
+        </Item>
 
-                  <Grid columns={2}>
-                      <Grid.Row>
-                          <Grid.Column>
-                              <div
-                                  style={}
-                                >
-                                  {this.state.loading
-                                        ? null
-                                        : <MapContainer
-                                          location={{
-                                            lat: this.state.event.location.coords.latitude,
-                                            lng: this.state.event.location.coords.longitude,
-                                        }} 
-                                        />
-}
-                                </div>
+      </Responsive>
+      <Responsive minWidth={901}>
 
-                            </Grid.Column>
-                          <Grid.Column>
-                              <Item
-                                  style={}
-                                >
-                                  {this.state.loading
-                                        ? 
-                                        : <div>
-                                          <Card
-                                              style={{
-                                                width: '95%',
-                                            }}
-                                            >
-                                              <EventHeader
-                                                  user_id={this.state.event.user_id}
-                                                  datetime={this.state.event.datetime} 
-                                                />
+        <Grid columns={2}>
+          <Grid.Row>
+            <Grid.Column>
+              <div style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '90vh',
+                  left: '0px'
+                }}>
+                {
+                  this.state.loading
+                    ? null
+                    : <MapContainer location={{
+                          lat: this.state.event.location.coords.latitude,
+                          lng: this.state.event.location.coords.longitude
+                        }}/>
+                }
+              </div>
 
-                                              <Item.Content>
+            </Grid.Column>
+            <Grid.Column>
+              <Item style={{
+                  margin: '10px',
+                  width: '100%'
+                }}>
+                {
+                  this.state.loading
+                    ? <Card style={{
+                          width: '95%',
+                          height: '50vh'
+                        }}>
+                        <Item.Content>
+                          <Item.Description>
+                            <Image src='https://react.semantic-ui.com/assets/images/wireframe/paragraph.png'/>
+                            <Dimmer active={this.state.loading} inverted={true}>
+                              <Loader/>
+                            </Dimmer>
+                          </Item.Description>
+                        </Item.Content>
+                      </Card>
+                    : <div>
+                        <Card style={{
+                            width: '95%'
+                          }}>
+                          <EventHeader user_id={this.state.event.user_id} datetime={this.state.event.datetime}/>
 
-                                                  <Item.Header as="a">{this.state.event.title}</Item.Header>
-                                                  <Label
-                                                      color="blue"
-                                                      ribbon
-                                                      style={}
-                                                    >Health
-                                                    </Label>
-                                                  <Item.Meta>Description</Item.Meta>
+                          <Item.Content>
 
-                                                  <Item.Description>
-                                                      {this.state.event.comments}
-                                                    </Item.Description>
+                            <Item.Header as='a'>{this.state.event.title}</Item.Header>
+                            <Label color='blue' ribbon style={{
+                                marginTop: '7px',
+                                marginBottom: '7px'
+                              }}>Health</Label>
+                            <Item.Meta>Description</Item.Meta>
 
-                                                  <Divider section />
-                                                  <Item.Extra>
-                                                      <ImageModal image_base64={this.state.event.image_base64} />
+                            <Item.Description>
+                              {this.state.event.comments}
+                            </Item.Description>
 
-                                                    </Item.Extra>
-                                                </Item.Content>
-                                            </Card>
+                            <Divider section={true}/>
+                            <Item.Extra>
+                              <ImageModal image_base64={this.state.event.image_base64}/>
 
-                                          <EventFooter title={this.state.event.title} />
-                                          </div>
-}
+                            </Item.Extra>
+                          </Item.Content>
+                        </Card>
 
-                                </Item>
-                            </Grid.Column>
-                        </Grid.Row>
+                        <EventFooter title={this.state.event.title}/>
+                      </div>
 
-                    </Grid>
-                </Responsive>
-            </div>
-    );
+                }
+
+              </Item>
+            </Grid.Column>
+          </Grid.Row>
+
+        </Grid>
+      </Responsive>
+    </div>)
   }
 }
