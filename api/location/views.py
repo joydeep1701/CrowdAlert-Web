@@ -11,4 +11,4 @@ def places_autocomplete(request):
             return HttpResponseBadRequest("Bad request")
         data = gmaps.places_autocomplete(input_text=query[:50])
         return JsonResponse(data, safe=False)
-
+    return HttpResponseBadRequest("Bad request")
