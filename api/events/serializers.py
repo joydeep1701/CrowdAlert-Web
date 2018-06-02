@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from events.models import EventModel
+from api.events.models import EventModel
 
 class EventSerialzer(serializers.Serializer):
     category = serializers.CharField()

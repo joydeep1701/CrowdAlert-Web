@@ -19,4 +19,5 @@ from api.events import views
 urlpatterns = [
     # API paths
     path('view/', views.home, name='home'),
+    path('geteventbyid', views.get_event_by_id, name='get event by id')
 ]
