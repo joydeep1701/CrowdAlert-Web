@@ -4,9 +4,12 @@ import {Route} from 'react-router-dom';
 import {Responsive, Container, Image} from 'semantic-ui-react'
 import logo from '../../logo.svg'
 
-import MenuBar from '../../components/Menu'
-import LeftSidebar from '../../components/Sidebar'
-import MapContainer from '../../components/Map';
+import {
+  Menu,
+  Sidebar,
+  Map,
+  Sonar
+} from '../../components';
 
 import {database} from '../../utils/firebase'
 
@@ -64,13 +67,13 @@ class App extends Component {
     return (<div>
 
       <Responsive maxWidth={900}>
-        <LeftSidebar toggleVisibility={this.toggleVisibility} visible={this.state.visible} location={this.props.location}>
+        <Sidebar toggleVisibility={this.toggleVisibility} visible={this.state.visible} location={this.props.location}>
           <div style={{
               marginLeft: 10,
               marginRight: 10,
               marginTop: 10
             }}>
-            <MenuBar toggleVisibility={this.toggleVisibility}></MenuBar>
+            <Menu toggleVisibility={this.toggleVisibility}></Menu>
           </div>
           <Route exact path="/view/:eventid" component={Viewevent}/>
           <Route exact path="/" render={props => (<div style={{
@@ -82,20 +85,25 @@ class App extends Component {
               }}>
               {
                 this.state.location?
-                  <MapContainer location={{
+                  <Map location={{
                     lat: this.state.location.lat,
                     lng: this.state.location.long,
-                  }} zoom={11}/>
+                  }} zoom={11}>
+                      <Sonar lat={22.67} lng={88.36} id={'Event 1'} />
+                      <Sonar lat={22.66} lng={88.35} id={'Event 2'} />
+                      <Sonar lat={22.65} lng={88.35} id={'Event 3'} />
+
+                  </Map>
                 :null
               }
              
             </div>)}/>
 
-        </LeftSidebar>
+        </Sidebar>
       </Responsive>
 
       <Responsive minWidth={901}>
-        <MenuBar toggleVisibility={this.toggleVisibility}></MenuBar>
+        <Menu toggleVisibility={this.toggleVisibility}></Menu>
         <Container>
           <Route exact path="/" render={props => (<div style={{
                 position: 'absolute',
@@ -107,10 +115,14 @@ class App extends Component {
               }}>
               {
                 this.state.location?
-                  <MapContainer location={{
+                  <Map location={{
                     lat: this.state.location.lat,
                     lng: this.state.location.long,
-                  }} zoom={11}/>
+                  }} zoom={11}>
+                    <Sonar lat={22.67} lng={88.36} id={'Event 1'} />
+                    <Sonar lat={22.66} lng={88.35} id={'Event 2'} />
+                    <Sonar lat={22.65} lng={88.34} id={'Event 3'} />
+                  </Map>
                 :null
               }
             </div>)}/>

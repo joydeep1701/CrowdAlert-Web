@@ -1,51 +1,77 @@
-import React, { Component } from 'react';
-import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
-import PropTypes from 'prop-types';
+/* global google */
+import React from 'react';
+import { compose, withProps, withStateHandlers } from 'recompose';
+import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
+import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
 
-// const MapStyle = {   width: '90%',   height: '90%', };
+import style from './style';
+// import { InfoBox } from 'react-google-maps/lib/components/addons/InfoBox';
 
-export class MapContainer extends Component {
-  componentDidMount() {
-    // alert('Not Yet Implemented');
-  }
-  render() {
-    // console.log("MAP", this.props);
-    if (!this.props.loaded) {
-      return (
-        <div>Loading..</div>
-      );
-    }
-    return (
-      <div>
-        <Map
-          google={this.props.google}
-          zoom={this.props.zoom || 16}
-          initialCenter={this.props.location}
-        >
-          {this.props.children}
-          <Marker onClick={() => console.log(this)} name="Current location" />
-        </Map>
+import './pulse.css';
+
+const markerImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII=';
+
+const Sonar = props => (
+  <MarkerWithLabel
+    position={{ lat: props.lat, lng: props.lng }}
+    labelAnchor={new google.maps.Point(35, 70)}
+    labelStyle={{ padding: '24px' }}
+    icon={{
+    url: markerImage,
+  }}
+    onClick={() => alert(props.id)}
+  >
+    <div>
+      <div className="sonar-emitter">
+        <div className="sonar-wave" />
       </div>
-    );
-  }
-}
-MapContainer.propTypes = {
-  google: PropTypes
-    .objectOf(PropTypes.string)
-    .isRequired,
-  location: PropTypes
-    .objectOf(PropTypes.number)
-    .isRequired,
-  zoom: PropTypes.number,
-  loaded: PropTypes.bool.isRequired,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]),
-};
-MapContainer.defaultProps = {
-  zoom: 14,
-  children: null,
-};
+    </div>
 
-export default GoogleApiWrapper({ apiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY })(MapContainer);
+  </MarkerWithLabel>
+);
+
+const MapComponent = compose(
+  withProps({
+    googleMapURL: `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`,
+    loadingElement: <div style={{ height: '100%' }}>Loader</div>,
+    containerElement: <div style={{ height: '100%' }} />,
+    mapElement: <div style={{ height: '100%' }} />,
+  }),
+  withStateHandlers(() => ({
+    isOpen: false,
+  }), {
+    onToggleOpen: ({ isOpen }) => () => ({
+      isOpen: !isOpen,
+    }),
+  }),
+  withScriptjs,
+  withGoogleMap,
+)(props => (
+  <GoogleMap
+    defaultZoom={13}
+    defaultCenter={{ lat: 22.66, lng: 88.34 }}
+    defaultOptions={{
+      styles: style,
+     // these following 7 options turn certain controls off
+      streetViewControl: false,
+      scaleControl: false,
+      mapTypeControl: false,
+      panControl: false,
+      zoomControl: false,
+      rotateControl: false,
+      fullscreenControl: false,
+    }}
+    disableDefaultUI
+  >
+    { props.children } 
+  </GoogleMap>
+));
+
+const Map = props => (
+  <MapComponent {...props} />
+);
+
+export {
+  Map,
+  Sonar,
+};

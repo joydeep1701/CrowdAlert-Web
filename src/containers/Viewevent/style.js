@@ -33,8 +33,10 @@ const styleSheet = {
       height: '50vh',
     },
   },
-
-
+  ribbonLabel: {
+    marginTop: '7px',
+    marginBottom: '7px',
+  },
 };
 
 

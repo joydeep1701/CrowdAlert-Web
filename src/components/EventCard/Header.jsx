@@ -5,6 +5,8 @@ import {
   Label,
 } from 'semantic-ui-react';
 import eventStyles from './styleSheet';
+import { calcAge } from '../../utils/time';
+
 
 const EventHeader = props => (
   <Feed style={eventStyles.header}>
