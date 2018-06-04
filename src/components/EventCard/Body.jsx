@@ -7,7 +7,7 @@ const Body = props => (
     <Item.Header as="a">{props.title}</Item.Header>
     <Label
       color="blue"
-      ribbon="ribbon"
+      ribbon
       style={styleSheet.ribbonLabel}
     >
       Health
@@ -16,11 +16,13 @@ const Body = props => (
       <Item.Meta>Description</Item.Meta>
     : null}
     <Item.Description>
-      {props.comments}
+      {props.description}
     </Item.Description>
 
-    <Divider section="section" />
-    <Item.Extra />
+    <Divider section />
+    <Item.Extra>
+      {props.children}
+    </Item.Extra>
   </Item.Content>
 );
 export default Body;
