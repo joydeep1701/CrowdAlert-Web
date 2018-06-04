@@ -30,7 +30,6 @@ const styleSheet = {
     },
     cardContainer: {
       width: '95%',
-      height: '50vh',
     },
   },
 };

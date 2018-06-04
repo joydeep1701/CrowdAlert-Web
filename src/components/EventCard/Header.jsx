@@ -18,15 +18,22 @@ const EventHeader = props => (
       </Feed.Label>
       <Feed.Content>
         <Feed.Date>
-          {calcAge(props.datetime)}
+          {calcAge(props.dateTime)}
         </Feed.Date>
         <Feed.Summary>
           <a>{props.user_id}</a>
-          reported an incident
+           <br/> reported an incident
         </Feed.Summary>
         <br />
-        <Label as="a" basic color="orange">Serampore</Label>
-        <Label as="a" basic color="blue">West Bengal</Label>
+        {props.reverse_geocode?
+          <div>
+              <Label as="a" basic color="purple">{props.reverse_geocode.name}</Label>
+              <Label as="a" basic color="orange">{props.reverse_geocode.admin2}</Label>
+              <Label as="a" basic color="yellow">{props.reverse_geocode.admin1}</Label>
+          </div>
+          :null
+        }
+       
       </Feed.Content>
     </Feed.Event>
   </Feed>

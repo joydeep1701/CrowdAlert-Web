@@ -7,33 +7,32 @@ import {
   Image,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import logo from '../../logo.svg';
+import logo from '../../logo.png';
 import styles from './styles';
 
 const LeftSidebar = props => (
   <div style={styles.fitContainer}>
-    <Sidebar.Pushable
-      as={Segment}
-      style={styles.darkBackground}
-    >
+    <Sidebar.Pushable as={Segment} style={styles.darkBackground}>
       <Sidebar
         as={Menu}
-        animation="overlay"
+        animation="scale down"
         width="wide"
         visible={props.visible}
-        icon="labeled"
-        vertical="vertical"
+        vertical
         style={styles.sidebar}
+        inverted
       >
         <Menu.Item name="logo">
-          <Image src={logo} size="small" bordered="bordered" centered="centered" />
-
+          <Image src={logo} size="small" bordered centered />
         </Menu.Item>
+
         <Link
           to="/"
-          onClick={props.visible
-                    ? props.toggleVisibility
-                    : null}
+          onClick={
+            props.visible
+            ? props.toggleVisibility
+            : null
+          }
         >
           <Menu.Item name="home">
             <Icon name="home" />

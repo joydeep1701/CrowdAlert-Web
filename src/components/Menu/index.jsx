@@ -3,7 +3,7 @@ import { Responsive, Menu, Icon, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 
-import logo from '../../logo.svg';
+import logo from '../../logo.png';
 
 const MenuBar = props => (
   <Menu size="small" inverted>
