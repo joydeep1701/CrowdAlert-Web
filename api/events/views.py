@@ -27,10 +27,15 @@ def get_events_by_location(request):
         
         incidents = db.child('incidents').get()
         data = []
-        for incident in incidents.each():
-            temp = dict(incident.val())            
-            if distance(float(temp['location']['coords']['latitude']),
-             float(temp['location']['coords']['longitude']), lat, lng) < thresold:
+        for incident in incidents.each():                     
+            event = dict(incident.val())
+            temp = {}
+            temp['key'] = incident.key()
+            temp['lat'] = event['location']['coords']['latitude']
+            temp['long'] = event['location']['coords']['longitude']
+
+            if distance(float(event['location']['coords']['latitude']),
+             float(event['location']['coords']['longitude']), lat, lng) < thresold:
                 data.append(temp)
 
         return JsonResponse(data, safe=False)

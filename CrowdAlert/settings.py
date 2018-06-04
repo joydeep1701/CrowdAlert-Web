@@ -166,6 +166,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CORS_ORIGIN_WHITELIST = (    
     'crowdalert.herokuapp.com',
+    'crowdalert-dev.herokuapp.com',
     'localhost:3000',
     '127.0.0.1:8000',
     '192.168.0.4:8000' # Should use a regex
