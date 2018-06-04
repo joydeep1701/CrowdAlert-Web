@@ -6,7 +6,7 @@ import propTypes from 'prop-types';
 import logo from '../../logo.svg';
 
 const MenuBar = props => (
-  <Menu size="small">
+  <Menu size="small" inverted>
     <Menu.Menu position="left">
       <Responsive as={Menu.Item} {...Responsive.onlyMobile}>
         <Icon name="content" onClick={props.toggleVisibility} />
