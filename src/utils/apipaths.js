@@ -18,11 +18,14 @@ const GET_EVENT_BY_ID = 'https://crowdalert.herokuapp.com/api/events/geteventbyi
  */
 const GET_IMAGE_URLS = 'https://crowdalert.herokuapp.com/api/images/getimageurl';
 
-const REVERSE_GEOCODE = 'https://crowdalert.herokuapp.com/api/location/reverse_geocode'
+const REVERSE_GEOCODE = 'https://crowdalert.herokuapp.com/api/location/reverse_geocode';
+
+const GET_EVENTS_BY_LOCATION = 'https://crowdalert.herokuapp.com/api/events/geteventsbylocation';
 
 export {
   GET_LOCATION_BY_IP,
   GET_EVENT_BY_ID,
   GET_IMAGE_URLS,
   REVERSE_GEOCODE,
+  GET_EVENTS_BY_LOCATION,
 };

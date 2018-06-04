@@ -48,3 +48,4 @@ registerServiceWorker();
 
   window.addEventListener('load', removeDimmer);
 }());
+export default history;

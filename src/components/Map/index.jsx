@@ -3,7 +3,8 @@ import React from 'react';
 import { compose, withProps, withStateHandlers } from 'recompose';
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
-
+import { Redirect } from 'react-router-dom';
+import history from '../../';
 import style from './style';
 // import { InfoBox } from 'react-google-maps/lib/components/addons/InfoBox';
 
@@ -17,15 +18,16 @@ const Sonar = props => (
     labelAnchor={new google.maps.Point(35, 70)}
     labelStyle={{ padding: '24px' }}
     icon={{
-    url: markerImage,
-  }}
-    onClick={() => alert(props.id)}
+      url: markerImage,
+    }}
+    onClick={() => history.push(`/view/${props.id}`)}
   >
     <div>
       <div className="sonar-emitter">
         <div className="sonar-wave" />
       </div>
     </div>
+
 
   </MarkerWithLabel>
 );
