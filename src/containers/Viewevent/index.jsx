@@ -4,6 +4,7 @@ import {
   Card,
   Item,
   Grid,
+  Container
 } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
 import { Image, Event, Map, LoadingCard, Sonar } from '../../components';
@@ -101,7 +102,7 @@ export default class Viewevent extends Component {
   render() {
     console.log(this.state, this.props);
     return (
-      <div>
+      <Container>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
             {
@@ -167,7 +168,7 @@ export default class Viewevent extends Component {
             </Grid.Row>
           </Grid>
         </Responsive>
-      </div>
+      </Container>
     );
   }
 }

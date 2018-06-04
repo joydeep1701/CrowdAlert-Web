@@ -38,7 +38,7 @@ class Feed extends Component {
   }
 
   render() {
-    console.log(this.state.events); 
+    console.log(this.state.events);
     return (
       <div style={{
         // position: 'absolute',
@@ -57,18 +57,18 @@ class Feed extends Component {
             lng: this.state.location.long,
           }}
           zoom={11}
-         >
-         {  this.state.events.map(event => (
-      
-          <Sonar
-            lat={event.location.coords.latitude}
-            lng={event.location.coords.longitude}
-            id={event.title}
-            key={event.datetime}
-          />
-        ))}
-         </Map>
-          
+        >
+          {
+            this.state.events.map(event => (
+              <Sonar
+                lat={event.location.coords.latitude}
+                lng={event.location.coords.longitude}
+                id={event.title}
+                key={event.datetime}
+              />
+          ))}
+        </Map>
+
       : null
   }
 
