@@ -1,7 +1,7 @@
 const styleSheet = {
   cardContainer: {
     width: '95%',
-    height: '25vh',
+    height: '35vh',
   },
 };
 

@@ -8,6 +8,10 @@ const eventStyles = {
       width: '95%',
     },
   },
+  ribbonLabel: {
+    marginTop: '7px',
+    marginBottom: '7px',
+  },
 
 };
 export default eventStyles;
