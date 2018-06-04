@@ -48,16 +48,16 @@ const MapComponent = compose(
   }),
   withScriptjs,
   withGoogleMap,
-)(props => {
-  console.log('MAP PROPS',props);
+)((props) => {
+  console.log('MAP PROPS', props);
   return (
-  <GoogleMap
-    defaultZoom={props.zoom}
-    defaultCenter={{
+    <GoogleMap
+      defaultZoom={props.zoom}
+      defaultCenter={{
       lat: parseFloat(props.location.lat),
       lng: parseFloat(props.location.lng),
      }}
-    defaultOptions={{
+      defaultOptions={{
       styles: style,
      // these following 7 options turn certain controls off
       streetViewControl: false,
@@ -68,11 +68,12 @@ const MapComponent = compose(
       rotateControl: false,
       fullscreenControl: false,
     }}
-    disableDefaultUI
-  >
-    { props.children } 
-  </GoogleMap>
-)});
+      disableDefaultUI
+    >
+      { props.children }
+    </GoogleMap>
+  );
+});
 
 const Map = props => (
   <MapComponent {...props} />

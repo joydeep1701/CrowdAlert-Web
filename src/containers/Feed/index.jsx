@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import fetch from 'isomorphic-fetch';
 import { Map, Sonar } from '../../components';
-import { GET_EVENTS_BY_LOCATION } from '../../utils/apipaths';
+import { GET_EVENTS_BY_LOCATION, GET_LOCATION_BY_IP } from '../../utils/apipaths';
 
 class Feed extends Component {
   constructor(props) {
@@ -12,13 +12,13 @@ class Feed extends Component {
     };
   }
   componentWillMount() {
-    fetch('https://ipinfo.io/json').then(resp => resp.json()).then((resp) => {
+    fetch(GET_LOCATION_BY_IP).then(resp => resp.json()).then((resp) => {
       this.setState({
         ...this.state,
         location: {
           ...resp,
-          lat: parseFloat(resp.loc.split(',')[0]),
-          long: parseFloat(resp.loc.split(',')[1]),
+          lat: parseFloat(resp.lat),
+          long: parseFloat(resp.lng),
         },
       });
       let lat;
@@ -61,10 +61,10 @@ class Feed extends Component {
           {
             this.state.events.map(event => (
               <Sonar
-                lat={event.location.coords.latitude}
-                lng={event.location.coords.longitude}
-                id={event.title}
-                key={event.datetime}
+                lat={event.lat}
+                lng={event.long}
+                key={event.key}
+                id={event.key}
               />
           ))}
         </Map>
