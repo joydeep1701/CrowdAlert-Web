@@ -6,7 +6,7 @@ import {
   Label,
 } from 'semantic-ui-react';
 import eventStyles from './styleSheet';
-import { calcAge } from '../../utils/time';
+import calcAge from '../../utils/time';
 
 /**
  * [EventHeader description]

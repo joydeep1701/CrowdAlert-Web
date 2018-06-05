@@ -4,29 +4,36 @@ import { Item, Divider, Label } from 'semantic-ui-react';
 import styleSheet from './styleSheet';
 
 /**
+ * [getEventColor returns event color according event type]
+ * @param  {[type]} type [event type]
+ * @return {[type]}      [event color]
+ */
+const getEventColor = (type) => {
+  let eventColor = '';
+  switch (type) {
+    case 'fire':
+      eventColor = 'red';
+    case 'road':
+      eventColor = 'brown';
+    case 'health':
+      eventColor = 'teal';
+    case 'electric':
+      eventColor = 'yellow';
+    default:
+      eventColor = 'blue';
+  }
+  return eventColor;
+};
+/**
  * [Body JSX element for Event Card Body. Contains the event description]
  * @param {[type]} props
  */
-const getEventColor = (type) => {
-  switch (type) {
-    case 'fire':
-      return 'red';
-    case 'road':
-      return 'brown';
-    case 'health':
-      return 'teal';
-    case 'electric':
-      return 'yellow';
-    default:
-      return 'blue';
-  }
-};
 
 const Body = props => (
   <Item.Content>
     <Item.Header as="a">{props.title}</Item.Header>
     <Label
-      color={getEventColor(props.eventType)} 
+      color={getEventColor(props.eventType)}
       ribbon
       style={styleSheet.ribbonLabel}
     >
