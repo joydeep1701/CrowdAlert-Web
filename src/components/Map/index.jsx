@@ -9,7 +9,7 @@ import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerW
 import history from '../../';
 import style from './styleBright1';
 
-import './pulseYellow.css';
+import './pulseRed.css';
 
 // 1x1 transparent png image as we don't want to show the default marker image
 const markerImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII=';
@@ -41,11 +41,10 @@ Sonar.propTypes = {
   lng: PropTypes.number.isRequired,
   id: PropTypes.string.isRequired,
 };
-
 const MapComponent = compose(
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`,
-    loadingElement: <div style={{ height: '100%' }}>Loader</div>,
+    loadingElement: <div style={{ height: '100%' }} />,
     containerElement: <div style={{ height: '100%' }} />,
     mapElement: <div style={{ height: '100%' }} />,
   }),

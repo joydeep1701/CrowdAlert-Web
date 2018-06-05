@@ -30,13 +30,13 @@ import styleSheet from './style';
  */
 const MapwithSonar = props => (
   <Map location={{ lat: props.latitude, lng: props.longitude }} zoom={15}>
-    <Sonar lat={props.latitude} lng={props.longitude} id={props.title} />
+    <Sonar lat={props.latitude} lng={props.longitude} id={props.id} />
   </Map>
 );
 MapwithSonar.propTypes = {
   latitude: propTypes.number.isRequired,
   longitude: propTypes.number.isRequired,
-  title: propTypes.string.isRequired,
+  id: propTypes.string.isRequired,
 };
 /**
  * [EventCard Combines the all the three parts of event cards to form a single
@@ -83,7 +83,10 @@ EventCard.propTypes = {
 EventCard.defaultProps = {
   reverse_geocode: { name: '', admin2: '', admin1: '' },
   description: '',
-  imageUrls: false,
+  imageUrls: {
+    thumbnail: '',
+    url: '',
+  },
 };
 /**
  * [Viewevents Responsive Viewevents component. Fetches data & renders the
@@ -122,7 +125,7 @@ export default class Viewevent extends Component {
         });
         // For a valid event get the corresponding image uuid
         // Considering there is a image for every event
-        const { imageUuid } = response;
+        const imageUuid = response.image_uuid;
         return fetch(`${GET_IMAGE_URLS}?uuid=${imageUuid}`);
       })
       // Decode json
@@ -155,7 +158,7 @@ export default class Viewevent extends Component {
   render() {
     console.log(this.state, this.props);
     return (
-      <Container>
+      <div>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
             {
@@ -165,6 +168,7 @@ export default class Viewevent extends Component {
               <MapwithSonar
                 latitude={this.state.event.location.coords.latitude}
                 longitude={this.state.event.location.coords.longitude}
+                id={this.state.eventid}
               />
           }
           </div>
@@ -186,45 +190,52 @@ export default class Viewevent extends Component {
           </Item>
         </Responsive>
         <Responsive minWidth={901}>
-          <Grid columns={2}>
-            <Grid.Row>
-              <Grid.Column>
-                <div style={styleSheet.desktop.mapContainer}>
-                  {
-                    this.state.loading
-                      ? null :
-                      <MapwithSonar
-                        latitude={this.state.event.location.coords.latitude}
-                        longitude={this.state.event.location.coords.longitude}
-                      />
-                  }
-                </div>
-              </Grid.Column>
-              <Grid.Column>
-                <Item style={styleSheet.desktop.itemContainer}>
-                  {
-                    this.state.loading
-                      ? <LoadingCard loading />
-                      :
-                      <EventCard
-                        viewmode="desktop"
-                        user_id={this.state.event.user_id}
-                        datetime={this.state.event.datetime}
-                        title={this.state.event.title}
-                        description={this.state.event.comments}
-                        imageUrls={this.state.image_urls}
-                        reverse_geocode={this.state.reverse_geocode}
-                      />
-                  }
-                </Item>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
+          <Container>
+            <Grid columns={2}>
+              <Grid.Row>
+                <Grid.Column>
+                  <div style={styleSheet.desktop.mapContainer}>
+                    {
+                      this.state.loading
+                        ? null :
+                        <MapwithSonar
+                          latitude={this.state.event.location.coords.latitude}
+                          longitude={this.state.event.location.coords.longitude}
+                          id={this.state.eventid}
+                        />
+                    }
+                  </div>
+                </Grid.Column>
+                <Grid.Column>
+                  <Item style={styleSheet.desktop.itemContainer}>
+                    {
+                      this.state.loading
+                        ? <LoadingCard loading />
+                        :
+                        <EventCard
+                          viewmode="desktop"
+                          user_id={this.state.event.user_id}
+                          datetime={this.state.event.datetime}
+                          title={this.state.event.title}
+                          description={this.state.event.comments}
+                          imageUrls={this.state.image_urls}
+                          reverse_geocode={this.state.reverse_geocode}
+                        />
+                    }
+                  </Item>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Container>
         </Responsive>
-      </Container>
+      </div>
     );
   }
 }
 Viewevent.propTypes = {
-  match: propTypes.isRequired,
+  match: propTypes.shape({
+    params: propTypes.shape({
+      eventid: propTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };

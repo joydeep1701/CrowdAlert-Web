@@ -25,8 +25,7 @@ const EventHeader = props => (
           {calcAge(props.dateTime)}
         </Feed.Date>
         <Feed.Summary>
-          <p>{props.user_id}</p>
-          <br /> reported an incident
+          <p>{props.user_id} reported an incident</p>
         </Feed.Summary>
         <br />
         {props.reverse_geocode ?

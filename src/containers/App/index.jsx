@@ -18,6 +18,7 @@ class App extends Component {
     this.state = {
       visible: false,
     };
+    this.toggleVisibility = this.toggleVisibility.bind(this);
   }
   /**
    * [toggleVisibility toogles visiblity of sidebar]

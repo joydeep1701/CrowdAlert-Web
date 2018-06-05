@@ -30,7 +30,7 @@ Body.propTypes = {
   title: PropTypes.string.isRequired,
   desktop: PropTypes.bool,
   description: PropTypes.string,
-  children: PropTypes.isRequired,
+  children: PropTypes.node.isRequired,
   eventType: PropTypes.string,
 };
 Body.defaultProps = {

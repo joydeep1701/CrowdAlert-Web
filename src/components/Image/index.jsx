@@ -7,7 +7,7 @@ import { Image, Modal, Responsive } from 'semantic-ui-react';
  * @param {[type]} props [description]
  */
 const ImageModal = (props) => {
-  if (props.imageUrls) {
+  if (props.imageUrls.url !== '') {
     return (
       <Modal trigger={
         <Image

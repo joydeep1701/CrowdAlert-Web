@@ -86,7 +86,7 @@ LeftSidebar.propTypes = {
   toggleVisibility: propTypes.func.isRequired,
   /* bool denoting whether the sidebar is open or not */
   visible: propTypes.bool.isRequired,
-  children: propTypes.isRequired,
+  children: propTypes.node.isRequired,
 };
 
 export default LeftSidebar;
