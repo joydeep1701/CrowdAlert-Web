@@ -188,6 +188,7 @@ export default class Viewevent extends Component {
                 description={this.state.event.comments}
                 imageUrls={this.state.image_urls}
                 reverse_geocode={this.state.reverse_geocode}
+                eventType={this.state.event.category}
               />
           }
           </Item>
