@@ -4,7 +4,7 @@ import {
   Card,
   Item,
   Grid,
-  Container
+  Container,
 } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
 import { Image, Event, Map, LoadingCard, Sonar } from '../../components';

@@ -1,17 +1,23 @@
 /* global google */
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import { compose, withProps, withStateHandlers } from 'recompose';
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
-import { Redirect } from 'react-router-dom';
+
 import history from '../../';
-import style from './style';
-// import { InfoBox } from 'react-google-maps/lib/components/addons/InfoBox';
+import style from './styleBright1';
 
-import './pulse.css';
+import './pulseYellow.css';
 
+// 1x1 transparent png image as we don't want to show the default marker image
 const markerImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII=';
 
+/**
+ * [Sonar Our custom marker for the maps. Behaves like a Sonar pulsating on the map]
+ * @param {[type]} props [description]
+ */
 const Sonar = props => (
   <MarkerWithLabel
     position={{ lat: props.lat, lng: props.lng }}
@@ -20,6 +26,7 @@ const Sonar = props => (
     icon={{
       url: markerImage,
     }}
+    // Push events to browser history so that user is redirected to view events
     onClick={() => history.push(`/view/${props.id}`)}
   >
     <div>
@@ -27,10 +34,13 @@ const Sonar = props => (
         <div className="sonar-wave" />
       </div>
     </div>
-
-
   </MarkerWithLabel>
 );
+Sonar.propTypes = {
+  lat: PropTypes.number.isRequired,
+  lng: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
+};
 
 const MapComponent = compose(
   withProps({
@@ -39,6 +49,7 @@ const MapComponent = compose(
     containerElement: <div style={{ height: '100%' }} />,
     mapElement: <div style={{ height: '100%' }} />,
   }),
+  // Reserved for future if we
   withStateHandlers(() => ({
     isOpen: false,
   }), {
@@ -54,8 +65,8 @@ const MapComponent = compose(
     <GoogleMap
       defaultZoom={props.zoom}
       defaultCenter={{
-      lat: parseFloat(props.location.lat),
-      lng: parseFloat(props.location.lng),
+        lat: parseFloat(props.location.lat),
+        lng: parseFloat(props.location.lng),
      }}
       defaultOptions={{
       styles: style,
@@ -74,7 +85,10 @@ const MapComponent = compose(
     </GoogleMap>
   );
 });
-
+/**
+ * [Map Just to make sure everythings is in scope]
+ * @param {[type]} props [description]
+ */
 const Map = props => (
   <MapComponent {...props} />
 );

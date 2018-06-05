@@ -1,4 +1,5 @@
 import React from 'react';
+import propTypes from 'prop-types';
 import {
   Sidebar,
   Segment,
@@ -10,9 +11,13 @@ import { Link } from 'react-router-dom';
 import logo from '../../logo.png';
 import styles from './styles';
 
+/**
+ * [LeftSidebar LeftSidebar for the app]
+ * @param {[type]} props [description]
+ */
 const LeftSidebar = props => (
   <div style={styles.fitContainer}>
-    <Sidebar.Pushable as={Segment} style={styles.darkBackground}>
+    <Sidebar.Pushable as={Segment}>
       <Sidebar
         as={Menu}
         animation="scale down"
@@ -36,16 +41,16 @@ const LeftSidebar = props => (
         >
           <Menu.Item name="home">
             <Icon name="home" />
-                        Home
+            Home
           </Menu.Item>
         </Link>
         <Menu.Item name="camera">
           <Icon name="camera" />
-                    Report
+          Report
         </Menu.Item>
         <Menu.Item name="user">
           <Icon name="user circle" />
-                    Profile
+          Profile
         </Menu.Item>
 
         <Link
@@ -70,11 +75,18 @@ const LeftSidebar = props => (
         onClick={props.visible
                 ? props.toggleVisibility
                 : null}
-        style={styles.darkBackground}
       >
         {props.children}
       </Sidebar.Pusher>
     </Sidebar.Pushable>
   </div>
 );
+LeftSidebar.propTypes = {
+  /* function to handle the visiblity */
+  toggleVisibility: propTypes.func.isRequired,
+  /* bool denoting whether the sidebar is open or not */
+  visible: propTypes.bool.isRequired,
+  children: propTypes.isRequired,
+};
+
 export default LeftSidebar;

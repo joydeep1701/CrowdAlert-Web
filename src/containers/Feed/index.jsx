@@ -21,11 +21,7 @@ class Feed extends Component {
           long: parseFloat(resp.lng),
         },
       });
-      let lat;
-      let long;
-      ({ lat, long } = this.state.location);
-      // For now fetch events with large distance proximity. Later we need to
-      // change that to 6,000/3*zoom level, so that only relevant events are fetched
+      const { lat, long } = this.state.location;
       return fetch(`${GET_EVENTS_BY_LOCATION}?lat=${lat}&long=${long}&dist=10000`);
     })
       .then(resp => resp.json())

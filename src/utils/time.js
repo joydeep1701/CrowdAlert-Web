@@ -1,3 +1,9 @@
+/**
+ * [calcAge Calculates the approximate time passed & returns it as a textual
+ * representation ]
+ * @param  {Float} timestamp [description]
+ * @return {String}           [description]
+ */
 function calcAge(timestamp) {
     const duration = Math.floor((new Date() - timestamp)/1000)
     if (duration < 60) {
@@ -15,11 +21,9 @@ function calcAge(timestamp) {
     if (duration < 3600*24*100 ) {
         return `About ${Math.floor(duration/(3600*24)) } days ago`
     }
-    if (duration < 3600*24*365 ) {       
+    if (duration < 3600*24*365 ) {
         return `About ${Math.floor(duration/(3600*24*30)) } months ago`
     }
-    
-
 }
 
 export { calcAge };

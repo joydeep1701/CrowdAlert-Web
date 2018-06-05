@@ -1,3 +1,7 @@
+/**
+ * [eventStyles Style sheet for event card]
+ * @type {Object}
+ */
 const eventStyles = {
   header: {
     paddingTop: '10px',

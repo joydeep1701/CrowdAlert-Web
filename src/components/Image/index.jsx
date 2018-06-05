@@ -1,7 +1,11 @@
 import React from 'react';
-import { Image, Modal, Responsive } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import { Image, Modal, Responsive } from 'semantic-ui-react';
 
+/**
+ * [ImageModal Displays a small thumbnail & opens a large modal onclick]
+ * @param {[type]} props [description]
+ */
 const ImageModal = (props) => {
   if (props.imageUrls) {
     return (
@@ -28,8 +32,16 @@ const ImageModal = (props) => {
   return null;
 };
 
-// ImageModal.propTypes = {
-//   imageBase64: PropTypes.string.isRequired,
-// };
+ImageModal.propTypes = {
+  imageUrls: PropTypes.shape({
+    /* SVG url for the image thumbnail */
+    thumbnail: PropTypes.string,
+    /* Original image thumbnail */
+    url: PropTypes.string,
+  }),
+};
+ImageModal.defaultProps = {
+  imageUrls: false,
+};
 
 export default ImageModal;
