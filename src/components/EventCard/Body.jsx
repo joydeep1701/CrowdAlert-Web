@@ -7,11 +7,30 @@ import styleSheet from './styleSheet';
  * [Body JSX element for Event Card Body. Contains the event description]
  * @param {[type]} props
  */
+const getEventColor = (type) => {
+  switch (type) {
+    case 'fire':
+      return 'red';
+    case 'road':
+      return 'brown';
+    case 'health':
+      return 'teal';
+    case 'electric':
+      return 'yellow';
+    default:
+      return 'blue';
+  }
+};
+
 const Body = props => (
   <Item.Content>
     <Item.Header as="a">{props.title}</Item.Header>
-    <Label color="blue" ribbon style={styleSheet.ribbonLabel}>
-      {props.eventType}
+    <Label
+      color={getEventColor(props.eventType)} 
+      ribbon
+      style={styleSheet.ribbonLabel}
+    >
+      {props.eventType.toLocaleUpperCase()}
     </Label>
     {props.desktop ?
       <Item.Meta>Description</Item.Meta>

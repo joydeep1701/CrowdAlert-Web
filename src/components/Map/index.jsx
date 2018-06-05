@@ -7,7 +7,7 @@ import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
 
 import history from '../../';
-import style from './styleBright1';
+import style from './styleBright2';
 
 import './pulseRed.css';
 

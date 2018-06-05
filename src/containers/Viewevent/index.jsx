@@ -53,6 +53,7 @@ const EventCard = props => (
     <Event.Body
       title={props.title}
       description={props.description}
+      eventType={props.eventType}
     >
       <Image imageUrls={props.imageUrls} />
     </Event.Body>
@@ -65,6 +66,7 @@ EventCard.propTypes = {
   datetime: propTypes.number.isRequired,
   title: propTypes.string.isRequired,
   description: propTypes.string,
+  eventType: propTypes.string,
   reverse_geocode: propTypes.shape({
     /* Name of the place */
     name: propTypes.string,
@@ -83,6 +85,7 @@ EventCard.propTypes = {
 EventCard.defaultProps = {
   reverse_geocode: { name: '', admin2: '', admin1: '' },
   description: '',
+  eventType: 'N/A',
   imageUrls: {
     thumbnail: '',
     url: '',
@@ -220,6 +223,7 @@ export default class Viewevent extends Component {
                           description={this.state.event.comments}
                           imageUrls={this.state.image_urls}
                           reverse_geocode={this.state.reverse_geocode}
+                          eventType={this.state.event.category}
                         />
                     }
                   </Item>
