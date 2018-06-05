@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import propTypes from 'prop-types';
 import {
   Responsive,
   Card,
@@ -7,31 +8,42 @@ import {
   Container,
 } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
-import { Image, Event, Map, LoadingCard, Sonar } from '../../components';
-import { GET_EVENT_BY_ID, GET_IMAGE_URLS, REVERSE_GEOCODE } from '../../utils/apipaths';
+import {
+  Image,
+  Event,
+  Map,
+  LoadingCard,
+  Sonar,
+} from '../../components';
+import {
+  GET_EVENT_BY_ID,
+  GET_IMAGE_URLS,
+  REVERSE_GEOCODE,
+} from '../../utils/apipaths';
 
 import styleSheet from './style';
 
+/**
+ * [MapwithSonar Combines the Map & Sonar component to view a single marker
+ * on a single marker]
+ * @param {[type]} props [description]
+ */
 const MapwithSonar = props => (
-  <Map
-    location={{
-        lat: props.latitude,
-        lng: props.longitude,
-      }}
-    zoom={17}
-    loaded
-  >
-    <Sonar
-      lat={props.latitude}
-      lng={props.longitude}
-      id={props.title}
-    />
+  <Map location={{ lat: props.latitude, lng: props.longitude }} zoom={15}>
+    <Sonar lat={props.latitude} lng={props.longitude} id={props.title} />
   </Map>
 );
-
-const EventCard = (props) => {
-  console.log("EVENT CARD", props)
-  return (
+MapwithSonar.propTypes = {
+  latitude: propTypes.number.isRequired,
+  longitude: propTypes.number.isRequired,
+  title: propTypes.string.isRequired,
+};
+/**
+ * [EventCard Combines the all the three parts of event cards to form a single
+ * whole component ]
+ * @param {[type]} props [description]
+ */
+const EventCard = props => (
   <Card style={styleSheet[props.viewmode].cardContainer}>
     <Event.Header
       user_id={props.user_id}
@@ -45,10 +57,39 @@ const EventCard = (props) => {
       <Image imageUrls={props.imageUrls} />
     </Event.Body>
     <Event.Footer title={props.title} />
-
   </Card>
-)};
-
+);
+EventCard.propTypes = {
+  viewmode: propTypes.string.isRequired,
+  user_id: propTypes.string.isRequired,
+  datetime: propTypes.number.isRequired,
+  title: propTypes.string.isRequired,
+  description: propTypes.string,
+  reverse_geocode: propTypes.shape({
+    /* Name of the place */
+    name: propTypes.string,
+    /* Top levels administative area */
+    admin1: propTypes.string,
+    /* Upper administative area */
+    admin2: propTypes.string,
+  }),
+  imageUrls: propTypes.shape({
+    /* SVG url for the image thumbnail */
+    thumbnail: propTypes.string,
+    /* Original image thumbnail */
+    url: propTypes.string,
+  }),
+};
+EventCard.defaultProps = {
+  reverse_geocode: { name: '', admin2: '', admin1: '' },
+  description: '',
+  imageUrls: false,
+};
+/**
+ * [Viewevents Responsive Viewevents component. Fetches data & renders the
+ * component]
+ * @type {Object}
+ */
 export default class Viewevent extends Component {
   constructor(props) {
     super(props);
@@ -61,29 +102,41 @@ export default class Viewevent extends Component {
   componentWillMount() {
     this.getEventData();
   }
+  /**
+   * [getEventData Issue fetch requests to server to get data]
+   * @return {[none]}
+   */
   getEventData() {
+    // Fetch the json data for the given event id
     fetch(`${GET_EVENT_BY_ID}?id=${this.props.match.params.eventid}`)
+      // Decode json
       .then(response => (response.json()))
+      // setState or reject eventid
       .then((response) => {
         if (response === null) {
-          throw 'Event Not Found';
+          throw Error('Event Not Found');
         }
         this.setState({
           event: response,
           loading: false,
         });
-        const imageUuid = response.image_uuid;
+        // For a valid event get the corresponding image uuid
+        // Considering there is a image for every event
+        const { imageUuid } = response;
         return fetch(`${GET_IMAGE_URLS}?uuid=${imageUuid}`);
       })
+      // Decode json
       .then(response => response.json())
       .then((response) => {
+        // reject if something bad happens
         if (response === null) {
-          throw 'Image not found';
+          throw Error('Image not found');
         }
         this.setState({
           ...this.state,
           image_urls: response,
         });
+        // Should be updated. The main fetch should return an array of promises
         const lat = this.state.event.location.coords.latitude;
         const long = this.state.event.location.coords.longitude;
         return fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`);
@@ -172,3 +225,6 @@ export default class Viewevent extends Component {
     );
   }
 }
+Viewevent.propTypes = {
+  match: propTypes.isRequired,
+};
