@@ -10,7 +10,7 @@ import { Image, Modal, Responsive } from 'semantic-ui-react';
 const undefinedURL = 'https://firebasestorage.googleapis.com/v0/b/crowdalert-4fa46.appspot.com/o/images%2Fundefined?alt=media';
 
 const ImageModal = (props) => {
-  console.log(props.imageUrls.url,undefinedURL, props.imageUrls.url === undefinedURL);
+  // console.log(props.imageUrls.url,undefinedURL, props.imageUrls.url === undefinedURL);
   if (props.imageUrls.url !== undefinedURL && props.imageUrls.url !== '') {
     return (
       <Modal trigger={

@@ -88,11 +88,11 @@ const MapComponent = compose(
  * [Map Just to make sure everythings is in scope]
  * @param {[type]} props [description]
  */
-const Map = props => (
+const MapWrapper = props => (
   <MapComponent {...props} />
 );
 
 export {
-  Map,
+  MapWrapper,
   Sonar,
 };

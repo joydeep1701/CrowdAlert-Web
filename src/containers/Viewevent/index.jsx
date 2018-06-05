@@ -11,7 +11,7 @@ import fetch from 'isomorphic-fetch';
 import {
   Image,
   Event,
-  Map,
+  MapWrapper,
   LoadingCard,
   Sonar,
 } from '../../components';
@@ -24,14 +24,14 @@ import {
 import styleSheet from './style';
 
 /**
- * [MapwithSonar Combines the Map & Sonar component to view a single marker
+ * [MapwithSonar Combines the MapWrapper & Sonar component to view a single marker
  * on a single marker]
  * @param {[type]} props [description]
  */
 const MapwithSonar = props => (
-  <Map location={{ lat: props.latitude, lng: props.longitude }} zoom={15}>
+  <MapWrapper location={{ lat: props.latitude, lng: props.longitude }} zoom={15}>
     <Sonar lat={props.latitude} lng={props.longitude} id={props.id} />
-  </Map>
+  </MapWrapper>
 );
 MapwithSonar.propTypes = {
   latitude: propTypes.number.isRequired,
