@@ -18,6 +18,9 @@ class EventModel(object):
         self.user = user
         self.visibility = visibility
 
+    def save(self, *args, **kwargs):
+        print(args, kwargs)
+
         
 
 

@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 from api.location.gps import distance
+
 db = settings.FIREBASE.database()
 
 # Create your views here.
@@ -40,3 +42,7 @@ def get_events_by_location(request):
 
         return JsonResponse(data, safe=False)
     return HttpResponseBadRequest("Bad request")
+
+@csrf_exempt
+def createnewevent(request):
+    return JsonResponse({'status':'OK'})

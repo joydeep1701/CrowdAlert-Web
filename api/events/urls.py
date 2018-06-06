@@ -22,4 +22,5 @@ urlpatterns = [
     path('geteventbyid', views.get_event_by_id, name='get event by id'),
     path('geteventsbylocation', views.get_events_by_location,
      name='get events by a location & thresold'),
+    path('createnewevent', views.createnewevent, name='create new event')
 ]
