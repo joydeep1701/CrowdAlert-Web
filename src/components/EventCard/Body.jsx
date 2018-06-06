@@ -13,12 +13,16 @@ const getEventColor = (type) => {
   switch (type) {
     case 'fire':
       eventColor = 'red';
+      break;
     case 'road':
       eventColor = 'brown';
+      break;
     case 'health':
       eventColor = 'teal';
+      break;
     case 'electric':
       eventColor = 'yellow';
+      break;
     default:
       eventColor = 'blue';
   }
