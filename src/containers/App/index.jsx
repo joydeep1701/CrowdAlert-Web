@@ -7,6 +7,7 @@ import {
 } from '../../components';
 import Viewevent from '../Viewevent';
 import Feed from '../Feed';
+import CreateEvent from '../CreateEvent';
 
 /**
  * [App Main entry point of the App]
@@ -40,6 +41,7 @@ class App extends Component {
           <Menu toggleVisibility={this.toggleVisibility} />
         </div>
         <Route exact path="/view/:eventid" component={Viewevent} />
+        <Route exact path="/create" component={CreateEvent} />
         <Route exact path="/" component={Feed} />
       </Sidebar>
     );

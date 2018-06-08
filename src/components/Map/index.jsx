@@ -27,7 +27,11 @@ const Sonar = props => (
       url: markerImage,
     }}
     // Push events to browser history so that user is redirected to view events
-    onClick={() => history.push(`/view/${props.id}`)}
+    onClick={() => {
+      if (props.id) {
+        history.push(`/view/${props.id}`)
+      }
+    }}
   >
     <div>
       <div className="sonar-emitter">
@@ -68,17 +72,18 @@ const MapComponent = compose(
         lng: parseFloat(props.location.lng),
      }}
       defaultOptions={{
-      styles: style,
-     // these following 7 options turn certain controls off
-      streetViewControl: false,
-      scaleControl: false,
-      mapTypeControl: false,
-      panControl: false,
-      zoomControl: false,
-      rotateControl: false,
-      fullscreenControl: false,
-    }}
+        styles: style,
+      // these following 7 options turn certain controls off
+        streetViewControl: false,
+        scaleControl: false,
+        mapTypeControl: false,
+        panControl: false,
+        zoomControl: false,
+        rotateControl: false,
+        fullscreenControl: false,
+      }}
       disableDefaultUI
+      onClick={props.onClick}
     >
       { props.children }
     </GoogleMap>

@@ -44,10 +44,17 @@ const LeftSidebar = props => (
             Home
           </Menu.Item>
         </Link>
-        <Menu.Item name="camera">
-          <Icon name="camera" />
-          Report
-        </Menu.Item>
+        <Link
+          to="/create"
+          onClick={props.visible
+                    ? props.toggleVisibility
+                    : null}
+        >
+          <Menu.Item name="camera">
+            <Icon name="camera" />
+            Report
+          </Menu.Item>
+        </Link>
         <Menu.Item name="user">
           <Icon name="user circle" />
           Profile
