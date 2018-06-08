@@ -1,10 +1,10 @@
 /* global navigator */
 import React, { Component } from 'react';
-import { Button, Header, Container, Modal, Icon, Step, Segment, Image, Grid, Form, Input, TextArea, Checkbox, Label } from 'semantic-ui-react';
+import { Button, Header, Container, Modal, Icon, Step, Segment, Image, Grid, Form, Input, TextArea, Checkbox, Label, Responsive } from 'semantic-ui-react';
 
 import fetch from 'isomorphic-fetch';
 import { MapWrapper, Sonar } from '../../components/Map';
-import { REVERSE_GEOCODE } from '../../utils/apipaths';
+import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
 // import Webcam from 'react-webcam';
 
 const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera  
@@ -12,7 +12,9 @@ const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera
 const PERMISSION_FAILED_TEXT = `You need to enable location permissions in
                                   order to report an incident`;
 const LOCATION_FAILED_TEXT = `You need enable location services in order to 
-                                  report an incident`;
+                                  report an incident. Currently we are using an
+                                  approximate location based on your IP. Please 
+                                  update the marker & save the location`;
 const MEDIA_DEVICES_FAILED = `We need access to your camera. Please enable the 
                                   camera permission.`;
 
@@ -57,6 +59,13 @@ class CreateEvent extends Component {
       },
       reportForm: {
         activeTab: 1,
+        loading: false,
+        message: {
+          shown: false,
+          header: '',
+          body: '',
+        },
+        validationErrors: [],
       },
       eventFormData: {
         location: {
@@ -86,10 +95,12 @@ class CreateEvent extends Component {
     this.handleGetLocation = this.handleGetLocation.bind(this);
     this.handleGeoLocationSuccess = this.handleGeoLocationSuccess.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleGeoLocationFailure = this.handleGeoLocationFailure.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentWillMount() {
-    setTimeout(this.handlePermission,500);
+    setTimeout(this.handlePermission,1500);
     
   }
   handleGeoLocationSuccess(response) {
@@ -135,6 +146,31 @@ class CreateEvent extends Component {
   handleGeoLocationFailure(err) {
     // fetch ip locations
     console.error('Location Failed, Switching to IP API', err);
+    fetch(GET_LOCATION_BY_IP).then(resp => resp.json()).then((resp) => {
+      // Store the location
+      this.setState({
+        ...this.state,
+        location: {
+          lat: parseFloat(resp.lat),
+          lng: parseFloat(resp.lng),
+        },
+        permissions: {
+          ...this.state.permissions,
+          location: true,
+        },
+        eventFormData: {
+          ...this.state.eventFormData,
+          location: {
+            lat: parseFloat(resp.lat),
+            lng: parseFloat(resp.lng),
+            isValid: false,
+          },
+        },
+        reportForm: {
+          activeTab: 0,
+        },
+      });
+    });
   }
   handleGeoLoactionPermissionDenied() {
     this.setState({
@@ -286,6 +322,22 @@ class CreateEvent extends Component {
       },
     });
   }
+  handleSubmit() {
+    this.setState({
+      ...this.state,
+      reportForm: {
+        ...this.state.reportForm,
+        loading: true,
+      },
+      eventFormData: {
+        ...this.state.eventFormData,
+        details: {
+          ...this.state.eventFormData.details,
+          isValid: true,
+        },        
+      }
+    });
+  }
   render() {
     console.log(this.state);
     return (
@@ -297,40 +349,48 @@ class CreateEvent extends Component {
         />
 
         <br />
-        <Step.Group ordered fluid attached="top" widths={3}>
-          <Step
-            completed
+        <Step.Group fluid attached="top" widths={3} unstackable>
+          <Step 
+            completed={this.state.eventFormData.location.isValid}         
             active={this.state.reportForm.activeTab === 0}
-            onClick={() => this.handleTabChange(0)}
+            onClick={() => this.handleTabChange(0)}            
           >
-            <Step.Content>
-              <Step.Title>Location</Step.Title>
-              <Step.Description>{this.state.eventFormData.text}</Step.Description>
-            </Step.Content>
+            <Icon name='map' color='teal' />
+            <Responsive minWidth={901}>
+              <Step.Content>
+                <Step.Title>Location</Step.Title>
+                <Step.Description>{this.state.eventFormData.text}</Step.Description>
+              </Step.Content>
+            </Responsive>
           </Step>
           <Step
             active={this.state.reportForm.activeTab === 1}
             onClick={() => this.handleTabChange(1)}
+            completed={this.state.eventFormData.details.isValid}
           >
-            <Step.Content>
-              <Step.Title>Description</Step.Title>
-              <Step.Description>Enter incident information</Step.Description>
-            </Step.Content>
+            <Icon name="tasks" color='red' />
+            <Responsive minWidth={901}>
+              <Step.Content>
+                <Step.Title>Description</Step.Title>
+                <Step.Description>Enter incident information</Step.Description>
+              </Step.Content>
+            </Responsive>
           </Step>
 
           <Step
             active={this.state.reportForm.activeTab === 2}
             onClick={() => this.handleTabChange(2)}
           >
+            <Icon name='camera retro' color='violet' />
             <Step.Content>
-              <Step.Title>Image</Step.Title>
-              <Step.Description>Click a photo</Step.Description>
+              {/* <Step.Title>Image</Step.Title>
+              <Step.Description>Click a photo</Step.Description> */}
             </Step.Content>
           </Step>
         </Step.Group>
 
         {this.state.reportForm.activeTab === 0 ?
-          <Segment attached>
+          <Segment attached color='teal' secondary>
             <Grid>
               <Grid.Row>
                 <div 
@@ -358,15 +418,21 @@ class CreateEvent extends Component {
                   :null}
                 </div>
               </Grid.Row>
+              <Grid.Row>
+                <Grid.Column>
+                  <p>{this.state.eventFormData.text || LOCATION_FAILED_TEXT}</p>
+                  <Button floated="right" color="teal" disabled={this.state.eventFormData.location.isValid} onClick={() => this.handleSaveLocation()}>Save Location</Button>
+                </Grid.Column>
+              </Grid.Row>
             </Grid>
           </Segment>
           : null}
         {this.state.reportForm.activeTab === 1 ?
-          <Segment attached>
+          <Segment attached color='red'>
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Form>
+                  <Form loading={this.state.reportForm.loading}>
                     <Form.Field required>
                       <label>Event Type</label>
                       <Form.Select
@@ -427,7 +493,11 @@ class CreateEvent extends Component {
                         })} 
                       />
                     </Form.Field>
-                    <Form.Button floated="right" color="orange">Report Incident</Form.Button>
+                    <Form.Button floated="right" color="orange" 
+                      onClick={this.handleSubmit}
+                      disabled={this.state.reportForm.loading}
+                    >
+                      <Icon name='check' /> Report Incident</Form.Button>
                   </Form>
                 </Grid.Column>
               </Grid.Row>
@@ -435,7 +505,7 @@ class CreateEvent extends Component {
           </Segment>
           : null}
         {this.state.reportForm.activeTab === 2 ?
-          <Segment attached>
+          <Segment attached color='violet'>
             <p>Image Here</p>
             {/* <Webcam
                       audio={false}
