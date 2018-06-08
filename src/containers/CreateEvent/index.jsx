@@ -61,6 +61,7 @@ class CreateEvent extends Component {
   }
 
     componentWillMount() {
+        // setTimeout( ,500);
         this.handlePermission();
     }
     handleGeoLocationSuccess(response) {
@@ -95,7 +96,9 @@ class CreateEvent extends Component {
     }
 
     handleGeoLocationFailure(err) {
-      console.error("Location Failed")
+      // fetch ip locations      
+      console.error("Location Failed",err);
+      
     }
     handleGeoLoactionPermissionDenied() {
       this.setState({
@@ -267,13 +270,13 @@ class CreateEvent extends Component {
                 </Segment>
                 <Segment attached>
                   <p>Image Here</p>
-                  <Webcam
+                  {/* <Webcam
                     audio={false}
                     height={350}
                     // ref={this.setRef}
                     screenshotFormat="image/jpeg"
                     width={350}
-                  />
+                  /> */}
                 </Segment>
 
             </Container>
