@@ -1,6 +1,6 @@
 /* global navigator */
 import React, { Component } from 'react';
-import { Button, Header, Container, Modal, Icon, Step, Segment, Image, Grid, Form, Input, Label, TextArea } from 'semantic-ui-react';
+import { Button, Header, Container, Modal, Icon, Step, Segment, Image, Grid, Form, Input, TextArea, Checkbox, Label } from 'semantic-ui-react';
 
 import fetch from 'isomorphic-fetch';
 import { MapWrapper, Sonar } from '../../components/Map';
@@ -56,22 +56,26 @@ class CreateEvent extends Component {
         camera: false,
       },
       reportForm: {
-        activeTab: 0,
+        activeTab: 1,
       },
       eventFormData: {
         location: {
           lat: null,
           lng: null,
-          isValid: false,
+          isValid: true,
           text: 'Select Location',
         },
         details: {
-          eventType: '',
+          eventType: null,
           title: '',
           description: '',
+          isValid: false,
+          public: true,
+          help: false,
+
         },
         image: {
-          is_verified: false,
+          isVerified: false,
           image: '',
         },
       },
@@ -81,11 +85,12 @@ class CreateEvent extends Component {
     this.closeModal = this.closeModal.bind(this);
     this.handleGetLocation = this.handleGetLocation.bind(this);
     this.handleGeoLocationSuccess = this.handleGeoLocationSuccess.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   componentWillMount() {
-    // setTimeout( ,500);
-    this.handlePermission();
+    setTimeout(this.handlePermission,500);
+    
   }
   handleGeoLocationSuccess(response) {
     console.log('====================================');
@@ -263,6 +268,24 @@ class CreateEvent extends Component {
       },
     });
   }
+  handleInputChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    console.log('====================================');
+    console.log(this.state, name, target);
+    console.log('====================================');
+    this.setState({
+      ...this.state,
+      eventFormData: {
+        ...this.state.eventFormData,
+        details: {
+          ...this.state.eventFormData.details,
+          [name]: value,
+        },
+      },
+    });
+  }
   render() {
     console.log(this.state);
     return (
@@ -276,7 +299,7 @@ class CreateEvent extends Component {
         <br />
         <Step.Group ordered fluid attached="top" widths={3}>
           <Step
-            completed={this.state.eventFormData.location.isValid}
+            completed
             active={this.state.reportForm.activeTab === 0}
             onClick={() => this.handleTabChange(0)}
           >
@@ -317,31 +340,23 @@ class CreateEvent extends Component {
                     left: '0px',
                   }}
                 >
-                  <MapWrapper
-                    location={{
-                        lat: this.state.eventFormData.location.lat,
-                        lng: this.state.eventFormData.location.lng,
-                    }}
-                    onClick={e => this.handleMapLocationChange(e)}
-                    zoom={16}
-                  >
-                    <Sonar
-                      lat={this.state.eventFormData.location.lat} 
-                      lng={this.state.eventFormData.location.lng} 
-                      id={null}
-                    />
-                  </MapWrapper>
+                  {this.state.eventFormData.location.lat?
+                    <MapWrapper
+                      location={{
+                          lat: this.state.eventFormData.location.lat,
+                          lng: this.state.eventFormData.location.lng,
+                      }}
+                      onClick={e => this.handleMapLocationChange(e)}
+                      zoom={16}
+                    >
+                      <Sonar
+                        lat={this.state.eventFormData.location.lat} 
+                        lng={this.state.eventFormData.location.lng} 
+                        id={null}
+                      />
+                    </MapWrapper>
+                  :null}
                 </div>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column>
-                  <p>{this.state.eventFormData.text}</p>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column>
-                  <Button floated="right" color="teal" disabled={this.state.eventFormData.location.isValid} onClick={() => this.handleSaveLocation()}>Save Location</Button>
-                </Grid.Column>
               </Grid.Row>
             </Grid>
           </Segment>
@@ -354,16 +369,65 @@ class CreateEvent extends Component {
                   <Form>
                     <Form.Field required>
                       <label>Event Type</label>
-                      <Form.Select options={eventOptions} placeholder="Event Type" />
+                      <Form.Select
+                        options={eventOptions}
+                        placeholder="Event Type"
+                        onChange={(e, { value }) =>
+                        this.handleInputChange({
+                          target: {
+                            value,
+                            name: 'eventType',
+                          },
+                        })
+                      }
+                      />
                     </Form.Field>
                     <Form.Field required>
                       <label>Short Description</label>
-                      <Input label={{ basic: true, content: '25/50' }} labelPosition="right" />
+                      <Input
+                        name="title"
+                        label={{ basic: true, content: `${this.state.eventFormData.details.title.length}/50` }}
+                        labelPosition="right"
+                        onChange={this.handleInputChange}
+                        max={50}
+                      />
                     </Form.Field>
                     <Form.Field>
-                      <TextArea placeholder="Tell us more" style={{ minHeight: 100 }} />
+                      <TextArea
+                        placeholder="Tell us more"
+                        style={{ minHeight: 100 }}
+                        onChange={this.handleInputChange}
+                        name="description"
+                      />
                     </Form.Field>
-                    <Button floated="right" color="orange">Report Incident</Button>
+                    <Form.Field>
+                      <Checkbox
+                        label={{ children: 'Make incident publicly visible' }}
+                        checked={this.state.eventFormData.details.public}                        
+                        onChange={() => this.handleInputChange({
+                          target: {
+                            checked: !this.state.eventFormData.details.public,
+                            name: 'public',
+                            type: 'checkbox',
+                          },
+                        })} 
+                      />                      
+                    </Form.Field>
+                    <Form.Field>
+                      <Checkbox 
+                        label={{ children: 'Ask for public help' }} 
+                        checked={this.state.eventFormData.details.help}
+                        name="help"
+                        onChange={() => this.handleInputChange({
+                          target: {
+                            checked: this.state.eventFormData.details.public && !this.state.eventFormData.details.help,
+                            name: 'help',
+                            type: 'checkbox',
+                          },
+                        })} 
+                      />
+                    </Form.Field>
+                    <Form.Button floated="right" color="orange">Report Incident</Form.Button>
                   </Form>
                 </Grid.Column>
               </Grid.Row>
