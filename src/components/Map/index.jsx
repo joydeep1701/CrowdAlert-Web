@@ -27,11 +27,15 @@ const Sonar = props => (
       url: markerImage,
     }}
     // Push events to browser history so that user is redirected to view events
+<<<<<<< HEAD
     onClick={() => {
       if (props.id) {
         history.push(`/view/${props.id}`)
       }
     }}
+=======
+    onClick={() => history.push(`/view/${props.id}`)}
+>>>>>>> upstream/master
   >
     <div>
       <div className="sonar-emitter">
