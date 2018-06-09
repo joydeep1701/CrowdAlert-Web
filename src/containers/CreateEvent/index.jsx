@@ -1,10 +1,11 @@
 /* global navigator */
 import React, { Component } from 'react';
 import { Button, Header, Container, Modal, Icon, Step, Segment, Image, Grid, Form, Input, TextArea, Checkbox, Label, Responsive } from 'semantic-ui-react';
-
 import fetch from 'isomorphic-fetch';
 import { MapWrapper, Sonar } from '../../components/Map';
 import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
+import getEventColor from '../../utils/eventcolors';
+
 // import Webcam from 'react-webcam';
 
 const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera  
@@ -19,10 +20,10 @@ const MEDIA_DEVICES_FAILED = `We need access to your camera. Please enable the
                                   camera permission.`;
 
 const eventOptions = [
-  { key: 'rd', text: 'Road', value: 'rd' },
-  { key: 'el', text: 'Electric', value: 'el' },
-  { key: 'hl', text: 'Health', value: 'hl' },
-  { key: 'fr', text: 'Fire', value: 'fr' },
+  { key: 'rd', text: 'Road', value: 'road' },
+  { key: 'el', text: 'Electric', value: 'electric' },
+  { key: 'hl', text: 'Health', value: 'health' },
+  { key: 'fr', text: 'Fire', value: 'fire' },
 ];
 
 
@@ -58,7 +59,7 @@ class CreateEvent extends Component {
         camera: false,
       },
       reportForm: {
-        activeTab: 1,
+        activeTab: 0,
         loading: false,
         message: {
           shown: false,
@@ -71,7 +72,7 @@ class CreateEvent extends Component {
         location: {
           lat: null,
           lng: null,
-          isValid: true,
+          isValid: false,
           text: 'Select Location',
         },
         details: {
@@ -100,8 +101,7 @@ class CreateEvent extends Component {
   }
 
   componentWillMount() {
-    setTimeout(this.handlePermission,1500);
-    
+    setTimeout(this.handlePermission,2500);    
   }
   handleGeoLocationSuccess(response) {
     console.log('====================================');
@@ -349,26 +349,27 @@ class CreateEvent extends Component {
         />
 
         <br />
-        <Step.Group fluid attached="top" widths={3} unstackable>
-          <Step 
-            completed={this.state.eventFormData.location.isValid}         
-            active={this.state.reportForm.activeTab === 0}
-            onClick={() => this.handleTabChange(0)}            
-          >
-            <Icon name='map' color='teal' />
-            <Responsive minWidth={901}>
-              <Step.Content>
-                <Step.Title>Location</Step.Title>
-                <Step.Description>{this.state.eventFormData.text}</Step.Description>
-              </Step.Content>
-            </Responsive>
+        <Step.Group fluid attached="top" widths={3} unstackable>         
+            <Step 
+              completed={this.state.eventFormData.location.isValid}         
+              active={this.state.reportForm.activeTab === 0}
+              onClick={() => this.handleTabChange(0)}            
+            >            
+              <Icon circular color='yellow' name='map outline' size='small' />
+              <Responsive minWidth={901}>
+                <Step.Content>
+                  <Step.Title>Location</Step.Title>
+                  <Step.Description>{this.state.eventFormData.text}</Step.Description>
+                </Step.Content>
+              </Responsive>        
+
           </Step>
           <Step
             active={this.state.reportForm.activeTab === 1}
             onClick={() => this.handleTabChange(1)}
             completed={this.state.eventFormData.details.isValid}
           >
-            <Icon name="tasks" color='red' />
+            <Icon circular color={getEventColor(this.state.eventFormData.details.eventType)} name="edit outline" />
             <Responsive minWidth={901}>
               <Step.Content>
                 <Step.Title>Description</Step.Title>
@@ -379,9 +380,9 @@ class CreateEvent extends Component {
 
           <Step
             active={this.state.reportForm.activeTab === 2}
-            onClick={() => this.handleTabChange(2)}
-          >
-            <Icon name='camera retro' color='violet' />
+            onClick={() => this.handleTabChange(2)}           
+          >            
+            <Icon circular color='green' name='camera retro' />
             <Step.Content>
               {/* <Step.Title>Image</Step.Title>
               <Step.Description>Click a photo</Step.Description> */}
@@ -390,7 +391,7 @@ class CreateEvent extends Component {
         </Step.Group>
 
         {this.state.reportForm.activeTab === 0 ?
-          <Segment attached color='teal' secondary>
+          <Segment attached color='yellow' secondary>
             <Grid>
               <Grid.Row>
                 <div 
@@ -428,7 +429,7 @@ class CreateEvent extends Component {
           </Segment>
           : null}
         {this.state.reportForm.activeTab === 1 ?
-          <Segment attached color='red'>
+          <Segment attached color={getEventColor(this.state.eventFormData.details.eventType)}>
             <Grid>
               <Grid.Row>
                 <Grid.Column>
@@ -505,7 +506,7 @@ class CreateEvent extends Component {
           </Segment>
           : null}
         {this.state.reportForm.activeTab === 2 ?
-          <Segment attached color='violet'>
+          <Segment attached color='olive'>
             <p>Image Here</p>
             {/* <Webcam
                       audio={false}
