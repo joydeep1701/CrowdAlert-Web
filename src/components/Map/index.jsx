@@ -43,8 +43,11 @@ const Sonar = props => (
 Sonar.propTypes = {
   lat: PropTypes.number.isRequired,
   lng: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
 };
+Sonar.defaultProps = {
+  id: null,
+}
 const MapComponent = compose(
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`,

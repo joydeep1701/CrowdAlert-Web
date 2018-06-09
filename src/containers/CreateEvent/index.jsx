@@ -1,10 +1,15 @@
 /* global navigator */
 import React, { Component } from 'react';
-import { Button, Header, Container, Modal, Icon, Step, Segment, Image, Grid, Form, Input, TextArea, Checkbox, Label, Responsive } from 'semantic-ui-react';
+import { Button, Header, Container, Modal, Icon, Step, Segment, Image as SemanticImage, Grid, Form, Input, TextArea, Checkbox, Label, Responsive, Dimmer, Loader } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
-import { MapWrapper, Sonar } from '../../components/Map';
 import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
 import getEventColor from '../../utils/eventcolors';
+import {
+  Image,
+  MapWrapper,
+  Sonar,
+} from '../../components';
+import Dropzone from 'react-dropzone';
 
 import Webcam from './webcam';
 
@@ -84,10 +89,7 @@ class CreateEvent extends Component {
           help: false,
 
         },
-        image: {
-          isVerified: false,
-          image: '',
-        },
+        images: [],
       },
     };
     this.handlePermission = this.handlePermission.bind(this);
@@ -100,10 +102,12 @@ class CreateEvent extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.setWebcamRef = this.setWebcamRef.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
+    this.captureWebcam = this.captureWebcam.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   componentWillMount() {
-    setTimeout(this.handlePermission,2500);    
+    this.handlePermission();
   }
   handleGeoLocationSuccess(response) {
     console.log('====================================');
@@ -233,7 +237,7 @@ class CreateEvent extends Component {
           this.closeModal();
           this.handleGetLocation();
         } else if (result.state === 'prompt') {
-          this.handleGetLocation();
+          setTimeout(this.handleGetLocation, 3500);
         } else if (result.state === 'denied') {
           this.handleGeoLoactionPermissionDenied();
         }
@@ -346,7 +350,59 @@ class CreateEvent extends Component {
   captureWebcam() {
     console.log("OK");
     const src = this.webcam.getScreenshot();
-    console.log(src);
+    const newImage = {
+      base64: src,
+      isVerified: true,
+      uri: null,
+      key: this.state.eventFormData.images.length,
+    };
+    this.setState({
+      ...this.state,
+      eventFormData: {
+        ...this.state.eventFormData,
+        images: [
+          ...this.state.eventFormData.images,
+          newImage,
+        ],
+      },
+    });
+    // console.log(src);    
+  }
+  handleUpload(accepted, rejected) {
+    const uploadRequests = accepted.map((imageFile) => {
+      let reader = new FileReader();
+
+      reader.addEventListener('load', () => {
+        const newImage = {
+          base64: reader.result,
+          isVerified: false,
+          uri: null,
+          key: this.state.eventFormData.images.length,
+        };
+        this.setState({
+          ...this.state,
+          eventFormData: {
+            ...this.state.eventFormData,
+            images: [
+              ...this.state.eventFormData.images,
+              newImage,
+            ],
+          },
+        });
+      }, false);
+
+      reader.readAsDataURL(imageFile);
+
+      const newFormData = new FormData();
+      newFormData.append('image', imageFile)
+
+      return fetch(`https://localhost:8000/api/foo`,{
+        method: 'post',
+        body: newFormData,
+      }).then(resp => resp.json());
+    });
+    Promise.all(uploadRequests).then(val => console.log(val));
+    this;
   }
   render() {
     console.log(this.state);
@@ -379,7 +435,7 @@ class CreateEvent extends Component {
             onClick={() => this.handleTabChange(1)}
             completed={this.state.eventFormData.details.isValid}
           >
-            <Icon circular color={getEventColor(this.state.eventFormData.details.eventType)} name="edit outline" />
+            <Icon circular color={getEventColor(this.state.eventFormData.details.eventType)} name="edit" />
             <Responsive minWidth={901}>
               <Step.Content>
                 <Step.Title>Description</Step.Title>
@@ -557,9 +613,13 @@ class CreateEvent extends Component {
                     
                   </Grid.Column>
                   <Grid.Column>
+
+                    <Dropzone ref={(node) => {this.dropzoneRef = node;}}  onDrop={this.handleUpload} style={{'display':'none'}} />
                     <p>Upload from device</p>
-                    <Button icon='cloud upload' fluid size='massive' basic color='orange' style={{marginTop: '5vh', marginBottom:'5vh', paddingTop: '8vh', paddingBottom: '8vh'}} />
-                  </Grid.Column>
+                    <Button icon='cloud upload' fluid size='massive' basic color='orange' style={{marginTop: '5vh', marginBottom:'5vh', paddingTop: '8vh', paddingBottom: '8vh'}}  onClick={() => { this.dropzoneRef.open() }} />
+                  
+                    
+                   </Grid.Column>
                 </Grid.Row>
 
               </Grid>
@@ -567,11 +627,21 @@ class CreateEvent extends Component {
               {/*  */}
             </Segment>
             <Segment attached secondary>
-            </Segment>
-          </div>
-
+              <SemanticImage.Group size='small'>
+                {
+                  this.state.eventFormData.images.map(image => (
+                      <Image
+                        base64={image.base64}
+                        key={image.key}
+                        isTrusted={image.isVerified}
+                      />
+                  ))
+                }
+              </SemanticImage.Group>
+            </Segment>     
+          </div>     
           : null}
-
+        
       </Container>
 
     );
