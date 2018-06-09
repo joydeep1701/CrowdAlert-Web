@@ -6,7 +6,7 @@ import { MapWrapper, Sonar } from '../../components/Map';
 import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
 import getEventColor from '../../utils/eventcolors';
 
-// import Webcam from 'react-webcam';
+import Webcam from 'react-webcam';
 
 const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera  
                                     in order to report an incident`;
@@ -59,7 +59,7 @@ class CreateEvent extends Component {
         camera: false,
       },
       reportForm: {
-        activeTab: 0,
+        activeTab: 2,
         loading: false,
         message: {
           shown: false,
@@ -350,11 +350,11 @@ class CreateEvent extends Component {
 
         <br />
         <Step.Group fluid attached="top" widths={3} unstackable>         
-            <Step 
-              completed={this.state.eventFormData.location.isValid}         
-              active={this.state.reportForm.activeTab === 0}
-              onClick={() => this.handleTabChange(0)}            
-            >            
+          <Step 
+            completed={this.state.eventFormData.location.isValid}         
+            active={this.state.reportForm.activeTab === 0}
+            onClick={() => this.handleTabChange(0)}            
+          >            
               <Icon circular color='yellow' name='map outline' size='small' />
               <Responsive minWidth={901}>
                 <Step.Content>
@@ -382,11 +382,13 @@ class CreateEvent extends Component {
             active={this.state.reportForm.activeTab === 2}
             onClick={() => this.handleTabChange(2)}           
           >            
-            <Icon circular color='green' name='camera retro' />
-            <Step.Content>
-              {/* <Step.Title>Image</Step.Title>
-              <Step.Description>Click a photo</Step.Description> */}
-            </Step.Content>
+            <Icon circular color='brown' name='camera retro' />
+            <Responsive minWidth={901}>
+              <Step.Content>
+                <Step.Title>Image</Step.Title>
+                <Step.Description>Click a photo</Step.Description>
+              </Step.Content>
+            </Responsive>   
           </Step>
         </Step.Group>
 
@@ -439,6 +441,7 @@ class CreateEvent extends Component {
                       <Form.Select
                         options={eventOptions}
                         placeholder="Event Type"
+                        value={this.state.eventFormData.details.eventType}
                         onChange={(e, { value }) =>
                         this.handleInputChange({
                           target: {
@@ -456,6 +459,7 @@ class CreateEvent extends Component {
                         label={{ basic: true, content: `${this.state.eventFormData.details.title.length}/50` }}
                         labelPosition="right"
                         onChange={this.handleInputChange}
+                        value={this.state.eventFormData.details.title}
                         max={50}
                       />
                     </Form.Field>
@@ -464,6 +468,7 @@ class CreateEvent extends Component {
                         placeholder="Tell us more"
                         style={{ minHeight: 100 }}
                         onChange={this.handleInputChange}
+                        value={this.state.eventFormData.details.description}
                         name="description"
                       />
                     </Form.Field>
@@ -506,16 +511,48 @@ class CreateEvent extends Component {
           </Segment>
           : null}
         {this.state.reportForm.activeTab === 2 ?
-          <Segment attached color='olive'>
-            <p>Image Here</p>
-            {/* <Webcam
-                      audio={false}
-                      height={350}
-                      // ref={this.setRef}
-                      screenshotFormat="image/jpeg"
-                      width={350}
-                    /> */}
-          </Segment>
+          <div>
+            <Segment attached color='brown'>              
+              <Grid columns={2} divided>
+                <Grid.Row>
+                  <Grid.Column>
+                    <p>Use device camera</p>
+                    <Modal trigger={<Button circular icon='camera' fluid size='massive' basic color='green' style={{marginTop: '5vh', marginBottom:'5vh'}} />} centered={'false'}>
+                      <Modal.Header>Click a Photo</Modal.Header>
+                      <Modal.Content image>
+                        <Image wrapped size='huge'>
+                          {/* <Webcam
+                            audio={false}
+                            height={1080}
+                            // ref={this.setRef}
+                            screenshotFormat="image/jpeg"
+                            width={1920}
+                          /> */}
+                        </Image> 
+                        
+                        <Modal.Description>
+                          <Header>Default Profile Image</Header>
+                          <p>We've found the following gravatar image associated with your e-mail address.</p>
+                          <p>Is it okay to use this photo?</p>
+                        </Modal.Description>
+                      </Modal.Content>
+                    </Modal>
+                    
+                  </Grid.Column>
+                  <Grid.Column>
+                    <p>Upload from device</p>
+                    <Button circular icon='cloud upload' fluid size='massive' basic color='orange' style={{marginTop: '5vh', marginBottom:'5vh'}} />
+                  </Grid.Column>
+                </Grid.Row>
+
+              </Grid>
+
+              {/*  */}
+            </Segment>
+            <Segment attached secondary>
+            </Segment>
+          </div>
+
           : null}
 
       </Container>
