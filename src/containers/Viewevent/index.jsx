@@ -3,6 +3,7 @@ import propTypes from 'prop-types';
 import {
   Responsive,
   Card,
+  Image as SemanticImage,
   Item,
   Grid,
   Container,
@@ -54,8 +55,18 @@ const EventCard = props => (
       title={props.title}
       description={props.description}
       eventType={props.eventType}
-    >
-      <Image imageUrls={props.imageUrls} />
+    >    
+      <SemanticImage.Group size='small'>
+        {
+          props.images.map(image => (
+            <Image
+              uuid={image.uuid}
+              key={image.uuid}
+              isTrusted={image.isTrusted}
+            />
+          ))
+        }
+      </SemanticImage.Group>      
     </Event.Body>
     <Event.Footer title={props.title} />
   </Card>
@@ -75,12 +86,11 @@ EventCard.propTypes = {
     /* Upper administative area */
     admin2: propTypes.string,
   }),
-  imageUrls: propTypes.shape({
-    /* SVG url for the image thumbnail */
-    thumbnail: propTypes.string,
-    /* Original image thumbnail */
-    url: propTypes.string,
-  }),
+  images: propTypes.arrayOf(propTypes.shape({
+    isNsfw: propTypes.bool.isRequired,
+    isTrusted: propTypes.bool.isRequired,
+    uuid: propTypes.string.isRequired,
+  })).isRequired,
 };
 EventCard.defaultProps = {
   reverse_geocode: { name: '', admin2: '', admin1: '' },
@@ -126,22 +136,6 @@ export default class Viewevent extends Component {
           event: response,
           loading: false,
         });
-        // For a valid event get the corresponding image uuid
-        // Considering there is a image for every event
-        const imageUuid = response.image_uuid;
-        return fetch(`${GET_IMAGE_URLS}?uuid=${imageUuid}`);
-      })
-      // Decode json
-      .then(response => response.json())
-      .then((response) => {
-        // reject if something bad happens
-        if (response === null) {
-          throw Error('Image not found');
-        }
-        this.setState({
-          ...this.state,
-          image_urls: response,
-        });
         // Should be updated. The main fetch should return an array of promises
         const lat = this.state.event.location.coords.latitude;
         const long = this.state.event.location.coords.longitude;
@@ -185,8 +179,8 @@ export default class Viewevent extends Component {
                 user_id={this.state.event.user_id}
                 datetime={this.state.event.datetime}
                 title={this.state.event.title}
-                description={this.state.event.comments}
-                imageUrls={this.state.image_urls}
+                description={this.state.event.description}
+                images={this.state.event.images}
                 reverse_geocode={this.state.reverse_geocode}
                 eventType={this.state.event.category}
               />
@@ -221,8 +215,8 @@ export default class Viewevent extends Component {
                           user_id={this.state.event.user_id}
                           datetime={this.state.event.datetime}
                           title={this.state.event.title}
-                          description={this.state.event.comments}
-                          imageUrls={this.state.image_urls}
+                          description={this.state.event.description}
+                          images={this.state.event.images}
                           reverse_geocode={this.state.reverse_geocode}
                           eventType={this.state.event.category}
                         />
