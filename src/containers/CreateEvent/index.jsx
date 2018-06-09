@@ -6,7 +6,7 @@ import { MapWrapper, Sonar } from '../../components/Map';
 import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
 import getEventColor from '../../utils/eventcolors';
 
-import Webcam from 'react-webcam';
+import Webcam from './webcam';
 
 const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera  
                                     in order to report an incident`;
@@ -98,6 +98,8 @@ class CreateEvent extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleGeoLocationFailure = this.handleGeoLocationFailure.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.setWebcamRef = this.setWebcamRef.bind(this);
+    this.captureWebcam = this.captureWebcam.bind(this);
   }
 
   componentWillMount() {
@@ -338,6 +340,14 @@ class CreateEvent extends Component {
       }
     });
   }
+  setWebcamRef(webcam) {
+    this.webcam = webcam;
+  }
+  captureWebcam() {
+    console.log("OK");
+    const src = this.webcam.getScreenshot();
+    console.log(src);
+  }
   render() {
     console.log(this.state);
     return (
@@ -517,23 +527,30 @@ class CreateEvent extends Component {
                 <Grid.Row>
                   <Grid.Column>
                     <p>Use device camera</p>
-                    <Modal trigger={<Button circular icon='camera' fluid size='massive' basic color='green' style={{marginTop: '5vh', marginBottom:'5vh'}} />} centered={'false'}>
+                    <Modal trigger={<Button icon='camera' fluid size='massive' basic color='green' style={{marginTop: '5vh', marginBottom:'5vh', paddingTop: '8vh', paddingBottom: '8vh'}} />} closeIcon>
                       <Modal.Header>Click a Photo</Modal.Header>
-                      <Modal.Content image>
-                        <Image wrapped size='huge'>
-                          {/* <Webcam
-                            audio={false}
-                            height={1080}
-                            // ref={this.setRef}
-                            screenshotFormat="image/jpeg"
-                            width={1920}
-                          /> */}
-                        </Image> 
-                        
+                      <Modal.Content>                        
+                        <Webcam
+                        audio={false}
+                        height={'100%'}
+                        ref={this.setWebcamRef}
+                        screenshotFormat="image/jpeg"
+                        width={'100%'}
+                        front={false}
+                          />
                         <Modal.Description>
-                          <Header>Default Profile Image</Header>
-                          <p>We've found the following gravatar image associated with your e-mail address.</p>
-                          <p>Is it okay to use this photo?</p>
+                          <Grid columns='equal'>
+                            <Grid.Row textAlign='center'>
+                              <Grid.Column>                                
+                              </Grid.Column>
+                              <Grid.Column>
+                                <Button circular icon='camera' fluid size='massive' basic color='green' onClick={this.captureWebcam}/>
+                              </Grid.Column>
+                              <Grid.Column>                                
+                              </Grid.Column>
+                            </Grid.Row>
+                          </Grid>
+                                                
                         </Modal.Description>
                       </Modal.Content>
                     </Modal>
@@ -541,7 +558,7 @@ class CreateEvent extends Component {
                   </Grid.Column>
                   <Grid.Column>
                     <p>Upload from device</p>
-                    <Button circular icon='cloud upload' fluid size='massive' basic color='orange' style={{marginTop: '5vh', marginBottom:'5vh'}} />
+                    <Button icon='cloud upload' fluid size='massive' basic color='orange' style={{marginTop: '5vh', marginBottom:'5vh', paddingTop: '8vh', paddingBottom: '8vh'}} />
                   </Grid.Column>
                 </Grid.Row>
 
