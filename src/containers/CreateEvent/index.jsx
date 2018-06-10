@@ -1,6 +1,6 @@
 /* global navigator */
 import React, { Component } from 'react';
-import { Button, Header, Container, Modal, Icon, Step, Segment, Image as SemanticImage, Grid, Form, Input, TextArea, Checkbox, Label, Responsive, Dimmer, Loader } from 'semantic-ui-react';
+import { Button, Header, Message, Container, Modal, Icon, Step, Segment, Image as SemanticImage, Grid, Form, Input, TextArea, Checkbox, Label, Responsive, Dimmer, Loader } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
 import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
 import getEventColor from '../../utils/eventcolors';
@@ -64,16 +64,15 @@ class CreateEvent extends Component {
         camera: false,
       },
       reportForm: {
-        activeTab: 2,
+        activeTab: 0,
         loading: false,
         message: {
-          shown: false,
           header: '',
           body: '',
         },
-        eventID: null,
+        eventID: 'Some Random ID',
         isFreezed: false,
-        validationErrors: [],
+        validationErrors: false,
       },
       eventFormData: {
         location: {
@@ -106,6 +105,7 @@ class CreateEvent extends Component {
     this.captureWebcam = this.captureWebcam.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
     this.handleFileSelect = this.handleFileSelect.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   componentWillMount() {
@@ -341,15 +341,45 @@ class CreateEvent extends Component {
     const { eventFormData } = this.state;
 
     if (!eventFormData.location.isValid) {
-      alert('Location not saved');
+      this.setState({
+        ...this.state,
+        reportForm: {
+          ...this.state.reportForm,
+          validationErrors: true,
+          message: {
+            header: 'Location',
+            body: 'Save the location',
+          },
+        },
+      });
       return;
     }
     if (!eventFormData.details.eventType) {
-      alert('Event type not given');
+      this.setState({
+        ...this.state,
+        reportForm: {
+          ...this.state.reportForm,
+          validationErrors: true,
+          message: {
+            header: 'Event not given',
+            body: 'Select an event type from the dropdown',
+          },
+        },
+      });
       return;
     }
-    if (!eventFormData.title) {
-      alert('Short Description not given');
+    if (!eventFormData.details.title) {
+      this.setState({
+        ...this.state,
+        reportForm: {
+          ...this.state.reportForm,
+          validationErrors: true,
+          message: {
+            header: 'Short description not given',
+            body: 'Write a short description about the event',
+          },
+        },
+      });
       return;
     }
 
@@ -359,6 +389,7 @@ class CreateEvent extends Component {
       reportForm: {
         ...this.state.reportForm,
         loading: true,
+        validationErrors: false,
       },
       eventFormData: {
         ...this.state.eventFormData,
@@ -411,6 +442,11 @@ class CreateEvent extends Component {
             ...this.state.reportForm,
             loading: false,
             isFreezed: false,
+            validationErrors: true,
+            message: {
+              header: 'Server Error',
+              body: 'Please try again later',
+            },
           },
         });
       });
@@ -466,9 +502,16 @@ class CreateEvent extends Component {
     // Promise.all(uploadRequests).then(val => console.log(val));
   }
   handleUpload() {
-    if (!this.state.reportForm.eventId) {
+    console.log('====================================');
+    console.log("Upload Called");
+    console.log('====================================');
+    if (!this.state.reportForm.eventID) {
       return;
     }
+    console.log('====================================');
+    console.log("Upload Called 2");
+    console.log('====================================');
+
     const { images } = this.state.eventFormData;
     const imagesUpload = images.map((image) => {
       const newFormData = new FormData();
@@ -592,7 +635,17 @@ class CreateEvent extends Component {
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Form loading={this.state.reportForm.loading}>
+                  <Form loading={this.state.reportForm.loading} error={this.state.reportForm.validationErrors} success={this.state.reportForm.isFreezed}>
+                    <Message
+                      error
+                      header={this.state.reportForm.message.header}
+                      content={this.state.reportForm.message.body}
+                    />
+                    <Message
+                      success
+                      header="Event Reported"
+                      content="Upload some pictures to get validity"
+                    />
                     <Form.Field required disabled={this.state.reportForm.isFreezed}>
                       <label>Event Type</label>
                       <Form.Select
@@ -766,7 +819,9 @@ style={{
                   <Grid.Column>
                     {
                       this.state.eventFormData.images.length ?
-                        <Button icon="cloud upload" loading color="brown" floated="right">Upload</Button>
+                        <Button color="brown" floated="right" onClick={this.handleUpload}> 
+                          <Icon name="cloud upload" />
+                          Upload</Button>
                       : null
                     }
                   </Grid.Column>
