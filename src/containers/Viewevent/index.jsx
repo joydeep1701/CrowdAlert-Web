@@ -18,7 +18,6 @@ import {
 } from '../../components';
 import {
   GET_EVENT_BY_ID,
-  GET_IMAGE_URLS,
   REVERSE_GEOCODE,
 } from '../../utils/apipaths';
 
@@ -55,8 +54,8 @@ const EventCard = props => (
       title={props.title}
       description={props.description}
       eventType={props.eventType}
-    >    
-      <SemanticImage.Group size='small'>
+    >
+      <SemanticImage.Group size="small">
         {
           props.images.map(image => (
             <Image
@@ -66,7 +65,7 @@ const EventCard = props => (
             />
           ))
         }
-      </SemanticImage.Group>      
+      </SemanticImage.Group>
     </Event.Body>
     <Event.Footer title={props.title} />
   </Card>
