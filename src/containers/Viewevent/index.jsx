@@ -22,7 +22,6 @@ import {
 } from '../../utils/apipaths';
 
 import styleSheet from './style';
-import { format } from 'url';
 
 /**
  * [MapwithSonar Combines the MapWrapper & Sonar component to view a single marker
