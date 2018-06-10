@@ -9,6 +9,7 @@ import base64
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 
 storage = settings.FIREBASE.storage()
+db = settings.FIREBASE.database()
 
 @csrf_exempt
 def upload(request):
@@ -39,13 +40,20 @@ def upload(request):
         # and expose another endpoint where we can check the status
         subprocess.run(['node_modules/.bin/sqip', name, '-o', name+'.svg'])
         # Upload files to Cloud storage
-        # storage.child('images/' + firebaseName).put(name)
-        # storage.child('thumbnails/'+name+'.svg').put(name+'.svg')
+        storage.child('images/' + firebaseName).put(name)
+        storage.child('thumbnails/'+name+'.svg').put(name+'.svg')        
         # Remove the uploaded files for two good reasons:
         # Keep our dyno clean
         # remove malicious code before anything wrong goes.
         os.remove(name)
         os.remove(name+'.svg')
+        # Update Event if id is given,
+        if request.POST.get("eventId", False):
+            event_id = request.POST.get("eventId", False)
+            is_trusted = request.POST.get('isValid', False)
+            image_data = {"isNsfw": False, "isTrusted": is_trusted, "uuid": firebaseName}
+            db.child('incidents').child(event_id).child("images").push(image_data)
+            print("Image Added")
         # Return file id for future reference
         return JsonResponse({'name': firebaseName})
     return JsonResponse({'status':'OK'})

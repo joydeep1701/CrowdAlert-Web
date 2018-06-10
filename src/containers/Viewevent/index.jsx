@@ -22,6 +22,7 @@ import {
 } from '../../utils/apipaths';
 
 import styleSheet from './style';
+import { format } from 'url';
 
 /**
  * [MapwithSonar Combines the MapWrapper & Sonar component to view a single marker
@@ -131,13 +132,23 @@ export default class Viewevent extends Component {
         if (response === null) {
           throw Error('Event Not Found');
         }
+        let formattedImages = [];
+        const { images } = response;
+        if (images) {
+          formattedImages = Object.keys(images).map(key => images[key]);
+        }
+
         this.setState({
-          event: response,
+          ...this.state,
+          event: {
+            ...response,
+            images: formattedImages,
+          },
           loading: false,
         });
         // Should be updated. The main fetch should return an array of promises
         const lat = this.state.event.location.coords.latitude;
-        const long = this.state.event.location.coords.longitude;
+        const long = this.state.event.location.coords.longitude;        
         return fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`);
       })
       .then(response => response.json())

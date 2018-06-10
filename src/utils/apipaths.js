@@ -11,12 +11,14 @@ const GET_LOCATION_BY_IP = 'https://crowdalert.herokuapp.com/api/location/get_lo
  * [GET_EVENT_BY_ID: Do GET request with event id as a url parameter]
  * @type {String}
  */
-const GET_EVENT_BY_ID = 'https://crowdalert.herokuapp.com/api/events/geteventbyid';
+const GET_EVENT_BY_ID = 'https://crowdalert.herokuapp.com/api/events/incident';
 /**
  * [GET_IMAGE_URLS Do GET request with image uuid to get the iamge urls]
  * @type {String}
  */
 const GET_IMAGE_URLS = 'https://crowdalert.herokuapp.com/api/images/getimageurl';
+
+const UPLOAD_IMAGES = 'https://crowdalert.herokuapp.com/api/api/images/upload/'
 /**
  * [REVERSE_GEOCODE returns the reverse geocode for a given pair of coordinates
  * If accuracy=high, it uses google apis to reverse geocode]
@@ -36,4 +38,5 @@ export {
   GET_IMAGE_URLS,
   REVERSE_GEOCODE,
   GET_EVENTS_BY_LOCATION,
+  UPLOAD_IMAGES,
 };

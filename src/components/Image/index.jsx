@@ -53,15 +53,17 @@ export default class ImageModal extends Component {
       && this.state.imageUrls.url !== ''
       && this.state.imageUrls.url !== undefinedURL) {
       return (
-        <Modal trigger={
-          <Image
-            src={`${this.props.isTrusted
-              ? this.state.imageUrls.url
-              : this.state.imageUrls.thumbnail}`}
-            size="small"
-            style={{ backgroundImage: `url(${this.state.imageUrls.thumbnail})` }}
-          />
-        }
+        <Modal
+          trigger={
+            <Image
+              src={`${this.props.isTrusted
+                ? this.state.imageUrls.url
+                : this.state.imageUrls.thumbnail}`}
+              size="small"
+              style={{ backgroundImage: `url(${this.state.imageUrls.thumbnail})` }}
+            />
+          }
+          closeIcon
         >
           <Modal.Header>
             <div>

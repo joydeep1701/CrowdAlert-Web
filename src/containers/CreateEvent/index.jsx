@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { Button, Header, Message, Container, Modal, Icon, Step, Segment, Image as SemanticImage, Grid, Form, Input, TextArea, Checkbox, Label, Responsive, Dimmer, Loader } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
-import { REVERSE_GEOCODE, GET_LOCATION_BY_IP } from '../../utils/apipaths';
+import { REVERSE_GEOCODE, GET_LOCATION_BY_IP,UPLOAD_IMAGES, GET_EVENT_BY_ID } from '../../utils/apipaths';
 import getEventColor from '../../utils/eventcolors';
 import {
   Image,
@@ -10,7 +10,7 @@ import {
   Sonar,
 } from '../../components';
 import Dropzone from 'react-dropzone';
-
+import history from '../../';
 import Webcam from './webcam';
 
 const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera  
@@ -73,6 +73,9 @@ class CreateEvent extends Component {
         eventID: 'Some Random ID',
         isFreezed: false,
         validationErrors: false,
+        uploading: false,
+        imageSelectDisabled: false,
+        uploadComplete: false,
       },
       eventFormData: {
         location: {
@@ -401,7 +404,7 @@ class CreateEvent extends Component {
       },
     });
 
-    
+
     const eventData = {
       category: eventFormData.details.eventType,
       description: eventFormData.details.description,
@@ -420,12 +423,12 @@ class CreateEvent extends Component {
     };
     const newFormData = new FormData();
     newFormData.append('eventData', JSON.stringify(eventData));
-    fetch('https://127.0.0.1:8000/api/events/incident', {
+    fetch(GET_EVENT_BY_ID, {
       method: 'post',
       body: newFormData,
     }).then(resp => resp.json())
       .then((resp) => {
-        console.log(resp, resp.eventId)
+        console.log(resp, resp.eventId);
         this.setState({
           ...this.state,
           reportForm: {
@@ -504,15 +507,18 @@ class CreateEvent extends Component {
     // Promise.all(uploadRequests).then(val => console.log(val));
   }
   handleUpload() {
-    console.log('====================================');
-    console.log("Upload Called");
-    console.log('====================================');
     if (!this.state.reportForm.eventID) {
       return;
     }
-    console.log('====================================');
-    console.log("Upload Called 2");
-    console.log('====================================');
+    this.setState({
+      ...this.state,
+      reportForm: {
+        ...this.state.reportForm,
+        uploading: true,
+        imageSelectDisabled: true,
+      },
+    });
+
 
     const { images } = this.state.eventFormData;
     const imagesUpload = images.map((image) => {
@@ -526,7 +532,7 @@ class CreateEvent extends Component {
       newFormData.append('base64', image.base64);
 
 
-      return fetch('https://127.0.0.1:8000/api/images/upload/', {
+      return fetch(UPLOAD_IMAGES, {
         method: 'post',
         body: newFormData,
       }).then(resp => resp.json())
@@ -543,6 +549,20 @@ class CreateEvent extends Component {
           this.setState(newState);
         })
         .catch(() => {});
+    });
+    Promise.all(imagesUpload).then(() => {
+      this.setState({
+        ...this.state,
+        reportForm: {
+          ...this.state.reportForm,
+          uploading: false,
+          imageSelectDisabled: true,
+          uploadComplete: true,
+        },
+      });
+      // Navigate to view events
+    }).then(() => {
+      history.push(`/view/${this.state.reportForm.eventID}`)
     });
   }
   render() {
@@ -588,6 +608,7 @@ class CreateEvent extends Component {
           <Step
             active={this.state.reportForm.activeTab === 2}
             onClick={() => this.handleTabChange(2)}
+            completed={this.state.reportForm.uploadComplete}
           >
             <Icon circular color="brown" name="camera retro" />
             <Responsive minWidth={901}>
@@ -645,12 +666,12 @@ class CreateEvent extends Component {
                   <Form loading={this.state.reportForm.loading} error={this.state.reportForm.validationErrors}>
                     <Form.Field>
                       <Message
-                          error
-                          header={this.state.reportForm.message.header}
-                          content={this.state.reportForm.message.body}
-                        />
+                        error
+                        header={this.state.reportForm.message.header}
+                        content={this.state.reportForm.message.body}
+                      />
                     </Form.Field>
-                    
+
                     <Form.Field required disabled={this.state.reportForm.isFreezed}>
                       <label>Event Type</label>
                       <Form.Select
@@ -742,14 +763,15 @@ class CreateEvent extends Component {
                     <p>Use device camera</p>
                     <Modal
                       trigger={<Button
-icon="camera"
-fluid
-size="massive"
-basic
-color="green"
-style={{ 
-                        marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh' 
+                        icon="camera"
+                        fluid
+                        size="massive"
+                        basic
+                        color="green"
+                        style={{
+                        marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
                         }}
+                        disabled={this.state.reportForm.imageSelectDisabled}
                       />}
                       closeIcon
                     >
@@ -768,7 +790,16 @@ style={{
                             <Grid.Row textAlign="center">
                               <Grid.Column />
                               <Grid.Column>
-                                <Button circular icon="camera" fluid size="massive" basic color="green" onClick={this.captureWebcam} />
+                                <Button
+                                  circular
+                                  icon="camera"
+                                  fluid
+                                  size="massive"
+                                  basic
+                                  color="green"
+                                  onClick={this.captureWebcam}
+                                  disabled={this.state.reportForm.imageSelectDisabled}
+                                />
                               </Grid.Column>
                               <Grid.Column />
                             </Grid.Row>
@@ -793,6 +824,7 @@ style={{
                       marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
                       }}
                       onClick={() => { this.dropzoneRef.open(); }}
+                      disabled={this.state.reportForm.imageSelectDisabled}
                     />
 
 
@@ -824,9 +856,10 @@ style={{
                   <Grid.Column>
                     {
                       this.state.eventFormData.images.length ?
-                        <Button color="brown" floated="right" onClick={this.handleUpload}> 
+                        <Button color="brown" floated="right" onClick={this.handleUpload} loading={this.state.reportForm.uploading} disabled={this.state.reportForm.imageSelectDisabled}>
                           <Icon name="cloud upload" />
-                          Upload</Button>
+                          Upload
+                        </Button>
                       : null
                     }
                   </Grid.Column>
