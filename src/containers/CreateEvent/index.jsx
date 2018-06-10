@@ -71,6 +71,8 @@ class CreateEvent extends Component {
           header: '',
           body: '',
         },
+        eventID: null,
+        isFreezed: false,
         validationErrors: [],
       },
       eventFormData: {
@@ -103,7 +105,7 @@ class CreateEvent extends Component {
     this.setWebcamRef = this.setWebcamRef.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
-    this.handleUpload = this.handleUpload.bind(this);
+    this.handleFileSelect = this.handleFileSelect.bind(this);
   }
 
   componentWillMount() {
@@ -256,6 +258,9 @@ class CreateEvent extends Component {
       });
   }
   handleMapLocationChange(e) {
+    if (this.state.reportForm.isFreezed) {
+      return;
+    }
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
 
@@ -286,19 +291,23 @@ class CreateEvent extends Component {
   }
   handleSaveLocation() {
     console.log('====================================');
-    console.log("Save Location Called");
+    console.log('Save Location Called');
     console.log('====================================');
-    this.setState({
-      ...this.state,
-      eventFormData: {
-        ...this.state.eventFormData,
-        location: {
-          ...this.state.eventFormData.location,
-          isValid: true,
+    if (this.state.reportForm.isFreezed) {
+      return;
+    }
+    this.setState(
+      {
+        ...this.state,
+        eventFormData: {
+          ...this.state.eventFormData,
+          location: {
+            ...this.state.eventFormData.location,
+            isValid: true,
+          },
         },
       },
-    },
-    () => this.handleTabChange(1),
+      () => this.handleTabChange(1),
     );
   }
   handleTabChange(index) {
@@ -329,6 +338,22 @@ class CreateEvent extends Component {
     });
   }
   handleSubmit() {
+    const { eventFormData } = this.state;
+
+    if (!eventFormData.location.isValid) {
+      alert('Location not saved');
+      return;
+    }
+    if (!eventFormData.details.eventType) {
+      alert('Event type not given');
+      return;
+    }
+    if (!eventFormData.title) {
+      alert('Short Description not given');
+      return;
+    }
+
+
     this.setState({
       ...this.state,
       reportForm: {
@@ -340,21 +365,67 @@ class CreateEvent extends Component {
         details: {
           ...this.state.eventFormData.details,
           isValid: true,
-        },        
-      }
+          isFreezed: true,
+        },
+      },
     });
+
+    
+    const eventData = {
+      category: eventFormData.details.eventType,
+      description: eventFormData.details.description,
+      local_assistance: eventFormData.details.help,
+      title: eventFormData.details.title,
+      public: {
+        view: eventFormData.details.public,
+        share: eventFormData.details.help,
+      },
+      location: {
+        coords: {
+          latitude: eventFormData.location.lat,
+          longitude: eventFormData.location.lng,
+        },
+      },
+    };
+    const newFormData = new FormData();
+    newFormData.append('eventData', JSON.stringify(eventData));
+    fetch('https://localhost:8000/api/foo', {
+      method: 'post',
+      body: newFormData,
+    }).then(resp => resp.json())
+      .then((resp) => {
+        this.setState({
+          ...this.state,
+          reportForm: {
+            ...this.state.reportForm,
+            loading: false,
+            isFreezed: true,
+            eventID: resp.eventID,
+          },
+        });
+      })
+      .catch(() => {
+        this.setState({
+          ...this.state,
+          reportForm: {
+            ...this.state.reportForm,
+            loading: false,
+            isFreezed: false,
+          },
+        });
+      });
   }
   setWebcamRef(webcam) {
     this.webcam = webcam;
   }
   captureWebcam() {
-    console.log("OK");
+    console.log('OK');
     const src = this.webcam.getScreenshot();
     const newImage = {
       base64: src,
       isVerified: true,
-      uri: null,
       key: this.state.eventFormData.images.length,
+      isUploaded: false,
     };
     this.setState({
       ...this.state,
@@ -366,17 +437,16 @@ class CreateEvent extends Component {
         ],
       },
     });
-    // console.log(src);    
+    // console.log(src);
   }
-  handleUpload(accepted, rejected) {
-    const uploadRequests = accepted.map((imageFile) => {
-      let reader = new FileReader();
-
+  handleFileSelect(accepted) {
+    accepted.map((imageFile) => {
+      const reader = new FileReader();
       reader.addEventListener('load', () => {
         const newImage = {
           base64: reader.result,
           isVerified: false,
-          uri: null,
+          isUploaded: false,
           key: this.state.eventFormData.images.length,
         };
         this.setState({
@@ -390,19 +460,40 @@ class CreateEvent extends Component {
           },
         });
       }, false);
-
       reader.readAsDataURL(imageFile);
-
+      return null;
+    });
+    // Promise.all(uploadRequests).then(val => console.log(val));
+  }
+  handleUpload() {
+    if (!this.state.reportForm.eventId) {
+      return;
+    }
+    const { images } = this.state.eventFormData;
+    const imagesUpload = images.map((image) => {
       const newFormData = new FormData();
-      newFormData.append('image', imageFile)
+      newFormData.append('base64', image.base64);
+      newFormData.append('isValid', image.isValid);
+      newFormData.append('eventId', this.state.reportForm.eventId);
 
-      return fetch(`https://localhost:8000/api/foo`,{
+      return fetch('https://localhost:8000/api/foo', {
         method: 'post',
         body: newFormData,
-      }).then(resp => resp.json());
+      }).then(resp => resp.json())
+        .then((resp) => {
+          const newImage = { ...image };
+          newImage.isUploaded = true;
+          const newState = {
+            ...this.state,
+            eventFormData: {
+              ...this.state.eventFormData,
+            },
+          };
+          newState.eventFormData.images[image.key] = image;
+          this.setState(newState);
+        })
+        .catch(() => {});
     });
-    Promise.all(uploadRequests).then(val => console.log(val));
-    this;
   }
   render() {
     console.log(this.state);
@@ -415,19 +506,19 @@ class CreateEvent extends Component {
         />
 
         <br />
-        <Step.Group fluid attached="top" widths={3} unstackable>         
-          <Step 
-            completed={this.state.eventFormData.location.isValid}         
+        <Step.Group fluid attached="top" widths={3} unstackable>
+          <Step
+            completed={this.state.eventFormData.location.isValid}
             active={this.state.reportForm.activeTab === 0}
-            onClick={() => this.handleTabChange(0)}            
-          >            
-              <Icon circular color='yellow' name='map outline' size='small' />
-              <Responsive minWidth={901}>
-                <Step.Content>
-                  <Step.Title>Location</Step.Title>
-                  <Step.Description>{this.state.eventFormData.text}</Step.Description>
-                </Step.Content>
-              </Responsive>        
+            onClick={() => this.handleTabChange(0)}
+          >
+            <Icon circular color="yellow" name="map outline" size="small" />
+            <Responsive minWidth={901}>
+              <Step.Content>
+                <Step.Title>Location</Step.Title>
+                <Step.Description>{this.state.eventFormData.text}</Step.Description>
+              </Step.Content>
+            </Responsive>
 
           </Step>
           <Step
@@ -446,30 +537,30 @@ class CreateEvent extends Component {
 
           <Step
             active={this.state.reportForm.activeTab === 2}
-            onClick={() => this.handleTabChange(2)}           
-          >            
-            <Icon circular color='brown' name='camera retro' />
+            onClick={() => this.handleTabChange(2)}
+          >
+            <Icon circular color="brown" name="camera retro" />
             <Responsive minWidth={901}>
               <Step.Content>
                 <Step.Title>Image</Step.Title>
                 <Step.Description>Click a photo</Step.Description>
               </Step.Content>
-            </Responsive>   
+            </Responsive>
           </Step>
         </Step.Group>
 
         {this.state.reportForm.activeTab === 0 ?
-          <Segment attached color='yellow' secondary>
+          <Segment attached color="yellow" secondary>
             <Grid>
               <Grid.Row>
-                <div 
+                <div
                   style={{
                     width: '100%',
                     height: '50vh',
                     left: '0px',
                   }}
                 >
-                  {this.state.eventFormData.location.lat?
+                  {this.state.eventFormData.location.lat ?
                     <MapWrapper
                       location={{
                           lat: this.state.eventFormData.location.lat,
@@ -479,18 +570,18 @@ class CreateEvent extends Component {
                       zoom={16}
                     >
                       <Sonar
-                        lat={this.state.eventFormData.location.lat} 
-                        lng={this.state.eventFormData.location.lng} 
+                        lat={this.state.eventFormData.location.lat}
+                        lng={this.state.eventFormData.location.lng}
                         id={null}
                       />
                     </MapWrapper>
-                  :null}
+                  : null}
                 </div>
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column>
                   <p>{this.state.eventFormData.text || LOCATION_FAILED_TEXT}</p>
-                  <Button floated="right" color="teal" disabled={this.state.eventFormData.location.isValid} onClick={() => this.handleSaveLocation()}>Save Location</Button>
+                  <Button floated="right" color="teal" disabled={this.state.eventFormData.location.isValid || this.state.reportForm.isFreezed} onClick={() => this.handleSaveLocation()}>Save Location</Button>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -502,7 +593,7 @@ class CreateEvent extends Component {
               <Grid.Row>
                 <Grid.Column>
                   <Form loading={this.state.reportForm.loading}>
-                    <Form.Field required>
+                    <Form.Field required disabled={this.state.reportForm.isFreezed}>
                       <label>Event Type</label>
                       <Form.Select
                         options={eventOptions}
@@ -518,7 +609,7 @@ class CreateEvent extends Component {
                       }
                       />
                     </Form.Field>
-                    <Form.Field required>
+                    <Form.Field required disabled={this.state.reportForm.isFreezed}>
                       <label>Short Description</label>
                       <Input
                         name="title"
@@ -526,10 +617,11 @@ class CreateEvent extends Component {
                         labelPosition="right"
                         onChange={this.handleInputChange}
                         value={this.state.eventFormData.details.title}
-                        max={50}
+                        autoComplete="off"
+                        maxLength={50}
                       />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field disabled={this.state.reportForm.isFreezed}>
                       <TextArea
                         placeholder="Tell us more"
                         style={{ minHeight: 100 }}
@@ -538,22 +630,22 @@ class CreateEvent extends Component {
                         name="description"
                       />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field disabled={this.state.reportForm.isFreezed}>
                       <Checkbox
                         label={{ children: 'Make incident publicly visible' }}
-                        checked={this.state.eventFormData.details.public}                        
+                        checked={this.state.eventFormData.details.public}
                         onChange={() => this.handleInputChange({
                           target: {
                             checked: !this.state.eventFormData.details.public,
                             name: 'public',
                             type: 'checkbox',
                           },
-                        })} 
-                      />                      
+                        })}
+                      />
                     </Form.Field>
-                    <Form.Field>
-                      <Checkbox 
-                        label={{ children: 'Ask for public help' }} 
+                    <Form.Field disabled={this.state.reportForm.isFreezed}>
+                      <Checkbox
+                        label={{ children: 'Ask for public help' }}
                         checked={this.state.eventFormData.details.help}
                         name="help"
                         onChange={() => this.handleInputChange({
@@ -562,14 +654,17 @@ class CreateEvent extends Component {
                             name: 'help',
                             type: 'checkbox',
                           },
-                        })} 
+                        })}
                       />
                     </Form.Field>
-                    <Form.Button floated="right" color="orange" 
+                    <Form.Button
+                      floated="right"
+                      color="orange"
                       onClick={this.handleSubmit}
-                      disabled={this.state.reportForm.loading}
+                      disabled={this.state.reportForm.loading || this.state.reportForm.isFreezed}
                     >
-                      <Icon name='check' /> Report Incident</Form.Button>
+                      <Icon name="check" /> Report Incident
+                    </Form.Button>
                   </Form>
                 </Grid.Column>
               </Grid.Row>
@@ -578,48 +673,72 @@ class CreateEvent extends Component {
           : null}
         {this.state.reportForm.activeTab === 2 ?
           <div>
-            <Segment attached color='brown'>              
+            <Dimmer active={false}>
+              <Loader />
+            </Dimmer>
+            <Segment attached color="brown">
+
               <Grid columns={2} divided>
                 <Grid.Row>
                   <Grid.Column>
                     <p>Use device camera</p>
-                    <Modal trigger={<Button icon='camera' fluid size='massive' basic color='green' style={{marginTop: '5vh', marginBottom:'5vh', paddingTop: '8vh', paddingBottom: '8vh'}} />} closeIcon>
+                    <Modal
+                      trigger={<Button
+icon="camera"
+fluid
+size="massive"
+basic
+color="green"
+style={{ 
+                        marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh' 
+                        }}
+                      />}
+                      closeIcon
+                    >
                       <Modal.Header>Click a Photo</Modal.Header>
-                      <Modal.Content>                        
+                      <Modal.Content>
                         <Webcam
-                        audio={false}
-                        height={'100%'}
-                        ref={this.setWebcamRef}
-                        screenshotFormat="image/jpeg"
-                        width={'100%'}
-                        front={false}
-                          />
+                          audio={false}
+                          height="100%"
+                          ref={this.setWebcamRef}
+                          screenshotFormat="image/jpeg"
+                          width="100%"
+                          front={false}
+                        />
                         <Modal.Description>
-                          <Grid columns='equal'>
-                            <Grid.Row textAlign='center'>
-                              <Grid.Column>                                
-                              </Grid.Column>
+                          <Grid columns="equal">
+                            <Grid.Row textAlign="center">
+                              <Grid.Column />
                               <Grid.Column>
-                                <Button circular icon='camera' fluid size='massive' basic color='green' onClick={this.captureWebcam}/>
+                                <Button circular icon="camera" fluid size="massive" basic color="green" onClick={this.captureWebcam} />
                               </Grid.Column>
-                              <Grid.Column>                                
-                              </Grid.Column>
+                              <Grid.Column />
                             </Grid.Row>
                           </Grid>
-                                                
+
                         </Modal.Description>
                       </Modal.Content>
                     </Modal>
-                    
+
                   </Grid.Column>
                   <Grid.Column>
 
-                    <Dropzone ref={(node) => {this.dropzoneRef = node;}}  onDrop={this.handleUpload} style={{'display':'none'}} />
+                    <Dropzone ref={(node) => { this.dropzoneRef = node; }} onDrop={this.handleFileSelect} style={{ display: 'none' }} />
                     <p>Upload from device</p>
-                    <Button icon='cloud upload' fluid size='massive' basic color='orange' style={{marginTop: '5vh', marginBottom:'5vh', paddingTop: '8vh', paddingBottom: '8vh'}}  onClick={() => { this.dropzoneRef.open() }} />
-                  
-                    
-                   </Grid.Column>
+                    <Button
+                      icon="cloud upload"
+                      fluid
+                      size="massive"
+                      basic
+                      color="orange"
+                      style={{
+                      marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
+                      }}
+                      onClick={() => { this.dropzoneRef.open(); }}
+                    />
+
+
+                  </Grid.Column>
                 </Grid.Row>
 
               </Grid>
@@ -627,21 +746,38 @@ class CreateEvent extends Component {
               {/*  */}
             </Segment>
             <Segment attached secondary>
-              <SemanticImage.Group size='small'>
-                {
-                  this.state.eventFormData.images.map(image => (
-                      <Image
-                        base64={image.base64}
-                        key={image.key}
-                        isTrusted={image.isVerified}
-                      />
-                  ))
-                }
-              </SemanticImage.Group>
-            </Segment>     
-          </div>     
+              <Grid>
+                <Grid.Row>
+                  <Grid.Column>
+                    <SemanticImage.Group size="tiny">
+                      {
+                        this.state.eventFormData.images.map(image => (
+                          <Image
+                            base64={image.base64}
+                            key={image.key}
+                            isTrusted={image.isVerified}
+                          />
+                        ))
+                      }
+                    </SemanticImage.Group>
+                  </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                  <Grid.Column>
+                    {
+                      this.state.eventFormData.images.length ?
+                        <Button icon="cloud upload" loading color="brown" floated="right">Upload</Button>
+                      : null
+                    }
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+
+
+            </Segment>
+          </div>
           : null}
-        
+
       </Container>
 
     );
