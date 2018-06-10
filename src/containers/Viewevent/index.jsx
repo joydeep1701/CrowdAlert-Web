@@ -57,13 +57,13 @@ const EventCard = props => (
     >
       <SemanticImage.Group size="small">
         {
-          props.images.map(image => (
+          props.images ? props.images.map(image => (
             <Image
               uuid={image.uuid}
               key={image.uuid}
               isTrusted={image.isTrusted}
             />
-          ))
+          )) : null
         }
       </SemanticImage.Group>
     </Event.Body>

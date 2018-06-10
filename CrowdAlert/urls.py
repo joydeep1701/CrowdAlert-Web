@@ -32,6 +32,6 @@ urlpatterns = [
     re_path(r'^manifest.json', TemplateView.as_view(
         template_name="manifest.json",
     ), name='manifest.json'),
-    re_path('/', TemplateView.as_view(
-        template_name='index.html')),
+    # re_path('/', TemplateView.as_view(
+    #     template_name='index.html')),
 ]

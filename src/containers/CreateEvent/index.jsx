@@ -420,18 +420,20 @@ class CreateEvent extends Component {
     };
     const newFormData = new FormData();
     newFormData.append('eventData', JSON.stringify(eventData));
-    fetch('https://localhost:8000/api/foo', {
+    fetch('https://127.0.0.1:8000/api/events/incident', {
       method: 'post',
       body: newFormData,
     }).then(resp => resp.json())
       .then((resp) => {
+        console.log(resp, resp.eventId)
         this.setState({
           ...this.state,
           reportForm: {
             ...this.state.reportForm,
             loading: false,
             isFreezed: true,
-            eventID: resp.eventID,
+            eventID: resp.eventId,
+            activeTab: 2,
           },
         });
       })
@@ -514,12 +516,17 @@ class CreateEvent extends Component {
 
     const { images } = this.state.eventFormData;
     const imagesUpload = images.map((image) => {
+      console.log(image);
+      if (image.isUploaded) {
+        return null;
+      }
       const newFormData = new FormData();
+      newFormData.append('isValid', image.isVerified);
+      newFormData.append('eventId', this.state.reportForm.eventID);
       newFormData.append('base64', image.base64);
-      newFormData.append('isValid', image.isValid);
-      newFormData.append('eventId', this.state.reportForm.eventId);
 
-      return fetch('https://localhost:8000/api/foo', {
+
+      return fetch('https://127.0.0.1:8000/api/images/upload/', {
         method: 'post',
         body: newFormData,
       }).then(resp => resp.json())
@@ -635,17 +642,15 @@ class CreateEvent extends Component {
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Form loading={this.state.reportForm.loading} error={this.state.reportForm.validationErrors} success={this.state.reportForm.isFreezed}>
-                    <Message
-                      error
-                      header={this.state.reportForm.message.header}
-                      content={this.state.reportForm.message.body}
-                    />
-                    <Message
-                      success
-                      header="Event Reported"
-                      content="Upload some pictures to get validity"
-                    />
+                  <Form loading={this.state.reportForm.loading} error={this.state.reportForm.validationErrors}>
+                    <Form.Field>
+                      <Message
+                          error
+                          header={this.state.reportForm.message.header}
+                          content={this.state.reportForm.message.body}
+                        />
+                    </Form.Field>
+                    
                     <Form.Field required disabled={this.state.reportForm.isFreezed}>
                       <label>Event Type</label>
                       <Form.Select

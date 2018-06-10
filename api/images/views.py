@@ -5,28 +5,42 @@ from django.core.files.storage import FileSystemStorage
 import subprocess
 import os
 from uuid import uuid4
+import base64
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 
 storage = settings.FIREBASE.storage()
 
 @csrf_exempt
 def upload(request):
-    if request.method == 'POST' and request.FILES['image']:
-        # Generate uuid for the file. Never trust user.
+    if request.method == 'POST': 
         name = str(uuid4())
-        uploadedFile = request.FILES['image']
-        fs = FileSystemStorage()
-        # save
-        fs.save(name, uploadedFile)
+
+        if request.FILES.get('image', False):
+            # Generate uuid for the file. Never trust user.
+            uploadedFile = request.FILES['image']
+            fs = FileSystemStorage()
+            # save
+            fs.save(name, uploadedFile)
+            firebaseName = name + '.' + uploadedFile.name.split('.')[-1]
+
+        elif request.POST.get('base64', False):
+            data_uri = request.POST['base64']
+            name = str(uuid4())
+            img = base64.decodestring(str.encode(data_uri.split(",")[1]))
+            with open(name, "wb") as fh:
+                fh.write(img)
+            firebaseName = name + '.jpg'
+        else:
+            return HttpResponseBadRequest("Bad request")
+        
         # As our load is small now, we can do this in sequential manner
         # After we get enough traffic we should use a redis based solution.
         # Where an event would be pushed and a job id is to be returned
         # and expose another endpoint where we can check the status
         subprocess.run(['node_modules/.bin/sqip', name, '-o', name+'.svg'])
         # Upload files to Cloud storage
-        firebaseName = name + '.' + uploadedFile.name.split('.')[-1]
-        storage.child('images/' + firebaseName).put(name)
-        storage.child('thumbnails/'+name+'.svg').put(name+'.svg')
+        # storage.child('images/' + firebaseName).put(name)
+        # storage.child('thumbnails/'+name+'.svg').put(name+'.svg')
         # Remove the uploaded files for two good reasons:
         # Keep our dyno clean
         # remove malicious code before anything wrong goes.
