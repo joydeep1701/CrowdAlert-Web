@@ -24,10 +24,10 @@ const MenuBar = props => (
             Feed
           </Menu.Item>
         </Link>
-        <Link to="/view/-L6MrTH7NgTawjN-LOsd">
+        <Link to="/create">
           <Menu.Item>
             <Icon name="browser" />
-            Sample Incident
+            Report
           </Menu.Item>
         </Link>
       </Responsive>

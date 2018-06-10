@@ -18,7 +18,7 @@ const GET_EVENT_BY_ID = 'https://crowdalert.herokuapp.com/api/events/incident';
  */
 const GET_IMAGE_URLS = 'https://crowdalert.herokuapp.com/api/images/getimageurl';
 
-const UPLOAD_IMAGES = 'https://crowdalert.herokuapp.com/api/api/images/upload/'
+const UPLOAD_IMAGES = 'https://crowdalert.herokuapp.com/api/images/upload';
 /**
  * [REVERSE_GEOCODE returns the reverse geocode for a given pair of coordinates
  * If accuracy=high, it uses google apis to reverse geocode]
