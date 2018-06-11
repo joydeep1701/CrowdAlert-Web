@@ -1,269 +1,246 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import propTypes from 'prop-types';
 import {
   Responsive,
   Card,
   Item,
-  Image,
-  Feed,
-  Icon,
-  Divider,
-  Dimmer,
-  Loader,
   Grid,
-  Menu,
-  Dropdown,
-  Label,
-  Button
-} from 'semantic-ui-react'
-import MapContainer from '../../components/Map'
-import ShareModal from '../../components/Share'
-import ImageModal from '../../components/Image'
-import {database} from '../../utils/firebase';
-import {calcAge} from '../../utils/time';
+  Container,
+} from 'semantic-ui-react';
+import fetch from 'isomorphic-fetch';
+import {
+  Image,
+  Event,
+  MapWrapper,
+  LoadingCard,
+  Sonar,
+} from '../../components';
+import {
+  GET_EVENT_BY_ID,
+  GET_IMAGE_URLS,
+  REVERSE_GEOCODE,
+} from '../../utils/apipaths';
 
-const EventHeader = (props) => (<Feed style={{
-    paddingTop: '10px',
-    paddingLeft: '10px'
-  }}>
-  <Feed.Event>
-    <Feed.Label>
-      <Image src='https://react.semantic-ui.com/assets/images/avatar/small/jenny.jpg'/>
-    </Feed.Label>
-    <Feed.Content>
-      <Feed.Date>
-        {calcAge(props.datetime)}
-      </Feed.Date>
-      <Feed.Summary>
-        <a>{props.user_id}</a>
-        reported an incident
-      </Feed.Summary>
-      <br/>
-      <Label as='a' basic={true} color='orange'>Serampore</Label>
-      <Label as='a' basic={true} color='blue'>West Bengal</Label>
-    </Feed.Content>
-  </Feed.Event>
-</Feed>)
+import styleSheet from './style';
 
-const EventFooter = (props) => (<Menu style={{
-    width: '95%'
-  }} widths={3}>
-  <Menu.Item active={true}>
-    <Icon color='red' name='thumbs up'/>
-    <Label color='red' floating={true}>12</Label>
-    Upvoted
-  </Menu.Item>
-  <Menu.Item>
-    <Dropdown icon='bars'>
-      <Dropdown.Menu>
-        <Dropdown.Item>
-          <ShareModal title={props.title}>
-            <p>
-              <Icon color='black' name='external share'/>
-              Share</p>
-          </ShareModal>
-        </Dropdown.Item>
-        <Dropdown.Item>
-          <Icon color='black' name='warning circle'/>Mark as Spam
-        </Dropdown.Item>
-
-      </Dropdown.Menu>
-
-    </Dropdown>
-  </Menu.Item>
-  <Menu.Item >
-    <Icon color='blue' name='comments outline'/>
-    <Label color='blue' floating={true}>5</Label>
-    Comment
-  </Menu.Item>
-</Menu>)
-
+/**
+ * [MapwithSonar Combines the MapWrapper & Sonar component to view a single marker
+ * on a single marker]
+ * @param {[type]} props [description]
+ */
+const MapwithSonar = props => (
+  <MapWrapper location={{ lat: props.latitude, lng: props.longitude }} zoom={15}>
+    <Sonar lat={props.latitude} lng={props.longitude} id={props.id} />
+  </MapWrapper>
+);
+MapwithSonar.propTypes = {
+  latitude: propTypes.number.isRequired,
+  longitude: propTypes.number.isRequired,
+  id: propTypes.string.isRequired,
+};
+/**
+ * [EventCard Combines the all the three parts of event cards to form a single
+ * whole component ]
+ * @param {[type]} props [description]
+ */
+const EventCard = props => (
+  <Card style={styleSheet[props.viewmode].cardContainer}>
+    <Event.Header
+      user_id={props.user_id}
+      dateTime={props.datetime}
+      reverse_geocode={props.reverse_geocode}
+    />
+    <Event.Body
+      title={props.title}
+      description={props.description}
+      eventType={props.eventType}
+    >
+      <Image imageUrls={props.imageUrls} />
+    </Event.Body>
+    <Event.Footer title={props.title} />
+  </Card>
+);
+EventCard.propTypes = {
+  viewmode: propTypes.string.isRequired,
+  user_id: propTypes.string.isRequired,
+  datetime: propTypes.number.isRequired,
+  title: propTypes.string.isRequired,
+  description: propTypes.string,
+  eventType: propTypes.string,
+  reverse_geocode: propTypes.shape({
+    /* Name of the place */
+    name: propTypes.string,
+    /* Top levels administative area */
+    admin1: propTypes.string,
+    /* Upper administative area */
+    admin2: propTypes.string,
+  }),
+  imageUrls: propTypes.shape({
+    /* SVG url for the image thumbnail */
+    thumbnail: propTypes.string,
+    /* Original image thumbnail */
+    url: propTypes.string,
+  }),
+};
+EventCard.defaultProps = {
+  reverse_geocode: { name: '', admin2: '', admin1: '' },
+  description: '',
+  eventType: 'N/A',
+  imageUrls: {
+    thumbnail: '',
+    url: '',
+  },
+};
+/**
+ * [Viewevents Responsive Viewevents component. Fetches data & renders the
+ * component]
+ * @type {Object}
+ */
 export default class Viewevent extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ...this.props.match.params,
       loading: true,
-      event: {
-        location: {
-          coords: {
-            latitude: null,
-            longitude: null
-          }
-        }
-      }
-    }
+      event: {},
+    };
   }
-  componentDidMount() {
-    // eventid is passed as a prop
-    var ref = database.ref(`incidents/${this.state.eventid}`);
-    ref.on("value", snapshot => {
-      let event = snapshot.val();
-      console.log(event);
-      this.setState({
-        ...this.state,
-        loading: false,
-        event
+  componentWillMount() {
+    this.getEventData();
+  }
+  /**
+   * [getEventData Issue fetch requests to server to get data]
+   * @return {[none]}
+   */
+  getEventData() {
+    // Fetch the json data for the given event id
+    fetch(`${GET_EVENT_BY_ID}?id=${this.props.match.params.eventid}`)
+      // Decode json
+      .then(response => (response.json()))
+      // setState or reject eventid
+      .then((response) => {
+        if (response === null) {
+          throw Error('Event Not Found');
+        }
+        this.setState({
+          event: response,
+          loading: false,
+        });
+        // For a valid event get the corresponding image uuid
+        // Considering there is a image for every event
+        const imageUuid = response.image_uuid;
+        return fetch(`${GET_IMAGE_URLS}?uuid=${imageUuid}`);
       })
-    }, (err) => {
-      console.log('err')
-    })
+      // Decode json
+      .then(response => response.json())
+      .then((response) => {
+        // reject if something bad happens
+        if (response === null) {
+          throw Error('Image not found');
+        }
+        this.setState({
+          ...this.state,
+          image_urls: response,
+        });
+        // Should be updated. The main fetch should return an array of promises
+        const lat = this.state.event.location.coords.latitude;
+        const long = this.state.event.location.coords.longitude;
+        return fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`);
+      })
+      .then(response => response.json())
+      .then((response) => {
+        this.setState({
+          ...this.state,
+          reverse_geocode: response,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
   render() {
     console.log(this.state, this.props);
-    return (<div>
-      <Responsive maxWidth={900}>
-        <div style={{
-            position: 'absolute',
-            width: '100%',
-            height: '50vh',
-            top: '0px',
-            zIndex: -1
-          }}>
-          {
+    return (
+      <div>
+        <Responsive maxWidth={900}>
+          <div style={styleSheet.mobile.mapContainer}>
+            {
             this.state.loading
               ? null
-              : <MapContainer location={{
-                    lat: this.state.event.location.coords.latitude,
-                    lng: this.state.event.location.coords.longitude
-                  }}/>
+              :
+              <MapwithSonar
+                latitude={this.state.event.location.coords.latitude}
+                longitude={this.state.event.location.coords.longitude}
+                id={this.state.eventid}
+              />
           }
-        </div>
-
-        <Item style={{
-            margin: '10px',
-            paddingTop: '30vh',
-            paddingBottom: '8vh',
-            width: '100%'
-          }}>
-          {
+          </div>
+          <Item style={styleSheet.mobile.itemContainer}>
+            {
             this.state.loading
-              ? <Card style={{
-                    width: '95%',
-                    height: '25vh'
-                  }}>
-                  <Item.Content>
-                    <Item.Description>
-                      <Image src='https://react.semantic-ui.com/assets/images/wireframe/paragraph.png'/>
-                      <Dimmer active={this.state.loading} inverted={true}>
-                        <Loader/>
-                      </Dimmer>
-                    </Item.Description>
-                  </Item.Content>
-                </Card>
-              : <div>
-                  <Card style={{
-                      width: '95%'
-                    }}>
-                    <EventHeader user_id={this.state.event.user_id} datetime={this.state.event.datetime}/>
-
-                    <Item.Content>
-
-                      <Item.Header as='a'>{this.state.event.title}</Item.Header>
-                      <Label color='blue' ribbon style={{
-                          marginTop: '7px',
-                          marginBottom: '7px'
-                        }}>Health</Label>
-                      {/* <Item.Meta>Description</Item.Meta> */}
-
-                      <Item.Description>
-                        {this.state.event.comments}
-                      </Item.Description>
-
-                      <Divider section={true}/>
-                      <Item.Extra>
-                        <ImageModal image_base64={this.state.event.image_base64}/>
-
-                      </Item.Extra>
-                    </Item.Content>
-                  </Card>
-                  <EventFooter title={this.state.event.title}/>
-                </div>
-
+              ? <LoadingCard loading />
+              :
+              <EventCard
+                viewmode="mobile"
+                user_id={this.state.event.user_id}
+                datetime={this.state.event.datetime}
+                title={this.state.event.title}
+                description={this.state.event.comments}
+                imageUrls={this.state.image_urls}
+                reverse_geocode={this.state.reverse_geocode}
+                eventType={this.state.event.category}
+              />
           }
-
-        </Item>
-
-      </Responsive>
-      <Responsive minWidth={901}>
-
-        <Grid columns={2}>
-          <Grid.Row>
-            <Grid.Column>
-              <div style={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '90vh',
-                  left: '0px'
-                }}>
-                {
-                  this.state.loading
-                    ? null
-                    : <MapContainer location={{
-                          lat: this.state.event.location.coords.latitude,
-                          lng: this.state.event.location.coords.longitude
-                        }}/>
-                }
-              </div>
-
-            </Grid.Column>
-            <Grid.Column>
-              <Item style={{
-                  margin: '10px',
-                  width: '100%'
-                }}>
-                {
-                  this.state.loading
-                    ? <Card style={{
-                          width: '95%',
-                          height: '50vh'
-                        }}>
-                        <Item.Content>
-                          <Item.Description>
-                            <Image src='https://react.semantic-ui.com/assets/images/wireframe/paragraph.png'/>
-                            <Dimmer active={this.state.loading} inverted={true}>
-                              <Loader/>
-                            </Dimmer>
-                          </Item.Description>
-                        </Item.Content>
-                      </Card>
-                    : <div>
-                        <Card style={{
-                            width: '95%'
-                          }}>
-                          <EventHeader user_id={this.state.event.user_id} datetime={this.state.event.datetime}/>
-
-                          <Item.Content>
-
-                            <Item.Header as='a'>{this.state.event.title}</Item.Header>
-                            <Label color='blue' ribbon style={{
-                                marginTop: '7px',
-                                marginBottom: '7px'
-                              }}>Health</Label>
-                            <Item.Meta>Description</Item.Meta>
-
-                            <Item.Description>
-                              {this.state.event.comments}
-                            </Item.Description>
-
-                            <Divider section={true}/>
-                            <Item.Extra>
-                              <ImageModal image_base64={this.state.event.image_base64}/>
-
-                            </Item.Extra>
-                          </Item.Content>
-                        </Card>
-
-                        <EventFooter title={this.state.event.title}/>
-                      </div>
-
-                }
-
-              </Item>
-            </Grid.Column>
-          </Grid.Row>
-
-        </Grid>
-      </Responsive>
-    </div>)
+          </Item>
+        </Responsive>
+        <Responsive minWidth={901}>
+          <Container>
+            <Grid columns={2}>
+              <Grid.Row>
+                <Grid.Column>
+                  <div style={styleSheet.desktop.mapContainer}>
+                    {
+                      this.state.loading
+                        ? null :
+                        <MapwithSonar
+                          latitude={this.state.event.location.coords.latitude}
+                          longitude={this.state.event.location.coords.longitude}
+                          id={this.state.eventid}
+                        />
+                    }
+                  </div>
+                </Grid.Column>
+                <Grid.Column>
+                  <Item style={styleSheet.desktop.itemContainer}>
+                    {
+                      this.state.loading
+                        ? <LoadingCard loading />
+                        :
+                        <EventCard
+                          viewmode="desktop"
+                          user_id={this.state.event.user_id}
+                          datetime={this.state.event.datetime}
+                          title={this.state.event.title}
+                          description={this.state.event.comments}
+                          imageUrls={this.state.image_urls}
+                          reverse_geocode={this.state.reverse_geocode}
+                          eventType={this.state.event.category}
+                        />
+                    }
+                  </Item>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Container>
+        </Responsive>
+      </div>
+    );
   }
 }
+Viewevent.propTypes = {
+  match: propTypes.shape({
+    params: propTypes.shape({
+      eventid: propTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+};

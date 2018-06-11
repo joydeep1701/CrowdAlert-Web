@@ -3,8 +3,12 @@ import { Responsive, Menu, Icon, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 
-import logo from '../../logo.svg';
+import logo from '../../logo.png';
 
+/**
+ * [MenuBar top menu bar for the app. Responsive according to the viewport]
+ * @param {[type]} props [description]
+ */
 const MenuBar = props => (
   <Menu size="small">
     <Menu.Menu position="left">
@@ -13,13 +17,7 @@ const MenuBar = props => (
       </Responsive>
       <Responsive as={Menu.Item} {...Responsive.onlyTablet}>Tablet</Responsive>
       <Responsive as={Menu.Item} {...Responsive.onlyComputer}>
-        <Image
-          src={logo}
-          style={{
-          height: '4vh',
-        }}
-        />
-
+        <Image src={logo} style={{ height: '4vh' }} />
         <Link to="/">
           <Menu.Item>
             <Icon name="browser" />
@@ -32,8 +30,6 @@ const MenuBar = props => (
             Sample Incident
           </Menu.Item>
         </Link>
-        {/* <Menu.Item /> */}
-
       </Responsive>
     </Menu.Menu>
     <div className="ui transparent icon input">
@@ -50,7 +46,7 @@ const MenuBar = props => (
   </Menu>
 );
 
-Menu.propTypes = {
+MenuBar.propTypes = {
   toggleVisibility: propTypes.func.isRequired,
 };
 
