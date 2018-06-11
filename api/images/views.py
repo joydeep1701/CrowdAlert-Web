@@ -1,7 +1,5 @@
 from django.shortcuts import render
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from django.core.files.storage import FileSystemStorage
 import subprocess

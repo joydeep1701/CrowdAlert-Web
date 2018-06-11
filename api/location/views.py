@@ -8,6 +8,21 @@ from rest_framework.views import APIView
 gmaps = settings.GMAPS
 
 class PlacesView(APIView):
+    """ Autocomplete place names by google maps
+    
+    Arguments:
+        APIView {[type]} -- [description]
+
+    GET request parameters: 
+        [REQUIRED]
+        q: location name
+    
+    Returns:
+        [HttpResponseBadRequest] -- [If  any of the required parameters is
+                                        not given.]
+        [JsonResponse] -- [Containing the location data]     
+    """
+
     def get(self, request):
         if request.method == 'GET':
             query = request.GET.get('q', '')
@@ -18,6 +33,23 @@ class PlacesView(APIView):
         return HttpResponseBadRequest("Bad request")
 
 class ReverseGeocodeView(APIView):
+     """Returns reverse geocode for a given location
+        
+    GET request parameters: 
+        [REQUIRED]
+        lat: latitude of the location
+            
+        long: longitude of the location
+
+        accuracy: API to be used. If value is high then google api will 
+                    be used else inhouse api will be used
+
+    Returns:
+        [HttpResponseBadRequest] -- [If  any of the required parameters is
+                                        not given.]
+        [JsonResponse] -- [Containing the location data]     
+    """
+
     def get(self, request):
         if request.method == 'GET':
             lat = float(request.GET.get('lat', ''))
@@ -36,6 +68,14 @@ class ReverseGeocodeView(APIView):
         return HttpResponseBadRequest("Bad request")
 
 class IPLocationView(APIView):
+    """Geocodes a request using IP  
+    
+    Returns:
+        [HttpResponseBadRequest] -- [If  any of the required parameters is
+                                        not given.]
+        [JsonResponse] -- [Containing the location data] 
+    """
+
     def get(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
