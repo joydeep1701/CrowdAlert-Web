@@ -36,7 +36,7 @@ class Feed extends Component {
       // Here the distance param is hardcoded
       // but it should be replaced by (earth perimeter)/zoom level
       // so that we can fetch events according to the zoom level
-      return fetch(`${GET_EVENTS_BY_LOCATION}?lat=${lat}&long=${long}&dist=10000`);
+      return fetch(`${GET_EVENTS_BY_LOCATION}?lat=${lat}&long=${long}&dist=20000`);
     })
       .then(resp => resp.json())
       .then((resp) => {
