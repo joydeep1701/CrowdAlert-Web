@@ -33,7 +33,7 @@ class PlacesView(APIView):
         return HttpResponseBadRequest("Bad request")
 
 class ReverseGeocodeView(APIView):
-     """Returns reverse geocode for a given location
+    """Returns reverse geocode for a given location
         
     GET request parameters: 
         [REQUIRED]
