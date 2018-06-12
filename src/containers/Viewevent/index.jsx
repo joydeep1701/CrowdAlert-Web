@@ -55,7 +55,7 @@ const EventCard = props => (
       description={props.description}
       eventType={props.eventType}
     >
-      <SemanticImage.Group size="small">
+      <SemanticImage.Group size={props.viewmode === 'desktop' ? 'small' : 'tiny'}>
         {
           props.images ? props.images.map(image => (
             <Image

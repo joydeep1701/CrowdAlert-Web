@@ -178,6 +178,7 @@ class CreateEvent extends Component {
           },
         },
         reportForm: {
+          ...this.state.reportForm,
           activeTab: 0,
         },
       });
@@ -210,16 +211,21 @@ class CreateEvent extends Component {
     });
   }
   handleGetLocation() {
-    navigator
-      .geolocation
-      .getCurrentPosition(
-        this.handleGeoLocationSuccess,
-        this.handleGeoLocationFailure, {
-          enableHighAccuracy: true,
-          maximumAge: 30000,
-          timeout: 20000,
-        },
-      );
+    try {
+      navigator
+        .geolocation
+        .getCurrentPosition(
+          this.handleGeoLocationSuccess,
+          this.handleGeoLocationFailure, {
+            enableHighAccuracy: true,
+            maximumAge: 30000,
+            timeout: 20000,
+          },
+        );
+    } catch(err) {
+      console.error("Unexpected: Location Fetch Failed", err);
+      this.handleGeoLocationFailure();
+    }
   }
   closeModal() {
     if (this.state.permissions.location && this.state.permissions.camera) {
@@ -234,31 +240,41 @@ class CreateEvent extends Component {
   }
 
   handlePermission() {
-    navigator
-      .permissions
-      .query({ name: 'geolocation' })
-      .then((result) => {
-        if (result.state === 'granted') {
-          this.closeModal();
-          this.handleGetLocation();
-        } else if (result.state === 'prompt') {
-          setTimeout(this.handleGetLocation, 3500);
-        } else if (result.state === 'denied') {
-          this.handleGeoLoactionPermissionDenied();
-        }
-        result.onchange = () => {
-          // this.handlePermission();
-        };
-      });
-    navigator
-      .mediaDevices
-      .getUserMedia({ video: true })
-      .then((response) => {
-        this.handleMediaSuccess(response);
-      })
-      .catch((err) => {
-        this.handleMediaPermissionDenied();
-      });
+    try {
+      navigator
+        .permissions
+        .query({ name: 'geolocation' })
+        .then((result) => {
+          if (result.state === 'granted') {
+            this.closeModal();
+            this.handleGetLocation();
+          } else if (result.state === 'prompt') {
+            setTimeout(this.handleGetLocation, 3500);
+          } else if (result.state === 'denied') {
+            this.handleGeoLoactionPermissionDenied();
+          }
+          // result.onchange = () => {
+          //   // this.handlePermission();
+          // };
+        });
+    } catch (error) {
+      console.error("Unsupported browser", error);
+      this.handleGetLocation();
+    }
+    try {
+      navigator
+        .mediaDevices
+        .getUserMedia({ video: true })
+        .then((response) => {
+          this.handleMediaSuccess(response);
+        })
+        .catch((err) => {
+          this.handleMediaPermissionDenied();
+        });
+    } catch(err) {
+      console.error(err)
+    }
+
   }
   handleMapLocationChange(e) {
     if (this.state.reportForm.isFreezed) {
@@ -326,9 +342,9 @@ class CreateEvent extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log('====================================');
-    console.log(this.state, name, target);
-    console.log('====================================');
+    // console.log('====================================');
+    // console.log(this.state, name, target);
+    // console.log('====================================');
     this.setState({
       ...this.state,
       eventFormData: {
@@ -663,13 +679,16 @@ class CreateEvent extends Component {
             <Grid>
               <Grid.Row>
                 <Grid.Column>
-                  <Form loading={this.state.reportForm.loading} error={this.state.reportForm.validationErrors}>
+                  <Form loading={this.state.reportForm.loading}>
                     <Form.Field>
-                      <Message
-                        error
-                        header={this.state.reportForm.message.header}
-                        content={this.state.reportForm.message.body}
-                      />
+                      {this.state.reportForm.validationErrors ?
+                        <Message
+                          error
+                          header={this.state.reportForm.message.header}
+                          content={this.state.reportForm.message.body}
+                        />
+                        : null }
+
                     </Form.Field>
 
                     <Form.Field required disabled={this.state.reportForm.isFreezed}>
