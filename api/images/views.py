@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from django.core.files.storage import FileSystemStorage
 import subprocess
+from threading import Thread
 import os
 from uuid import uuid4
 import base64
@@ -13,6 +14,27 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 storage = settings.FIREBASE.storage()
 db = settings.FIREBASE.database()
 
+def asyncfunc(function):
+    def decorated_function(*args, **kwargs):
+        t = Thread(target=function, args=args, kwargs=kwargs)
+        # Make sure thread doesn't quit until everything is finished
+        t.daemon = False
+        t.start()
+    return decorated_function
+
+@asyncfunc
+def add_thumbnail(name):
+    # As our load is small now, we can do this in sequential manner
+    # After we get enough traffic we should use a redis based solution.
+    # Where an event would be pushed and a job id is to be returned
+    # and expose another endpoint where we can check the status
+    subprocess.run(['node_modules/.bin/sqip', name, '-o', name+'.svg'])
+    storage.child('thumbnails/'+name+'.svg').put(name+'.svg')
+    # Remove the uploaded files for two good reasons:
+    # Keep our dyno clean
+    # remove malicious code before anything wrong goes.
+    os.remove(name)
+    os.remove(name+'.svg')
 
 class ImagesView(APIView):
     def get(self, request):        
@@ -31,7 +53,6 @@ class ImagesView(APIView):
     def post(self, request):
         if request.method == 'POST': 
             name = str(uuid4())
-
             if request.FILES.get('image', False):
                 # Generate uuid for the file. Never trust user.
                 uploadedFile = request.FILES['image']
@@ -39,7 +60,6 @@ class ImagesView(APIView):
                 # save
                 fs.save(name, uploadedFile)
                 firebaseName = name + '.' + uploadedFile.name.split('.')[-1]
-
             elif request.POST.get('base64', False):
                 data_uri = request.POST['base64']
                 name = str(uuid4())
@@ -49,25 +69,18 @@ class ImagesView(APIView):
                 firebaseName = name + '.jpg'
             else:
                 return HttpResponseBadRequest("Bad request")
-            
-            # As our load is small now, we can do this in sequential manner
-            # After we get enough traffic we should use a redis based solution.
-            # Where an event would be pushed and a job id is to be returned
-            # and expose another endpoint where we can check the status
-            subprocess.run(['node_modules/.bin/sqip', name, '-o', name+'.svg'])
             # Upload files to Cloud storage
             storage.child('images/' + firebaseName).put(name)
-            storage.child('thumbnails/'+name+'.svg').put(name+'.svg')        
-            # Remove the uploaded files for two good reasons:
-            # Keep our dyno clean
-            # remove malicious code before anything wrong goes.
-            os.remove(name)
-            os.remove(name+'.svg')
+            add_thumbnail(name)
             # Update Event if id is given,
             if request.POST.get("eventId", False):
                 event_id = request.POST.get("eventId", False)
-                is_trusted = request.POST.get('isValid', False)
-                image_data = {"isNsfw": False, "isTrusted": is_trusted, "uuid": firebaseName}
+                is_trusted = request.POST.get('isValid', '') == 'true'
+                image_data = {
+                                "isNsfw": False, 
+                                "isTrusted": is_trusted, 
+                                "uuid": firebaseName
+                            }
                 db.child('incidents').child(event_id).child("images").push(image_data)
                 print("Image Added")
             # Return file id for future reference
