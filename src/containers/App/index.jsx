@@ -16,29 +16,14 @@ import CreateEvent from '../CreateEvent';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      visible: false,
-    };
-    this.toggleVisibility = this.toggleVisibility.bind(this);
-  }
-  /**
-   * [toggleVisibility toogles visiblity of sidebar]
-   * @return {none}
-   */
-  toggleVisibility() {
-    this.setState({
-      visible: !this.state.visible,
-    });
+    this.state = {};
   }
   render() {
     // console.log(this.state);
     return (
-      <Sidebar
-        toggleVisibility={this.toggleVisibility}
-        visible={this.state.visible}
-      >
+      <Sidebar>
         <div>
-          <Menu toggleVisibility={this.toggleVisibility} />
+          <Menu />
         </div>
         <Route exact path="/view/:eventid" component={Viewevent} />
         <Route exact path="/create" component={CreateEvent} />
@@ -47,6 +32,5 @@ class App extends Component {
     );
   }
 }
-
 
 export default App;

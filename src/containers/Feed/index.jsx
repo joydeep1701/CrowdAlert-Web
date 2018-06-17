@@ -57,7 +57,7 @@ class Feed extends Component {
         // So the following styles are commented out.
         // position: 'absolute',
         width: '100hw',
-        height: '99vh',
+        height: '94vh',
         // top: '0px',
         left: '0px',
         // zIndex: -1,
