@@ -33,4 +33,5 @@ function sidebarVisibilityReducer(state = initialState, action) {
   }
   return state;
 }
+
 export default sidebarVisibilityReducer;

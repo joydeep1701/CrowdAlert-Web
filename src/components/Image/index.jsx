@@ -70,25 +70,47 @@ export default class ImageModal extends Component {
               <p>Photo</p>
             </div>
           </Modal.Header>
-          <Modal.Content image>
+          <Modal.Content>
             <Responsive maxWidth={900}>
               <Image
                 fluid
+                label={this.props.isTrusted ? null : {
+                  as: 'a',
+                  color: 'red',
+                  content: 'Unverified',
+                  icon: 'warning circle',
+                  ribbon: true,
+                }}
                 src={`${this.state.imageUrls.url}`}
                 style={{
                   backgroundImage: `url(${this.state.imageUrls.thumbnail})`,
+                  minHeight: '100px',
                 }}
               />
             </Responsive>
             <Responsive minWidth={900}>
-              <Image size="massive"src={`${this.state.imageUrls.url}`} />
+              <Image
+                size="massive"
+                label={this.props.isTrusted ? null : {
+                  as: 'a',
+                  color: 'red',
+                  content: 'Unverified',
+                  icon: 'warning circle',
+                  ribbon: true,
+                }}
+                src={`${this.state.imageUrls.url}`}
+                style={{
+                  backgroundImage: `url(${this.state.imageUrls.thumbnail})`,
+                  minHeight: '50vh',
+                }}
+              />
             </Responsive>
-            <Modal.Description>
+            {/* <Modal.Description>
               <Modal.Header>
                 {this.props.isTrusted ? null :
                 <Label basic color="red">UNVERIFIED</Label>}
               </Modal.Header>
-            </Modal.Description>
+            </Modal.Description> */}
           </Modal.Content>
         </Modal>
       );

@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import fetch from 'isomorphic-fetch';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
+import style from './style';
 import { MapWrapper, Sonar } from '../../components';
 import { GET_EVENTS_BY_LOCATION, GET_LOCATION_BY_IP } from '../../utils/apipaths';
+import distanceCoordinates from '../../utils/gps';
 
 /**
  * [Feed Display events on th map using Sonar components]
@@ -23,20 +28,24 @@ class Feed extends Component {
     // Fetch the users current approximate location using API
     fetch(GET_LOCATION_BY_IP).then(resp => resp.json()).then((resp) => {
       // Store the location
-      this.setState({
-        ...this.state,
-        location: {
-          ...resp,
-          lat: parseFloat(resp.lat),
-          long: parseFloat(resp.lng),
-        },
-      });
-      const { lat, long } = this.state.location;
+      const lat = parseFloat(resp.lat);
+      const lng = parseFloat(resp.lng);
+      const distance = distanceCoordinates(lat, lng, this.props.lat, this.props.lng)
+      console.log(distance);
+      if (distance > 500) {
+        // Make sure that if the target location is somewhat near to the current
+        // location, don't update location
+        this.props.updateMapCenter({
+          lat,
+          lng,
+        });
+
+      }
       // Try to fetch the events near the given location
       // Here the distance param is hardcoded
       // but it should be replaced by (earth perimeter)/zoom level
       // so that we can fetch events according to the zoom level
-      return fetch(`${GET_EVENTS_BY_LOCATION}?lat=${lat}&long=${long}&dist=20000`);
+      return fetch(`${GET_EVENTS_BY_LOCATION}?lat=${lat}&long=${lng}&dist=20000`);
     })
       .then(resp => resp.json())
       .then((resp) => {
@@ -46,49 +55,35 @@ class Feed extends Component {
         });
       });
   }
-
+  componentWillUnmount() {
+    console.log('UNMOUNT');
+  }
   render() {
-    console.log(this.state.events);
+    console.log(this.props);
+    const Markers = this.state.events.map(event => (
+      <Sonar lat={event.lat} lng={event.long} key={event.key} id={event.key} />
+    ));
     return (
-      <div style={{
-        // BUG: I previously had encountered a situation where the Map component
-        // was not using the entire screen. So I had to hardcode them. But as of
-        // now I am not able to reproduce them.
-        // So the following styles are commented out.
-        // position: 'absolute',
-        width: '100hw',
-        height: '94vh',
-        // top: '0px',
-        left: '0px',
-        // zIndex: -1,
-      }}
-      >
-        {
-          this.state.location ?
-            <MapWrapper
-              location={{
-                lat: this.state.location.lat,
-                lng: this.state.location.long,
-              }}
-              zoom={11}
-            >
-              {
-                this.state.events.map(event => (
-                  <Sonar
-                    lat={event.lat}
-                    lng={event.long}
-                    key={event.key}
-                    id={event.key}
-                  />
-              ))}
-            </MapWrapper>
-
-          : null
-      }
-
+      <div style={style}>
+        <MapWrapper>
+          { Markers }
+        </MapWrapper>
       </div>
     );
   }
+
 }
 
-export default Feed;
+const mapStateToProps = (state) => {
+  const { map } = state;
+  return (
+    map
+  )
+}
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({
+    updateMapCenter,
+    updateMapZoom,
+  }, dispatch)
+);
+export default connect(mapStateToProps, mapDispatchToProps)(Feed);
