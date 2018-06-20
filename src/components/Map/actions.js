@@ -4,7 +4,6 @@ import {
 } from './actionTypes';
 
 export function updateMapCenter(payload = {}) {
-  console.log("UPDATE MAP CWENTER", payload)
   return {
     type: MAP_UPDATE_CENTER,
     payload,

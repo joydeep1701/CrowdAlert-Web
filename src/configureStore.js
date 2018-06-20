@@ -18,17 +18,17 @@ import middlewares from './middleware';
 export default function configureStore(initialState = {}, history) {
   const appRouterMiddleware = routerMiddleware(history);
   const epicMiddleware = createEpicMiddleware();
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
   const store = createStore(
     rootReducer, // Root reducer
     initialState, // Initial state
-    compose(
+    composeEnhancers(
       applyMiddleware(
         appRouterMiddleware,
         epicMiddleware,
         ...middlewares,
-      ),      
-      window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+      )  
     )
   )
   epicMiddleware.run(rootEpic);

@@ -1,10 +1,10 @@
 import { combineEpics } from 'redux-observable';
 
 // Import epics and combine
-// import home from './home/epics';
+import feedEpic from './containers/Feed/epic';
 
 const rootEpic = combineEpics(
-  // home,
+  feedEpic,
 );
 
 export default rootEpic;

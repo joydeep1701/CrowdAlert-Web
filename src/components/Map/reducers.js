@@ -5,8 +5,8 @@ import {
 
 const initialState = {
   isVisible: false,
-  lat: 0,
-  lng: 0,
+  lat: -26.77,
+  lng: 135.17,
   zoom: 4,
 };
 

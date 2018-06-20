@@ -17,7 +17,7 @@ const MapComponent = compose(
   withScriptjs,
   withGoogleMap,
 )((props) => {
-  console.log('MAP PROPS', props);
+  // console.log('MAP PROPS', props);
   return (
     <GoogleMap
       center={{

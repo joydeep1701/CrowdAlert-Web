@@ -26,12 +26,14 @@ const MenuBar = props => (
         />
       </Responsive>
       <Responsive as={Menu.Item} {...Responsive.onlyTablet}>
-        <Icon
-          name="content"
-          onClick={() => props.toggleSidebarVisibility({
-            animation: 'uncover',
-          })}
-        />
+        <Menu.Item>
+          <Icon
+            name="content"
+            onClick={() => props.toggleSidebarVisibility({
+              animation: 'uncover',
+            })}
+          />
+        </Menu.Item>
       </Responsive>
       <Responsive as={Menu.Item} minWidth={992}>
         <Image src={logo} style={{ height: '4vh' }} />
