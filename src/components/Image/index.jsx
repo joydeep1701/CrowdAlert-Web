@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Image, Modal, Responsive, Label } from 'semantic-ui-react';
+import { Image, Modal, Responsive } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
 import { GET_IMAGE_URLS } from '../../utils/apipaths';
 

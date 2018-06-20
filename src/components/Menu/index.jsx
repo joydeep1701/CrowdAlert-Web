@@ -7,7 +7,6 @@ import { bindActionCreators } from 'redux';
 
 import { toggleSidebarVisibility } from '../Sidebar/actions';
 
-
 import logo from '../../logo.png';
 
 /**
