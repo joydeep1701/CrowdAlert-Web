@@ -58,7 +58,6 @@ class EventView(APIView):
         return JsonResponse({"eventId":str(key)}) 
 
 class MultipleEventsView(APIView):
-
     def get(self, request):
         """Returns events within a certain radius for a given location
         
@@ -87,21 +86,44 @@ class MultipleEventsView(APIView):
             
             incidents = db.child('incidents').get()
             data = []
+            # Find events between the radius
             for incident in incidents.each():                     
                 event = dict(incident.val())
                 temp = {}
                 temp['key'] = incident.key()
                 temp['lat'] = event['location']['coords']['latitude']
                 temp['long'] = event['location']['coords']['longitude']
-
+                temp['category'] = event['category']
+                temp['title'] = event['title']
+                temp['datetime'] = event['datetime']
                 tmplat = float(event['location']['coords']['latitude'])
-                tmplng = float(event['location']['coords']['longitude'])
-                # Find 
+                tmplng = float(event['location']['coords']['longitude'])                
                 dist = distance(tmplat, tmplng, lat, lng)
-
                 if dist < thresold:
                     data.append(temp)
+            
+            # Cluster the events
+            clusterThresold = float(request.GET.get('min',0))
 
+            if clusterThresold:
+                modData = []
+
+                for root in data:
+                    if not root.get('isClustered', False):
+                        for child in data:
+                            if child['key'] == root['key']:
+                                continue
+                            if not child.get('isClustered',False):
+                                tempDist = distance(root['lat'], root['long'],
+                                                    child['lat'], child['long'])
+                                if tempDist < clusterThresold:
+                                    root['isClustered'] = True
+                                    root['lat'] = (root['lat'] + child['lat'])/2
+                                    root['long'] = (root['long'] + child['long'])/2
+
+                                    child['isClustered'] = True
+                        modData.append(root)
+                return JsonResponse((modData), safe=False)
             return JsonResponse(data, safe=False)
         return HttpResponseBadRequest("Bad request")
 
