@@ -10,12 +10,23 @@ const updateLocationMiddleware = ({ dispatch }) => next => (action) => {
     const lng = parseFloat(action.payload.lng);
     const oldLat = parseFloat(action.payload.oldLat);
     const oldLng = parseFloat(action.payload.oldLng);
-    const distance = distanceCoordinates(lat, lng, oldLat, oldLng);
-    // console.log(distance);
     const zoom = 12;
-    if (distance > 500) {
-      // Make sure that if the target location is somewhat near to the current
-      // location, don't update location
+
+    if (!action.payload.forced) {
+      const distance = distanceCoordinates(lat, lng, oldLat, oldLng);
+      // console.log(distance);
+      if (distance > 500) {
+        // Make sure that if the target location is somewhat near to the current
+        // location, don't update location
+        dispatch(updateMapCenter({
+          lat,
+          lng,
+          zoom,
+          fetch: false,
+        }));
+        dispatch(updateMapZoom({ lat, lng, zoom }));
+      }
+    } else {
       dispatch(updateMapCenter({
         lat,
         lng,
@@ -24,6 +35,7 @@ const updateLocationMiddleware = ({ dispatch }) => next => (action) => {
       }));
       dispatch(updateMapZoom({ lat, lng, zoom }));
     }
+
     dispatch(fetchEventsByLocation({ lat, lng, zoom }));
   }
   next(action);

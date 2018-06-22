@@ -6,6 +6,7 @@ import Menu from './Menu';
 import LoadingCard from './LoadingCard';
 import BottomBar from './Bottombar';
 import EventPreviewCard from './EventPreviewCard';
+import GeoLocator from './Geolocator';
 
 export {
   Image,
@@ -17,4 +18,5 @@ export {
   Event,
   BottomBar,
   EventPreviewCard,
+  GeoLocator,
 };

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import { fetchUserLocation, fetchEventsByLocation } from './actions';
 import style from './style';
-import { MapWrapper, Sonar, BottomBar, EventPreviewCard } from '../../components';
+import { MapWrapper, Sonar, BottomBar, EventPreviewCard, GeoLocator } from '../../components';
 
 function getEventMarkers(feed, zoom) {
   // Boundary conditions
@@ -62,7 +62,7 @@ class Feed extends Component {
     console.log('UNMOUNT');
   }
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     const Markers =
       getEventMarkers(this.props.feedProps, this.props.mapProps.zoom)
         .map(event => (
@@ -82,8 +82,9 @@ class Feed extends Component {
           { Markers }
         </MapWrapper>
         <EventPreviewCard />
+        <GeoLocator />
         <BottomBar />
-      </div>      
+      </div>
     );
   }
 }
