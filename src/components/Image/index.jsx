@@ -83,8 +83,8 @@ export default class ImageModal extends Component {
                 }}
                 src={`${this.state.imageUrls.url}`}
                 style={{
-                  backgroundImage: `url(${this.state.imageUrls.thumbnail})`,
-                  minHeight: '100px',
+                  background: `url(${this.state.imageUrls.thumbnail}) no-repeat`,
+                  minHeight: '28vh',
                 }}
               />
             </Responsive>
@@ -100,8 +100,8 @@ export default class ImageModal extends Component {
                 }}
                 src={`${this.state.imageUrls.url}`}
                 style={{
-                  backgroundImage: `url(${this.state.imageUrls.thumbnail})`,
-                  minHeight: '50vh',
+                  background: `url(${this.state.imageUrls.thumbnail}) no-repeat`,
+                  minHeight: '60vh',
                 }}
               />
             </Responsive>
