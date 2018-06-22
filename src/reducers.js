@@ -3,12 +3,16 @@ import { routerReducer } from 'react-router-redux';
 import sidebarReducer from './components/Sidebar/reducers';
 import mapReducer from './components/Map/reducers';
 import feedReducer from './containers/Feed/reducers';
+import eventReducer from './containers/Viewevent/reducer';
+import eventPreviewReducer from './components/EventPreviewCard/reducers';
 
 const rootReducer = combineReducers({
   router: routerReducer,
   sidebar: sidebarReducer,
   map: mapReducer,
   feed: feedReducer,
+  event: eventReducer,
+  eventPreview: eventPreviewReducer,
 });
 
 export default rootReducer;
