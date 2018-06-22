@@ -2,9 +2,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { updateMapCenter, updateMapZoom } from './actions';
 import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
-import history from '../../';
+import { openEventPreview } from '../EventPreviewCard/actions';
 import './pulseRed.css';
 
 // 1x1 transparent png image as we don't want to show the default marker image
@@ -25,14 +27,26 @@ const Sonar = props => (
       }}
       // Push events to browser history so that user is redirected to view events
     onClick={() => {
-        if (props.id) {
-          history.push(`/view/${props.id}`);
+        if (props.clustered) {
+          // console.log(props.map.zoom, props);
+          props.updateMapZoom({
+            lat: props.lat,
+            lng: props.lng,
+            zoom: Math.min(props.map.zoom + 3, 16),
+          });
+          props.updateMapCenter({
+            lat: props.lat,
+            lng: props.lng,
+            zoom: Math.min(props.map.zoom + 3, 16),
+          });
+        } else if (props.id) {
+          props.openEventPreview({ ...props.payload });
         }
       }}
   >
     <div>
-      <div className="sonar-emitter">
-        <div className="sonar-wave" />
+      <div className={`sonar-emitter ${props.type}`}>
+        <div className={`sonar-wave ${props.type}`} />
       </div>
     </div>
   </MarkerWithLabel>
@@ -41,9 +55,23 @@ Sonar.propTypes = {
   lat: PropTypes.number.isRequired,
   lng: PropTypes.number.isRequired,
   id: PropTypes.string,
+  type: PropTypes.string,
+  clustered: PropTypes.bool,
 };
 Sonar.defaultProps = {
   id: null,
+  type: 'other',
+  clustered: false,
 };
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({
+    updateMapCenter,
+    updateMapZoom,
+    openEventPreview,
+  }, dispatch)
+);
+const mapStateToProps = state => ({
+  map: state.map,
+});
 
-export default Sonar;
+export default connect(mapStateToProps, mapDispatchToProps)(Sonar);
