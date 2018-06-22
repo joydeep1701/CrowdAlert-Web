@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
 import { fetchUserLocation, fetchEventsByLocation } from './actions';
 import style from './style';
-import { MapWrapper, Sonar } from '../../components';
+import { MapWrapper, Sonar, BottomBar, EventPreviewCard } from '../../components';
 
 function getEventMarkers(feed, zoom) {
   // Boundary conditions
@@ -65,14 +66,24 @@ class Feed extends Component {
     const Markers =
       getEventMarkers(this.props.feedProps, this.props.mapProps.zoom)
         .map(event => (
-          <Sonar lat={event.lat} lng={event.long} key={event.key} id={event.key} />
+          <Sonar
+            lat={event.lat}
+            lng={event.long}
+            key={event.key}
+            id={event.key}
+            type={event.isClustered ? 'other' : event.category}
+            clustered={event.isClustered}
+            payload={event}
+          />
         ));
     return (
       <div style={style}>
         <MapWrapper>
           { Markers }
         </MapWrapper>
-      </div>
+        <EventPreviewCard />
+        <BottomBar />
+      </div>      
     );
   }
 }

@@ -5,7 +5,7 @@ const styleSheet = {
   // So the following styles are commented out.
   // position: 'absolute',
   width: '100hw',
-  height: '94vh',
+  height: '93.4vh',
   // top: '0px',
   left: '0px',
   // zIndex: -1,
