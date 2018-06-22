@@ -8,7 +8,8 @@ import {
   Grid,
   Container,
 } from 'semantic-ui-react';
-import fetch from 'isomorphic-fetch';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import {
   Image,
   Event,
@@ -16,6 +17,9 @@ import {
   LoadingCard,
   Sonar,
 } from '../../components';
+
+import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
+import { fetchEventData } from './actions';
 import {
   GET_EVENT_BY_ID,
   REVERSE_GEOCODE,
@@ -29,14 +33,13 @@ import styleSheet from './style';
  * @param {[type]} props [description]
  */
 const MapwithSonar = props => (
-  <MapWrapper location={{ lat: props.latitude, lng: props.longitude }} zoom={15}>
-    <Sonar lat={props.latitude} lng={props.longitude} id={props.id} />
+  <MapWrapper>
+    <Sonar lat={props.latitude} lng={props.longitude} id={null} type={props.type} />
   </MapWrapper>
 );
 MapwithSonar.propTypes = {
   latitude: propTypes.number.isRequired,
   longitude: propTypes.number.isRequired,
-  id: propTypes.string.isRequired,
 };
 /**
  * [EventCard Combines the all the three parts of event cards to form a single
@@ -105,7 +108,7 @@ EventCard.defaultProps = {
  * component]
  * @type {Object}
  */
-export default class Viewevent extends Component {
+class Viewevent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -115,7 +118,11 @@ export default class Viewevent extends Component {
     };
   }
   componentWillMount() {
-    this.getEventData();
+    const eventid = this.props.match.params.eventid;
+    const shouldRefresh = this.props.match.params.eventid !== this.props.event.data.eventid;
+
+    this.props.fetchEventData({ eventid, shouldRefresh });
+    //this.getEventData();
   }
   /**
    * [getEventData Issue fetch requests to server to get data]
@@ -123,75 +130,45 @@ export default class Viewevent extends Component {
    */
   getEventData() {
     // Fetch the json data for the given event id
-    fetch(`${GET_EVENT_BY_ID}?id=${this.props.match.params.eventid}`)
-      // Decode json
-      .then(response => (response.json()))
-      // setState or reject eventid
-      .then((response) => {
-        if (response === null) {
-          throw Error('Event Not Found');
-        }
-        let formattedImages = [];
-        const { images } = response;
-        if (images) {
-          formattedImages = Object.keys(images).map(key => images[key]);
-        }
-
-        this.setState({
-          ...this.state,
-          event: {
-            ...response,
-            images: formattedImages,
-          },
-          loading: false,
-        });
-        // Should be updated. The main fetch should return an array of promises
-        const lat = this.state.event.location.coords.latitude;
-        const long = this.state.event.location.coords.longitude;        
-        return fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`);
-      })
-      .then(response => response.json())
+      const lat = this.state.event.location.coords.latitude;
+      const long = this.state.event.location.coords.longitude;        
+      fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`)
       .then((response) => {
         this.setState({
           ...this.state,
           reverse_geocode: response,
         });
       })
-      .catch((err) => {
-        console.error(err);
-      });
+
   }
   render() {
-    console.log(this.state, this.props);
+    console.log('ViewEvent Props', this.props);
     return (
       <div>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
-            {
-            this.state.loading
-              ? null
-              :
-              <MapwithSonar
-                latitude={this.state.event.location.coords.latitude}
-                longitude={this.state.event.location.coords.longitude}
-                id={this.state.eventid}
-              />
-          }
+            <MapwithSonar
+              latitude={this.props.map.lat}
+              longitude={this.props.map.lng}
+              type={this.state.event.category}
+              id={this.state.eventid} 
+            />
+        
           </div>
           <Item style={styleSheet.mobile.itemContainer}>
             {
-            this.state.loading
+              this.props.event.isLoading
               ? <LoadingCard loading />
               :
               <EventCard
                 viewmode="mobile"
-                user_id={this.state.event.user_id}
-                datetime={this.state.event.datetime}
-                title={this.state.event.title}
-                description={this.state.event.description}
-                images={this.state.event.images}
+                user_id={this.props.event.data.user_id}
+                datetime={this.props.event.data.datetime}
+                title={this.props.event.data.title}
+                description={this.props.event.data.description}
+                images={this.props.event.data.images}
                 reverse_geocode={this.state.reverse_geocode}
-                eventType={this.state.event.category}
+                eventType={this.props.event.data.category}
               />
           }
           </Item>
@@ -202,32 +179,28 @@ export default class Viewevent extends Component {
               <Grid.Row>
                 <Grid.Column>
                   <div style={styleSheet.desktop.mapContainer}>
-                    {
-                      this.state.loading
-                        ? null :
-                        <MapwithSonar
-                          latitude={this.state.event.location.coords.latitude}
-                          longitude={this.state.event.location.coords.longitude}
-                          id={this.state.eventid}
-                        />
-                    }
+                    <MapwithSonar
+                      latitude={this.props.map.lat}
+                      longitude={this.props.map.lng}
+                      type={this.props.event.data.category}
+                    />
                   </div>
                 </Grid.Column>
                 <Grid.Column>
                   <Item style={styleSheet.desktop.itemContainer}>
                     {
-                      this.state.loading
+                      this.props.event.isLoading
                         ? <LoadingCard loading />
                         :
                         <EventCard
                           viewmode="desktop"
-                          user_id={this.state.event.user_id}
-                          datetime={this.state.event.datetime}
-                          title={this.state.event.title}
-                          description={this.state.event.description}
-                          images={this.state.event.images}
+                          user_id={this.props.event.data.user_id}
+                          datetime={this.props.event.data.datetime}
+                          title={this.props.event.data.title}
+                          description={this.props.event.data.description}
+                          images={this.props.event.data.images}
                           reverse_geocode={this.state.reverse_geocode}
-                          eventType={this.state.event.category}
+                          eventType={this.props.event.data.category}
                         />
                     }
                   </Item>
@@ -247,3 +220,17 @@ Viewevent.propTypes = {
     }).isRequired,
   }).isRequired,
 };
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({
+    updateMapCenter,
+    updateMapZoom,
+    fetchEventData,
+  }, dispatch)
+);
+const mapStateToProps = (state) => {
+  return {
+    map: state.map,
+    event: state.event,
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Viewevent);
