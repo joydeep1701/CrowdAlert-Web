@@ -13,16 +13,6 @@ import Dropzone from 'react-dropzone';
 import history from '../../';
 import Webcam from './webcam';
 
-const PERMISSION_REQUIRED_TEXT = `We need to access your location & camera  
-                                    in order to report an incident`;
-const PERMISSION_FAILED_TEXT = `You need to enable location permissions in
-                                  order to report an incident`;
-const LOCATION_FAILED_TEXT = `You need enable location services in order to 
-                                  report an incident. Currently we are using an
-                                  approximate location based on your IP. Please 
-                                  update the marker & save the location`;
-const MEDIA_DEVICES_FAILED = `We need access to your camera. Please enable the 
-                                  camera permission.`;
 
 const eventOptions = [
   { key: 'rd', text: 'Road', value: 'road' },
@@ -30,22 +20,6 @@ const eventOptions = [
   { key: 'hl', text: 'Health', value: 'health' },
   { key: 'fr', text: 'Fire', value: 'fire' },
 ];
-
-
-const ConfirmationModal = props => (
-  <Modal open={props.open} basic size="small">
-    <Header icon="archive" content="Permissions Required" />
-    <Modal.Content>
-      <p>{props.text}</p>
-    </Modal.Content>
-    <Modal.Actions>
-      <Button color="teal" inverted onClick={() => props.closeModal()}>
-        <Icon name="checkmark" />
-        Okay
-      </Button>
-    </Modal.Actions>
-  </Modal>
-);
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -57,7 +31,7 @@ class CreateEvent extends Component {
       },
       confirmationModal: {
         isopen: true,
-        text: PERMISSION_REQUIRED_TEXT,
+        text:'',
       },
       permissions: {
         location: true,
@@ -97,12 +71,7 @@ class CreateEvent extends Component {
       },
     };
     this.handlePermission = this.handlePermission.bind(this);
-    this.handleGeoLoactionPermissionDenied = this.handleGeoLoactionPermissionDenied.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-    this.handleGetLocation = this.handleGetLocation.bind(this);
-    this.handleGeoLocationSuccess = this.handleGeoLocationSuccess.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleGeoLocationFailure = this.handleGeoLocationFailure.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.setWebcamRef = this.setWebcamRef.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
@@ -114,32 +83,7 @@ class CreateEvent extends Component {
   componentWillMount() {
     this.handlePermission();
   }
-  handleGeoLocationSuccess(response) {
-    console.log('====================================');
-    console.log('Got Location');
-    console.log('====================================');
-    console.log(response);
-    this.setState({
-      ...this.state,
-      location: {
-        lat: response.coords.latitude,
-        lng: response.coords.longitude,
-      },
-      permissions: {
-        ...this.state.permissions,
-        location: true,
-      },
-      eventFormData: {
-        ...this.state.eventFormData,
-        location: {
-          lat: response.coords.latitude,
-          lng: response.coords.longitude,
-          isValid: false,
-        },
-      },
-    });
-    this.updateLocationReverseGeocode(response.coords.latitude, response.coords.longitude);
-  }
+
   handleMediaSuccess(response) {
     const tracks = response.getTracks();
     tracks.forEach((track) => {
@@ -184,19 +128,7 @@ class CreateEvent extends Component {
       });
     });
   }
-  handleGeoLoactionPermissionDenied() {
-    this.setState({
-      ...this.state,
-      permissions: {
-        ...this.state.permissions,
-        location: false,
-      },
-      confirmationModal: {
-        isopen: true,
-        text: PERMISSION_FAILED_TEXT,
-      },
-    });
-  }
+
   handleMediaPermissionDenied() {
     this.setState({
       ...this.state,
@@ -206,61 +138,12 @@ class CreateEvent extends Component {
       },
       confirmationModal: {
         isopen: true,
-        text: MEDIA_DEVICES_FAILED,
+        text: '',
       },
     });
   }
-  handleGetLocation() {
-    try {
-      navigator
-        .geolocation
-        .getCurrentPosition(
-          this.handleGeoLocationSuccess,
-          this.handleGeoLocationFailure, {
-            enableHighAccuracy: true,
-            maximumAge: 30000,
-            timeout: 20000,
-          },
-        );
-    } catch(err) {
-      console.error("Unexpected: Location Fetch Failed", err);
-      this.handleGeoLocationFailure();
-    }
-  }
-  closeModal() {
-    if (this.state.permissions.location && this.state.permissions.camera) {
-      this.setState({
-        ...this.state,
-        confirmationModal: {
-          ...this.state.confirmationModal,
-          isopen: false,
-        },
-      });
-    }
-  }
 
   handlePermission() {
-    try {
-      navigator
-        .permissions
-        .query({ name: 'geolocation' })
-        .then((result) => {
-          if (result.state === 'granted') {
-            this.closeModal();
-            this.handleGetLocation();
-          } else if (result.state === 'prompt') {
-            setTimeout(this.handleGetLocation, 3500);
-          } else if (result.state === 'denied') {
-            this.handleGeoLoactionPermissionDenied();
-          }
-          // result.onchange = () => {
-          //   // this.handlePermission();
-          // };
-        });
-    } catch (error) {
-      console.error("Unsupported browser", error);
-      this.handleGetLocation();
-    }
     try {
       navigator
         .mediaDevices
@@ -274,7 +157,6 @@ class CreateEvent extends Component {
     } catch(err) {
       console.error(err)
     }
-
   }
   handleMapLocationChange(e) {
     if (this.state.reportForm.isFreezed) {
@@ -585,12 +467,6 @@ class CreateEvent extends Component {
     console.log(this.state);
     return (
       <Container>
-        <ConfirmationModal
-          open={this.state.confirmationModal.isopen}
-          text={this.state.confirmationModal.text}
-          closeModal={this.closeModal}
-        />
-
         <br />
         <Step.Group fluid attached="top" widths={3} unstackable>
           <Step
@@ -667,7 +543,7 @@ class CreateEvent extends Component {
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column>
-                  <p>{this.state.eventFormData.text || LOCATION_FAILED_TEXT}</p>
+                  <p>{this.state.eventFormData.text}</p>
                   <Button floated="right" color="teal" disabled={this.state.eventFormData.location.isValid || this.state.reportForm.isFreezed} onClick={() => this.handleSaveLocation()}>Save Location</Button>
                 </Grid.Column>
               </Grid.Row>
