@@ -6,6 +6,7 @@ import feedReducer from './containers/Feed/reducers';
 import eventReducer from './containers/Viewevent/reducer';
 import eventPreviewReducer from './components/EventPreviewCard/reducers';
 import geoLocatorReducer from './components/Geolocator/reducers';
+import createEventsReducer from './containers/CreateEvent/reducers';
 
 const rootReducer = combineReducers({
   router: routerReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   event: eventReducer,
   eventPreview: eventPreviewReducer,
   geoLocator: geoLocatorReducer,
+  createEvents: createEventsReducer,
 });
 
 export default rootReducer;

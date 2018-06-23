@@ -10,6 +10,8 @@ import {
   Label,
   Checkbox,
 } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import getEventColor from '../../utils/eventcolors';
 
 const eventOptions = [
@@ -19,7 +21,7 @@ const eventOptions = [
   { key: 'fr', text: 'Fire', value: 'fire' },
 ];
 
-export default class FormTab extends Component {
+class FormTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,12 +39,6 @@ export default class FormTab extends Component {
         uploadComplete: false,
       },
       eventFormData: {
-        location: {
-          lat: null,
-          lng: null,
-          isValid: false,
-          text: 'Select Location',
-        },
         details: {
           eventType: null,
           title: '',
@@ -53,14 +49,12 @@ export default class FormTab extends Component {
         },
       },
     };
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
   handleInputChange(event) {
     const { target } = event;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const { name } = target;
-    // console.log('====================================');
-    // console.log(this.state, name, target);
-    // console.log('====================================');
     this.setState({
       ...this.state,
       eventFormData: {
@@ -73,7 +67,7 @@ export default class FormTab extends Component {
     });
   }
   render() {
-    if (!this.props.isOpen) {
+    if (this.props.tabs.activeTab !== 1) {
       return null;
     }
     return (
@@ -95,7 +89,7 @@ export default class FormTab extends Component {
                     : null }
                 </Form.Field>
                 <Form.Field required disabled={this.state.reportForm.isFreezed}>
-                  <Label>Event Type</Label>
+                  <p>Event Type</p>
                   <Form.Select
                     options={eventOptions}
                     placeholder="Event Type"
@@ -111,7 +105,7 @@ export default class FormTab extends Component {
                   />
                 </Form.Field>
                 <Form.Field required disabled={this.state.reportForm.isFreezed}>
-                  <Label>Short Description</Label>
+                  <p>Short Description</p>
                   <Input
                     name="title"
                     label={{
@@ -182,3 +176,10 @@ export default class FormTab extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    tabs: state.createEvents.tabs,
+  };
+};
+
+export default connect(mapStateToProps, null)(FormTab);

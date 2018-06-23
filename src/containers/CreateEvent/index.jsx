@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { Container } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
 import { REVERSE_GEOCODE, UPLOAD_IMAGES, GET_EVENT_BY_ID } from '../../utils/apipaths';
-
-import history from '../../';
-
+import Tab from './tabs';
+import MapTab from './mapstab';
+import FormTab from './formtab';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -14,14 +14,6 @@ class CreateEvent extends Component {
       location: {
         lat: null,
         lng: null,
-      },
-      confirmationModal: {
-        isopen: true,
-        text:'',
-      },
-      permissions: {
-        location: true,
-        camera: false,
       },
       reportForm: {
         activeTab: 0,
@@ -39,13 +31,9 @@ class CreateEvent extends Component {
       },
     };
     this.handlePermission = this.handlePermission.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.setWebcamRef = this.setWebcamRef.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
-    this.handleFileSelect = this.handleFileSelect.bind(this);
-    this.handleUpload = this.handleUpload.bind(this);
   }
 
   componentWillMount() {
@@ -149,122 +137,7 @@ class CreateEvent extends Component {
     });
   }
 
-  handleSubmit() {
-    const { eventFormData } = this.state;
-
-    if (!eventFormData.location.isValid) {
-      this.setState({
-        ...this.state,
-        reportForm: {
-          ...this.state.reportForm,
-          validationErrors: true,
-          message: {
-            header: 'Location',
-            body: 'Save the location',
-          },
-        },
-      });
-      return;
-    }
-    if (!eventFormData.details.eventType) {
-      this.setState({
-        ...this.state,
-        reportForm: {
-          ...this.state.reportForm,
-          validationErrors: true,
-          message: {
-            header: 'Event not given',
-            body: 'Select an event type from the dropdown',
-          },
-        },
-      });
-      return;
-    }
-    if (!eventFormData.details.title) {
-      this.setState({
-        ...this.state,
-        reportForm: {
-          ...this.state.reportForm,
-          validationErrors: true,
-          message: {
-            header: 'Short description not given',
-            body: 'Write a short description about the event',
-          },
-        },
-      });
-      return;
-    }
-
-
-    this.setState({
-      ...this.state,
-      reportForm: {
-        ...this.state.reportForm,
-        loading: true,
-        validationErrors: false,
-      },
-      eventFormData: {
-        ...this.state.eventFormData,
-        details: {
-          ...this.state.eventFormData.details,
-          isValid: true,
-          isFreezed: true,
-        },
-      },
-    });
-
-
-    const eventData = {
-      category: eventFormData.details.eventType,
-      description: eventFormData.details.description,
-      local_assistance: eventFormData.details.help,
-      title: eventFormData.details.title,
-      public: {
-        view: eventFormData.details.public,
-        share: eventFormData.details.help,
-      },
-      location: {
-        coords: {
-          latitude: eventFormData.location.lat,
-          longitude: eventFormData.location.lng,
-        },
-      },
-    };
-    const newFormData = new FormData();
-    newFormData.append('eventData', JSON.stringify(eventData));
-    fetch(GET_EVENT_BY_ID, {
-      method: 'post',
-      body: newFormData,
-    }).then(resp => resp.json())
-      .then((resp) => {
-        console.log(resp, resp.eventId);
-        this.setState({
-          ...this.state,
-          reportForm: {
-            ...this.state.reportForm,
-            loading: false,
-            isFreezed: true,
-            eventID: resp.eventId,
-            activeTab: 2,
-          },
-        });
-      })
-      .catch(() => {
-        this.setState({
-          ...this.state,
-          reportForm: {
-            ...this.state.reportForm,
-            loading: false,
-            isFreezed: false,
-            validationErrors: true,
-            message: {
-              header: 'Server Error',
-              body: 'Please try again later',
-            },
-          },
-        });
-      });
-  }
+  
   setWebcamRef(webcam) {
     this.webcam = webcam;
   }
@@ -315,74 +188,15 @@ class CreateEvent extends Component {
     });
     // Promise.all(uploadRequests).then(val => console.log(val));
   }
-  handleUpload() {
-    if (!this.state.reportForm.eventID) {
-      return;
-    }
-    this.setState({
-      ...this.state,
-      reportForm: {
-        ...this.state.reportForm,
-        uploading: true,
-        imageSelectDisabled: true,
-      },
-    });
 
-
-    const { images } = this.state.eventFormData;
-    const imagesUpload = images.map((image) => {
-      console.log(image);
-      if (image.isUploaded) {
-        return null;
-      }
-      const newFormData = new FormData();
-      newFormData.append('isValid', image.isVerified);
-      newFormData.append('eventId', this.state.reportForm.eventID);
-      newFormData.append('base64', image.base64);
-
-
-      return fetch(UPLOAD_IMAGES, {
-        method: 'post',
-        body: newFormData,
-      }).then(resp => resp.json())
-        .then((resp) => {
-          const newImage = { ...image };
-          newImage.isUploaded = true;
-          const newState = {
-            ...this.state,
-            eventFormData: {
-              ...this.state.eventFormData,
-            },
-          };
-          newState.eventFormData.images[image.key] = image;
-          this.setState(newState);
-        })
-        .catch(() => {});
-    });
-    Promise.all(imagesUpload).then(() => {
-      this.setState({
-        ...this.state,
-        reportForm: {
-          ...this.state.reportForm,
-          uploading: false,
-          imageSelectDisabled: true,
-          uploadComplete: true,
-        },
-      });
-      // Navigate to view events
-    }).then(() => {
-      history.push(`/view/${this.state.reportForm.eventID}`)
-    });
-  }
   render() {
     console.log(this.state);
     return (
       <Container>
         <br />
-        
-        
-        
-
+        <Tab />
+        <MapTab />
+        <FormTab />
 
       </Container>
 

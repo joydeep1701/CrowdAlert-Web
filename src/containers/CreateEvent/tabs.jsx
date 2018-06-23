@@ -1,34 +1,39 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Step,
   Icon,
   Responsive,
 } from 'semantic-ui-react';
+import getEventColor from '../../utils/eventcolors';
+
+import { changeTabCreateEventsForm } from './actions';
 
 const Tabs = (props) => {
   console.log(props);
   return (
     <Step.Group fluid attached="top" widths={3} unstackable>
       <Step
-        completed={this.state.eventFormData.location.isValid}
-        active={this.state.reportForm.activeTab === 0}
-        onClick={() => this.handleTabChange(0)}
+        completed={props.tabs.isValid.location}
+        active={props.tabs.activeTab === 0}
+        onClick={() => props.handleTabChange(0)}
       >
         <Icon circular color="yellow" name="map outline" size="small" />
         <Responsive minWidth={901}>
           <Step.Content>
             <Step.Title>Location</Step.Title>
-            <Step.Description>{this.state.eventFormData.text}</Step.Description>
+            {/* <Step.Description>{props.state.eventFormData.text}</Step.Description> */}
           </Step.Content>
         </Responsive>
 
       </Step>
       <Step
-        active={this.state.reportForm.activeTab === 1}
-        onClick={() => this.handleTabChange(1)}
-        completed={this.state.eventFormData.details.isValid}
+        active={props.tabs.activeTab === 1}
+        onClick={() => props.handleTabChange(1)}
+        completed={props.tabs.isValid.details}
       >
-        <Icon circular color={getEventColor(this.state.eventFormData.details.eventType)} name="edit" />
+        {/* <Icon circular color={getEventColor(props.state.eventFormData.details.eventType)} name="edit" /> */}
         <Responsive minWidth={901}>
           <Step.Content>
             <Step.Title>Description</Step.Title>
@@ -38,9 +43,9 @@ const Tabs = (props) => {
       </Step>
 
       <Step
-        active={this.state.reportForm.activeTab === 2}
-        onClick={() => this.handleTabChange(2)}
-        completed={this.state.reportForm.uploadComplete}
+        active={props.tabs.activeTab === 2}
+        onClick={() => props.handleTabChange(2)}
+        completed={props.tabs.isValid.images}
       >
         <Icon circular color="brown" name="camera retro" />
         <Responsive minWidth={901}>
@@ -51,6 +56,19 @@ const Tabs = (props) => {
         </Responsive>
       </Step>
     </Step.Group>
-
   );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    tabs: state.createEvents.tabs,
+  };
+};
+
+const mapDisptachToProps = dispatch => (
+  bindActionCreators({
+    handleTabChange: changeTabCreateEventsForm,
+  }, dispatch)
+);
+
+export default connect(mapStateToProps, mapDisptachToProps)(Tabs);

@@ -17,6 +17,65 @@ import { Image } from '../../components';
 import Webcam from './webcam';
 
 class ImagesTab extends Component {
+  handleUpload() {
+    if (!this.state.reportForm.eventID) {
+      return;
+    }
+    this.setState({
+      ...this.state,
+      reportForm: {
+        ...this.state.reportForm,
+        uploading: true,
+        imageSelectDisabled: true,
+      },
+    });
+
+
+    const { images } = this.state.eventFormData;
+    const imagesUpload = images.map((image) => {
+      console.log(image);
+      if (image.isUploaded) {
+        return null;
+      }
+      const newFormData = new FormData();
+      newFormData.append('isValid', image.isVerified);
+      newFormData.append('eventId', this.state.reportForm.eventID);
+      newFormData.append('base64', image.base64);
+
+
+      return fetch(UPLOAD_IMAGES, {
+        method: 'post',
+        body: newFormData,
+      }).then(resp => resp.json())
+        .then((resp) => {
+          const newImage = { ...image };
+          newImage.isUploaded = true;
+          const newState = {
+            ...this.state,
+            eventFormData: {
+              ...this.state.eventFormData,
+            },
+          };
+          newState.eventFormData.images[image.key] = image;
+          this.setState(newState);
+        })
+        .catch(() => {});
+    });
+    Promise.all(imagesUpload).then(() => {
+      this.setState({
+        ...this.state,
+        reportForm: {
+          ...this.state.reportForm,
+          uploading: false,
+          imageSelectDisabled: true,
+          uploadComplete: true,
+        },
+      });
+      // Navigate to view events
+    }).then(() => {
+      history.push(`/view/${this.state.reportForm.eventID}`)
+    });
+  }
   render() {
     return (
       <div>
