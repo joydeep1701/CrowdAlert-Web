@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Header, Icon, Button } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { geolocatoretLocationPermission, geolocatorModalClose } from './actions';
+import style from './styles';
 
 const ConfirmationModal = props => (
   <Modal open={props.isOpen} basic size="small">
@@ -19,14 +21,50 @@ const ConfirmationModal = props => (
   </Modal>
 );
 
-const GeoLocator = (props) => {
-  return (
-    <div style={{position: 'fixed', bottom: '10vh', right: '20px', zIndex: 1000}}>
-      <Button icon='crosshairs' circular color='black' size='huge' onClick={props.getLocation}/>
-      <ConfirmationModal text={props.modal.modalText} isOpen={props.modal.isOpen} closeModal={props.closeModal} />
-    </div>
-  )
+class GeoLocator extends Component {
+  componentWillMount() {
+    if (this.props.fetchOnLoad) {
+      this.props.getLocation();
+    }
+  }
+
+  render() {
+    return (
+      <div style={this.props.static ? null : style.crosshair}>
+        <Button
+          icon='crosshairs'
+          circular={this.props.circular}
+          color='black'
+          size={this.props.size}
+          onClick={() => this.props.getLocation(this.props)}
+          floated={this.props.floated}
+        />
+        <ConfirmationModal
+          text={this.props.modal.modalText}
+          isOpen={this.props.modal.isOpen}
+          closeModal={this.props.closeModal}
+        />
+      </div>
+    )
+  }
+
 }
+GeoLocator.propTypes = {
+  static: PropTypes.bool,
+  size: PropTypes.string,
+  circular: PropTypes.bool,
+  getLocation: PropTypes.func.isRequired,
+  closeModal: PropTypes.func.isRequired,
+  fetchOnLoad: PropTypes.bool,
+  floated: PropTypes.string,
+};
+GeoLocator.defaultProps = {
+  static: false,
+  size: 'huge',
+  circular: true,
+  fetchOnLoad: false,
+  floated: 'right',
+};
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({
