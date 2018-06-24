@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { compose, withProps } from 'recompose';
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
-import { updateMapCenter, updateMapZoom } from './actions';
+import { updateMapCenter, updateMapZoom, updateOnClick } from './actions';
 import style from './styleBright2';
 
 const MapComponent = compose(
@@ -60,6 +60,7 @@ class MapWrapper extends Component {
     this.onMapMounted = this.onMapMounted.bind(this);
     this.onZoomChanged = this.onZoomChanged.bind(this);
     this.onCenterChanged = this.onCenterChanged.bind(this);
+    this.handleOnClick = this.handleOnClick.bind(this);
   }
   onMapMounted(mapRef) {
     this.setState({ mapRef });
@@ -78,11 +79,20 @@ class MapWrapper extends Component {
     const lat = this.state.mapRef.getCenter().lat();
     const lng = this.state.mapRef.getCenter().lng();
     const zoom = this.state.mapRef.getZoom();
-    this.props.updateMapCenter({
-      lat,
-      lng,
-      zoom,
-    });
+    if (this.props.shouldFetch) {
+      this.props.updateMapCenter({
+        lat,
+        lng,
+        zoom,
+      });
+    }
+  }
+  handleOnClick(e) {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    if (this.props.dispatchOnClick) {
+      this.props.updateOnClick(lat, lng);
+    }
   }
   render() {
     // console.log("MAP WRAPPER", this.props)
@@ -94,6 +104,7 @@ class MapWrapper extends Component {
         onZoomChanged={this.onZoomChanged}
         zoom={this.props.zoom}
         onCenterChanged={this.onCenterChanged}
+        onClick={this.handleOnClick}
         {...this.props}
       />
     );
@@ -105,10 +116,12 @@ MapWrapper.propTypes = {
   zoom: PropTypes.number.isRequired,
   updateMapZoom: PropTypes.func,
   updateMapCenter: PropTypes.func,
+  shouldFetch: PropTypes.bool,
 };
 MapWrapper.defaultProps = {
   updateMapZoom: () => {},
   updateMapCenter: () => {},
+  shouldFetch: false,
 };
 
 const mapStateToProps = state => (
@@ -118,6 +131,7 @@ const mapDispatchToProps = dispatch => (
   bindActionCreators({
     updateMapCenter,
     updateMapZoom,
+    updateOnClick,
   }, dispatch)
 );
 
