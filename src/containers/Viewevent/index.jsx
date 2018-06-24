@@ -21,7 +21,6 @@ import {
 import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
 import { fetchEventData } from './actions';
 import {
-  GET_EVENT_BY_ID,
   REVERSE_GEOCODE,
 } from '../../utils/apipaths';
 
@@ -119,7 +118,8 @@ class Viewevent extends Component {
   }
   componentWillMount() {
     const eventid = this.props.match.params.eventid;
-    const shouldRefresh = this.props.match.params.eventid !== this.props.event.data.eventid;
+    const shouldRefresh =
+      this.props.match.params.eventid !== this.props.event.data.eventid;
 
     this.props.fetchEventData({ eventid, shouldRefresh });
     //this.getEventData();
@@ -130,16 +130,15 @@ class Viewevent extends Component {
    */
   getEventData() {
     // Fetch the json data for the given event id
-      const lat = this.state.event.location.coords.latitude;
-      const long = this.state.event.location.coords.longitude;        
-      fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`)
+    const lat = this.state.event.location.coords.latitude;
+    const long = this.state.event.location.coords.longitude;        
+    fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`)
       .then((response) => {
         this.setState({
           ...this.state,
           reverse_geocode: response,
         });
       })
-
   }
   render() {
     console.log('ViewEvent Props', this.props);
