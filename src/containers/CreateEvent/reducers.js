@@ -5,6 +5,8 @@ import {
   CREATE_EVENTS_FORM_UPDATE_LOCATION_TEXT,
   CREATE_EVENTS_FORM_SAVE_LOCATION,
   CREATE_EVENTS_FORMS_UPDATE_EVENT_DETAILS,
+  CREATE_EVENTS_FORM_VALIDATION_ERRORS,
+  CREATE_EVENTS_FORM_VALIDATION_SUCCESS,
 } from './actionTypes';
 import { MAP_ONCLICK } from '../../components/Map/actionTypes';
 
@@ -98,6 +100,20 @@ const reportFormInitialState = {
   uploadComplete: false,
 };
 function reportFormReducer(state = reportFormInitialState, action) {
+  if (action.type === CREATE_EVENTS_FORM_VALIDATION_ERRORS) {
+    return {
+      ...state,
+      ...action.payload,
+    };
+  }
+  if (action.type === CREATE_EVENTS_FORM_VALIDATION_SUCCESS) {
+    return {
+      ...state,
+      isFreezed: true,
+      loading: true,
+      validationErrors: false,
+    };
+  }
   return state;
 }
 const createEventsReducer = combineReducers({

@@ -1,14 +1,16 @@
 import { MAP_ONCLICK } from '../../components/Map/actionTypes';
-import {
-  updateMapCenter
-} from '../../components/Map/actions';
+import formValidator from './validator';
+import { updateMapCenter } from '../../components/Map/actions';
 import {
   changeTabCreateEventsForm,
   changeTabValidationCreateEventsForm,
+  formValidationErrorsCreateEvents,
+  acceptFormCreateEvents,
 } from './actions';
 import {
   CREATE_EVENTS_FORM_SAVE_LOCATION,
   CREATE_EVENTS_FORM_UPDATE_LOCATION_TEXT,
+  CREATE_EVENTS_FORM_VALIDATE_FORM,
 } from './actionTypes';
 
 const createEventsMiddleware = store => next => (action) => {
@@ -19,7 +21,6 @@ const createEventsMiddleware = store => next => (action) => {
     const { lng } = action.payload;
     // If form is freezed, don't allow to update.
     if (!state.createEvents.form.isFreezed) {
-      console.log(state.createEvents.form.isFreezed)
       dispatch(updateMapCenter({
         lat,
         lng,
@@ -39,6 +40,17 @@ const createEventsMiddleware = store => next => (action) => {
   if (action.type === CREATE_EVENTS_FORM_SAVE_LOCATION) {
     dispatch(changeTabCreateEventsForm(1));
     dispatch(changeTabValidationCreateEventsForm('location', true));
+  }
+  if (action.type === CREATE_EVENTS_FORM_VALIDATE_FORM) {
+    const state = store.getState();
+    const status = formValidator(state.createEvents);
+    if (!status.validationErrors) {
+      // dispatch post request
+      dispatch(acceptFormCreateEvents());
+    } else {
+      // dispatch error handler
+      dispatch(formValidationErrorsCreateEvents(status));
+    }
   }
   next(action);
 };

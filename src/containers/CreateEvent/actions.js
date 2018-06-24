@@ -4,6 +4,9 @@ import {
   CREATE_EVENTS_FORM_UPDATE_LOCATION_TEXT,
   CREATE_EVENTS_FORM_SAVE_LOCATION,
   CREATE_EVENTS_FORMS_UPDATE_EVENT_DETAILS,
+  CREATE_EVENTS_FORM_VALIDATE_FORM,
+  CREATE_EVENTS_FORM_VALIDATION_ERRORS,
+  CREATE_EVENTS_FORM_VALIDATION_SUCCESS,
 } from './actionTypes';
 
 export function changeTabCreateEventsForm(tabIndex) {
@@ -46,5 +49,23 @@ export function updateEventDetailsCreateEvents(event) {
       name,
       value,
     },
+  };
+}
+export function formValidationErrorsCreateEvents(payload = {}) {
+  return {
+    type: CREATE_EVENTS_FORM_VALIDATION_ERRORS,
+    payload,
+  };
+}
+export function validateFormCreateEvents(payload = {}) {
+  return {
+    type: CREATE_EVENTS_FORM_VALIDATE_FORM,
+    payload,
+  };
+}
+export function acceptFormCreateEvents(payload = {}) {
+  return {
+    type: CREATE_EVENTS_FORM_VALIDATION_SUCCESS,
+    payload,
   };
 }

@@ -13,7 +13,10 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import getEventColor from '../../utils/eventcolors';
-import { updateEventDetailsCreateEvents } from './actions';
+import {
+  updateEventDetailsCreateEvents,
+  validateFormCreateEvents,
+} from './actions';
 
 const eventOptions = [
   { key: 'rd', text: 'Road', value: 'road' },
@@ -26,6 +29,7 @@ const FormTab = (props) => {
   if (props.tabs.activeTab !== 1) {
     return null;
   }
+  console.log(props.reportForm.validationErrors);
   return (
     <Segment
       attached
@@ -37,8 +41,10 @@ const FormTab = (props) => {
             <Form loading={props.reportForm.loading}>
               <Form.Field>
                 {props.reportForm.validationErrors ?
+                  // <h1>ERROR</h1>
                   <Message
-                    error
+                    negative
+                    icon="ban"
                     header={props.reportForm.message.header}
                     content={props.reportForm.message.body}
                   />
@@ -117,7 +123,11 @@ const FormTab = (props) => {
               <Form.Button
                 floated="right"
                 color="orange"
-                onClick={props.handleSubmit}
+                onClick={(e) => {
+                  e.preventDefault();
+                  props.handleSubmit();
+                  }
+                }
                 disabled={
                   props.reportForm.loading
                   || props.reportForm.isFreezed}
@@ -142,6 +152,7 @@ const mapStateToProps = (state) => {
 const mapDisptachToProps = dispatch => (
   bindActionCreators({
     handleInputChange: updateEventDetailsCreateEvents,
+    handleSubmit: validateFormCreateEvents,
   }, dispatch)
 );
 
