@@ -11,7 +11,9 @@ import {
   Sonar,
   GeoLocator,
 } from '../../components';
-import Geolocator from '../../components/Geolocator';
+import {
+  saveLocationCreateEvents,
+} from './actions';
 
 const MapTab = (props) => {
   console.log(props);
@@ -21,22 +23,6 @@ const MapTab = (props) => {
   return (
     <Segment attached color="yellow" secondary>    
       <Grid>
-
-        <Grid.Row>
-          <Grid.Column>
-            {/* <p>{this.state.eventFormData.text}</p> */}
-            <Button
-              floated="left"
-              color="teal"
-              // disabled={
-              //   this.state.eventFormData.location.isValid
-              //   || this.state.reportForm.isFreezed} 
-              onClick={() => this.handleSaveLocation()}
-            >
-              Save Location
-            </Button>
-          </Grid.Column>
-        </Grid.Row>
         <Grid.Row>
           <div
             style={{
@@ -45,23 +31,55 @@ const MapTab = (props) => {
               left: '0px',
             }}
           >
-            <MapWrapper onClick={e => this.handleMapLocationChange(e)}>
-              {/* <Sonar
-                lat={this.state.eventFormData.location.lat}
-                lng={this.state.eventFormData.location.lng}
+            <MapWrapper
+              dispatchOnClick
+              shouldFetch={false}
+            >
+              <Sonar
+                lat={props.location.mapCenter.lat || props.map.lat}
+                lng={props.location.mapCenter.lng || props.map.lng}
                 id={null}
-              /> */}
+              />
             </MapWrapper>
           </div>
         </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <p>{props.location.text}</p>           
+            <GeoLocator
+              static
+              fetchOnLoad={!props.tabs.isValid.location}
+              floated="left"
+              circular={false}
+              size={null}
+              zoom={16}
+            />
+            <Button
+              floated="right"
+              color="teal"
+              disabled={
+                props.location.disabled
+                || false} 
+              onClick={() => props.handleSaveLocation()}
+            >
+              Save Location
+            </Button>
+          </Grid.Column>
+        </Grid.Row>
       </Grid>
-      <Geolocator />
     </Segment>
   );
 }
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({
+    handleSaveLocation: saveLocationCreateEvents,
+  }, dispatch)
+);
 const mapStateToProps = (state) => {
   return {
     tabs: state.createEvents.tabs,
+    location: state.createEvents.location,
+    map: state.map,
   };
 };
-export default connect(mapStateToProps, null)(MapTab);
+export default connect(mapStateToProps, mapDispatchToProps)(MapTab);

@@ -2,7 +2,11 @@ import { combineReducers } from 'redux';
 import {
   CREATE_EVENTS_FORM_TAB_CHANGE,
   CREATE_EVENTS_FORM_TAB_CHANGE_VALIDATION,
+  CREATE_EVENTS_FORM_UPDATE_LOCATION_TEXT,
+  CREATE_EVENTS_FORM_SAVE_LOCATION,
+  CREATE_EVENTS_FORMS_UPDATE_EVENT_DETAILS,
 } from './actionTypes';
+import { MAP_ONCLICK } from '../../components/Map/actionTypes';
 
 
 const tabInitialState = {
@@ -31,10 +35,76 @@ function switchTabReducer(state = tabInitialState, action) {
   }
   return state;
 }
-
-
+const locationInitialState = {
+  mapCenter: {
+    lat: null,
+    lng: null,
+  },
+  text: '',
+  disabled: true,
+};
+function locaitonTabReducer(state = locationInitialState, action) {
+  if (action.type === MAP_ONCLICK) {
+    return {
+      ...state,
+      mapCenter: {
+        lat: action.payload.lat,
+        lng: action.payload.lng,
+      },
+      disabled: false,
+    };
+  }
+  if (action.type === CREATE_EVENTS_FORM_UPDATE_LOCATION_TEXT) {
+    return {
+      ...state,
+      text: action.payload.text,
+    };
+  }
+  if (action.type === CREATE_EVENTS_FORM_SAVE_LOCATION) {
+    return {
+      ...state,
+      disabled: true,
+    };
+  }
+  return state;
+}
+const detailsInitialState = {
+  eventType: null,
+  title: '',
+  description: '',
+  public: true,
+  help: false,
+};
+function detailsReducer(state = detailsInitialState, action) {
+  if (action.type === CREATE_EVENTS_FORMS_UPDATE_EVENT_DETAILS) {
+    return {
+      ...state,
+      [action.payload.name]: action.payload.value,
+    };
+  }
+  return state;
+}
+const reportFormInitialState = {
+  loading: false,
+  message: {
+    header: '',
+    body: '',
+  },
+  eventID: 'Some Random ID',
+  isFreezed: false,
+  validationErrors: false,
+  uploading: false,
+  imageSelectDisabled: false,
+  uploadComplete: false,
+};
+function reportFormReducer(state = reportFormInitialState, action) {
+  return state;
+}
 const createEventsReducer = combineReducers({
   tabs: switchTabReducer,
+  details: detailsReducer,
+  location: locaitonTabReducer,
+  form: reportFormReducer,
 });
 
 export default createEventsReducer;

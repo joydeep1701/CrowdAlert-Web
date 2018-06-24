@@ -11,7 +11,6 @@ import getEventColor from '../../utils/eventcolors';
 import { changeTabCreateEventsForm } from './actions';
 
 const Tabs = (props) => {
-  console.log(props);
   return (
     <Step.Group fluid attached="top" widths={3} unstackable>
       <Step
@@ -23,7 +22,7 @@ const Tabs = (props) => {
         <Responsive minWidth={901}>
           <Step.Content>
             <Step.Title>Location</Step.Title>
-            {/* <Step.Description>{props.state.eventFormData.text}</Step.Description> */}
+            <Step.Description>{props.location.text}</Step.Description>
           </Step.Content>
         </Responsive>
 
@@ -33,7 +32,7 @@ const Tabs = (props) => {
         onClick={() => props.handleTabChange(1)}
         completed={props.tabs.isValid.details}
       >
-        {/* <Icon circular color={getEventColor(props.state.eventFormData.details.eventType)} name="edit" /> */}
+        <Icon circular color={getEventColor(props.details.eventType)} name="edit" />
         <Responsive minWidth={901}>
           <Step.Content>
             <Step.Title>Description</Step.Title>
@@ -62,6 +61,8 @@ const Tabs = (props) => {
 const mapStateToProps = (state) => {
   return {
     tabs: state.createEvents.tabs,
+    location: state.createEvents.location,
+    details: state.createEvents.details,
   };
 };
 

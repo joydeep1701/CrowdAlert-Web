@@ -84,60 +84,6 @@ class CreateEvent extends Component {
       console.error(err)
     }
   }
-  handleMapLocationChange(e) {
-    if (this.state.reportForm.isFreezed) {
-      return;
-    }
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-
-    this.updateLocationReverseGeocode(lat, lng);
-  }
-  updateLocationReverseGeocode(lat, lng) {
-    fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${lng}&accuracy=high`)
-      .then(response => response.json())
-      .then((response) => {
-        this.setState({
-          ...this.state,
-          eventFormData: {
-            ...this.state.eventFormData,
-            text: response[0].formatted_address,
-          },
-        });
-      });
-  }
-  handleSaveLocation() {
-    console.log('====================================');
-    console.log('Save Location Called');
-    console.log('====================================');
-    if (this.state.reportForm.isFreezed) {
-      return;
-    }
-    this.setState(
-      {
-        ...this.state,
-        eventFormData: {
-          ...this.state.eventFormData,
-          location: {
-            ...this.state.eventFormData.location,
-            isValid: true,
-          },
-        },
-      },
-      () => this.handleTabChange(1),
-    );
-  }
-  handleTabChange(index) {
-    this.setState({
-      ...this.state,
-      reportForm: {
-        ...this.state.reportForm,
-        activeTab: index,
-      },
-    });
-  }
-
-  
   setWebcamRef(webcam) {
     this.webcam = webcam;
   }
