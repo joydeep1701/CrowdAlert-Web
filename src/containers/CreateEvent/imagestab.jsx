@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import {
   Dimmer,
   Grid,
@@ -9,74 +8,121 @@ import {
   Segment,
   Image as SemanticImage,
   Icon,
+  Progress,
 } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Dropzone from 'react-dropzone';
-
+import { Link } from 'react-router-dom';
 import { Image } from '../../components';
-
 import Webcam from './webcam';
+import { UPLOAD_IMAGES } from '../../utils/apipaths';
+import { toggleImageUpload } from './actions';
 
 class ImagesTab extends Component {
-  handleUpload() {
-    if (!this.state.reportForm.eventID) {
-      return;
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      images: {},
+    };
+    this.setWebcamRef = this.setWebcamRef.bind(this);
+    this.captureWebcam = this.captureWebcam.bind(this);
+    this.captureWebcam = this.captureWebcam.bind(this);
+    this.handleFileSelect = this.handleFileSelect.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
+  }
+  setWebcamRef(webcam) {
+    this.webcam = webcam;
+  }
+  captureWebcam() {
+    const src = this.webcam.getScreenshot();
+    const newImage = {
+      base64: src,
+      isVerified: true,
+      key: Object.keys(this.state.images).length,
+      isUploaded: false,
+    };
     this.setState({
       ...this.state,
-      reportForm: {
-        ...this.state.reportForm,
-        uploading: true,
-        imageSelectDisabled: true,
+      images: {
+        ...this.state.images,
+        [Object.keys(this.state.images).length]: newImage,
       },
     });
+  }
+  handleFileSelect(accepted) {
+    accepted.map((imageFile) => {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        const newImage = {
+          base64: reader.result,
+          isVerified: false,
+          isUploaded: false,
+          key: Object.keys(this.state.images).length,
+        };
+        this.setState({
+          ...this.state,
+          images: {
+            ...this.state.images,
+            [Object.keys(this.state.images).length]: newImage,
+          },
+        });
+      }, false);
+      reader.readAsDataURL(imageFile);
+      return null;
+    });
+  }
+  handleUpload() {
+    if (!this.props.reportForm.eventID) {
+      return;
+    }
+    this.props.toggleImageUpload();
 
-
-    const { images } = this.state.eventFormData;
+    const images = Object.keys(this.state.images).map(key =>
+      this.state.images[key]);
     const imagesUpload = images.map((image) => {
-      console.log(image);
       if (image.isUploaded) {
+        // console.log(image);
         return null;
       }
       const newFormData = new FormData();
       newFormData.append('isValid', image.isVerified);
-      newFormData.append('eventId', this.state.reportForm.eventID);
+      newFormData.append('eventId', this.props.reportForm.eventID);
       newFormData.append('base64', image.base64);
 
-
-      return fetch('UPLOAD_IMAGES', {
+      return fetch(UPLOAD_IMAGES, {
         method: 'post',
         body: newFormData,
       }).then(resp => resp.json())
         .then((resp) => {
-          const newImage = { ...image };
-          newImage.isUploaded = true;
+          const newImage = {
+            ...image,
+            isUploaded: true,
+            uuid: resp.name,
+          };
           const newState = {
             ...this.state,
-            eventFormData: {
-              ...this.state.eventFormData,
+            images: {
+              ...this.state.images,
+              [image.key]: newImage,
             },
           };
-          newState.eventFormData.images[image.key] = image;
           this.setState(newState);
         })
         .catch(() => {});
     });
     Promise.all(imagesUpload).then(() => {
-      this.setState({
-        ...this.state,
-        reportForm: {
-          ...this.state.reportForm,
-          uploading: false,
-          imageSelectDisabled: true,
-          uploadComplete: true,
-        },
-      });
-      // Navigate to view events
-    }).then(() => {
-      // history.push(`/view/${this.state.reportForm.eventID}`)
+      this.props.toggleImageUpload();
     });
   }
   render() {
+    if (this.props.tabs.activeTab !== 2) {
+      return null;
+    }
+    let uploaded = 0;
+    const total = Object.keys(this.state.images).length;
+
+    // console.log(this.state);
     return (
       <div>
         <Dimmer active={false}>
@@ -98,7 +144,7 @@ class ImagesTab extends Component {
                     style={{
                       marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
                       }}
-                    // disabled={this.state.reportForm.imageSelectDisabled}
+                    disabled={this.props.reportForm.imageSelectDisabled}
                   />}
                   closeIcon
                 >
@@ -125,7 +171,7 @@ class ImagesTab extends Component {
                               basic
                               color="green"
                               onClick={this.captureWebcam}
-                              // disabled={this.state.reportForm.imageSelectDisabled}
+                              disabled={this.props.reportForm.imageSelectDisabled}
                             />
                           </Grid.Column>
                           <Grid.Column />
@@ -141,7 +187,7 @@ class ImagesTab extends Component {
                 <Dropzone
                   ref={(node) => { this.dropzoneRef = node; }}
                   onDrop={this.handleFileSelect}
-                  style={{ display: 'none' }} 
+                  style={{ display: 'none' }}
                 />
                 <p>Upload from device</p>
                 <Button
@@ -154,7 +200,7 @@ class ImagesTab extends Component {
                     marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
                     }}
                   onClick={() => { this.dropzoneRef.open(); }}
-                  // disabled={this.state.reportForm.imageSelectDisabled}
+                  disabled={this.props.reportForm.imageSelectDisabled}
                 />
               </Grid.Column>
             </Grid.Row>
@@ -165,41 +211,91 @@ class ImagesTab extends Component {
             <Grid.Row>
               <Grid.Column>
                 <SemanticImage.Group size="tiny">
-                  {/* {
-                      this.state.eventFormData.images.map(image => (
+                  {
+                    Object.keys(this.state.images).map((key) => {
+                      const image = this.state.images[key];
+                      if (image.isUploaded) {
+                        uploaded += 1;
+                      }
+                      return (
                         <Image
                           base64={image.base64}
                           key={image.key}
                           isTrusted={image.isVerified}
-                        />
-                      ))
-                    } */}
+                        >
+                          <SemanticImage
+                            fluid
+                            label={image.isUploaded ? {
+                              as: 'a',
+                              corner: 'left',
+                              icon: 'check',
+                            } : null}
+                            src={image.base64}
+                          />
+                        </Image>
+                      );
+ })
+                  }
                 </SemanticImage.Group>
               </Grid.Column>
             </Grid.Row>
             <Grid.Row>
               <Grid.Column>
-                {/* {
-                    this.state.eventFormData.images.length ?
-                      <Button
-                        color="brown"
-                        floated="right"
-                        onClick={this.handleUpload}
-                        loading={this.state.reportForm.uploading}
-                        disabled={this.state.reportForm.imageSelectDisabled}
-                      >
-                        <Icon name="cloud upload" />
-                        Upload
-                      </Button>
-                    : null
-                  } */}
+                {
+                  Object.keys(this.state.images).length ?
+                    <div>
+                      {parseInt((uploaded / total), 10) ?
+                        <Button
+                          as={Link}
+                          to={`/view/${this.props.reportForm.eventID}`}
+                          color="green"
+                          floated="left"
+                          loading={this.props.reportForm.uploading}
+                        >
+                          <Icon name="check" />
+                          Finish
+                        </Button>
+                      :
+                        <Button
+                          color="brown"
+                          floated="right"
+                          onClick={this.handleUpload}
+                          loading={this.props.reportForm.uploading}
+                          disabled={this.props.reportForm.uploading}
+                        >
+                          <Icon name="cloud upload" />
+                          Upload
+                        </Button>
+                      }
+                    </div>
+                    
+                  : null
+                }
               </Grid.Column>
             </Grid.Row>
           </Grid>
+          {this.props.reportForm.uploading ?
+            <Progress
+              percent={parseInt((uploaded / total) * 100, 10)}
+              attached="bottom"
+              color="teal"
+            />
+          : null
+          }
+
         </Segment>
       </div>
     );
   }
 }
-
-export default ImagesTab;
+const mapStateToProps = state => ({
+  tabs: state.createEvents.tabs,
+  details: state.createEvents.details,
+  reportForm: state.createEvents.form,
+});
+const mapDisptachToProps = dispatch => (
+  bindActionCreators({
+    toggleImageUpload,
+  }, dispatch)
+);
+export default connect(mapStateToProps, mapDisptachToProps)(ImagesTab);

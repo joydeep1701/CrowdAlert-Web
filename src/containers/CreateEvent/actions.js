@@ -10,6 +10,7 @@ import {
   CREATE_EVENTS_FORM_SUBMIT,
   CREATE_EVENTS_FORM_SUBMIT_SUCCESS,
   CREATE_EVENTS_FORM_SUBMIT_ERROR,
+  CREATE_EVENTS_FORM_TOGGLE_UPLOADING,
 } from './actionTypes';
 
 export function changeTabCreateEventsForm(tabIndex) {
@@ -84,8 +85,8 @@ export function submitFormCreateEvents({ location, details }) {
     },
     location: {
       coords: {
-        latitude: location.lat,
-        longitude: location.lng,
+        latitude: location.mapCenter.lat,
+        longitude: location.mapCenter.lng,
       },
     },
   };
@@ -103,19 +104,19 @@ export function submitFormSuccessCreateEvents({ response }) {
   };
 }
 export function submitFormErrorCreateEvents(error = {}) {
-  if (error.status >= 400) {
-    return {
-      type: CREATE_EVENTS_FORM_SUBMIT_ERROR,
-      payload: {
-        message: {
-          header: 'Unable to process your request',
-          payload: error.response,
-        },
-      },
-    };
-  }
+  // if (error.status >= 400) {
   return {
     type: CREATE_EVENTS_FORM_SUBMIT_ERROR,
-    error,
+    payload: {
+      message: {
+        header: 'Unable to process your request',
+        payload: error.response,
+      },
+    },
+  };
+}
+export function toggleImageUpload() {
+  return {
+    type: CREATE_EVENTS_FORM_TOGGLE_UPLOADING,
   };
 }

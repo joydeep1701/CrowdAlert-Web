@@ -55,6 +55,7 @@ export default class ImageModal extends Component {
       return (
         <Modal
           trigger={
+            this.props.children ? this.props.children :
             <Image
               src={`${this.props.isTrusted
                 ? this.state.imageUrls.url

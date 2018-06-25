@@ -29,7 +29,6 @@ const FormTab = (props) => {
   if (props.tabs.activeTab !== 1) {
     return null;
   }
-  console.log(props.reportForm.validationErrors);
   return (
     <Segment
       attached

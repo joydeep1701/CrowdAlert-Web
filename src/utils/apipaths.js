@@ -19,7 +19,7 @@ const GET_EVENT_BY_ID = `${domainNameL}/api/events/incident`;
  */
 const GET_IMAGE_URLS = `${domainNameL}/api/images/image`;
 
-const UPLOAD_IMAGES = `${domainNameL}/api/images/upload`;
+const UPLOAD_IMAGES = `${domainNameL}/api/images/image`;
 /**
  * [REVERSE_GEOCODE returns the reverse geocode for a given pair of coordinates
  * If accuracy=high, it uses google apis to reverse geocode]

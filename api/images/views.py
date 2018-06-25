@@ -8,6 +8,7 @@ import os
 from uuid import uuid4
 import base64
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+import time
 
 storage = settings.FIREBASE.storage()
 db = settings.FIREBASE.database()
@@ -26,6 +27,7 @@ def add_thumbnail(name):
     # After we get enough traffic we should use a redis based solution.
     # Where an event would be pushed and a job id is to be returned
     # and expose another endpoint where we can check the status
+    print("Generating Thumbnail", time.time())
     subprocess.run(['node_modules/.bin/sqip', name, '-o', name+'.svg'])
     storage.child('thumbnails/'+name+'.svg').put(name+'.svg')
     # Remove the uploaded files for two good reasons:
@@ -33,6 +35,8 @@ def add_thumbnail(name):
     # remove malicious code before anything wrong goes.
     os.remove(name)
     os.remove(name+'.svg')
+    print("Finished", time.time())
+
 
 class ImagesView(APIView):
     """Images class for API view. Allows users to get urls of an image using
@@ -86,10 +90,10 @@ class ImagesView(APIView):
                                         is provided]
             [JsonResponse] -- [Containing the uuid of image]     
         """
-
+        print("Request Recieved", time.time())
         # Generate uuid for the file. Never trust user.
         name = str(uuid4())
-
+        print()
         if request.FILES.get('image', False):            
             uploadedFile = request.FILES['image']
             fs = FileSystemStorage()
@@ -106,20 +110,11 @@ class ImagesView(APIView):
             firebaseName = name + '.jpg'
         else:
             return HttpResponseBadRequest("Bad request: Either base64 or image field should be given")
-        
-        # As our load is small now, we can do this in sequential manner
-        # After we get enough traffic we should use a redis based solution.
-        # Where an event would be pushed and a job id is to be returned
-        # and expose another endpoint where we can check the status
-        subprocess.run(['node_modules/.bin/sqip', name, '-o', name+'.svg'])
-        # Upload files to Cloud storage
+        print("File Saved", time.time())
+
+        add_thumbnail(name)
+        # Upload files to Cloud storage        
         storage.child('images/' + firebaseName).put(name)
-        storage.child('thumbnails/'+name+'.svg').put(name+'.svg')        
-        # Remove the uploaded files for two good reasons:
-        # Keep our dyno clean
-        # remove malicious code before anything wrong goes.
-        os.remove(name)
-        os.remove(name+'.svg')
         # Update Event if id is given,
         if request.POST.get("eventId", False):
             event_id = request.POST.get("eventId", False)
@@ -128,4 +123,5 @@ class ImagesView(APIView):
             db.child('incidents').child(event_id).child("images").push(image_data)
             print("Image Added")
         # Return file id for future reference
+        print("Returning From Request", time.time())
         return JsonResponse({'name': firebaseName})

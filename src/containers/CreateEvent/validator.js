@@ -31,37 +31,3 @@ export default ({ details, tabs }) => {
     validationErrors: false,
   };
 };
-
-// fetch(GET_EVENT_BY_ID, {
-//   method: 'post',
-//   body: newFormData,
-// }).then(resp => resp.json())
-//   .then((resp) => {
-//     console.log(resp, resp.eventId);
-//     this.setState({
-//       ...this.state,
-//       reportForm: {
-//         ...this.state.reportForm,
-//         loading: false,
-//         isFreezed: true,
-//         eventID: resp.eventId,
-//         activeTab: 2,
-//       },
-//     });
-//   })
-//   .catch(() => {
-//     this.setState({
-//       ...this.state,
-//       reportForm: {
-//         ...this.state.reportForm,
-//         loading: false,
-//         isFreezed: false,
-//         validationErrors: true,
-//         message: {
-//           header: 'Server Error',
-//           body: 'Please try again later',
-//         },
-//       },
-//     });
-//   });
-

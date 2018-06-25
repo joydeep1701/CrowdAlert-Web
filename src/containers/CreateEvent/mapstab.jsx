@@ -16,7 +16,6 @@ import {
 } from './actions';
 
 const MapTab = (props) => {
-  console.log(props);
   if (props.tabs.activeTab !== 0) {
     return null;
   }

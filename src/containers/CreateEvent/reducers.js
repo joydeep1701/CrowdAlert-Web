@@ -10,6 +10,7 @@ import {
   CREATE_EVENTS_FORM_SUBMIT,
   CREATE_EVENTS_FORM_SUBMIT_SUCCESS,
   CREATE_EVENTS_FORM_SUBMIT_ERROR,
+  CREATE_EVENTS_FORM_TOGGLE_UPLOADING,
 } from './actionTypes';
 import { MAP_ONCLICK } from '../../components/Map/actionTypes';
 
@@ -95,12 +96,11 @@ const reportFormInitialState = {
     header: '',
     body: '',
   },
-  eventID: 'Some Random ID',
+  eventID: null,
   isFreezed: false,
   validationErrors: false,
   uploading: false,
   imageSelectDisabled: false,
-  uploadComplete: false,
 };
 function reportFormReducer(state = reportFormInitialState, action) {
   if (action.type === CREATE_EVENTS_FORM_VALIDATION_ERRORS) {
@@ -137,9 +137,10 @@ function reportFormReducer(state = reportFormInitialState, action) {
       isFreezed: true,
       loading: false,
       validationErrors: false,
+      eventID: action.payload.eventId,
     };
   }
-  if (action.type === CREATE_EVENTS_FORM_SUBMIT_ERROR) {    
+  if (action.type === CREATE_EVENTS_FORM_SUBMIT_ERROR) {
     return {
       ...state,
       validationErrors: true,
@@ -149,6 +150,12 @@ function reportFormReducer(state = reportFormInitialState, action) {
       },
       loading: false,
       isFreezed: false,
+    };
+  }
+  if (action.type === CREATE_EVENTS_FORM_TOGGLE_UPLOADING) {
+    return {
+      ...state,
+      uploading: !state.uploading,
     };
   }
   return state;
