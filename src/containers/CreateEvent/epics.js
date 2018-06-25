@@ -14,11 +14,10 @@ const fetchReverseGeocodeEpic = action$ =>
       const apiUrl = `${REVERSE_GEOCODE}?lat=${lat}&long=${lng}&accuracy=high`;
       return ajax
         .getJSON(apiUrl)
-        .pipe(
-          map(response => createEventsUpdateLocationText(response[0].formatted_address))
-        )
-    })
-  )
+        .pipe(map(response =>
+          createEventsUpdateLocationText(response[0].formatted_address)));
+    }),
+  );
 
 const epics = combineEpics(fetchReverseGeocodeEpic);
 

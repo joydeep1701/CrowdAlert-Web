@@ -6,30 +6,12 @@ import { REVERSE_GEOCODE, UPLOAD_IMAGES, GET_EVENT_BY_ID } from '../../utils/api
 import Tab from './tabs';
 import MapTab from './mapstab';
 import FormTab from './formtab';
+import ImageTab from './imagestab';
 
 class CreateEvent extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      location: {
-        lat: null,
-        lng: null,
-      },
-      reportForm: {
-        activeTab: 0,
-        loading: false,
-        message: {
-          header: '',
-          body: '',
-        },
-        eventID: 'Some Random ID',
-        isFreezed: false,
-        validationErrors: false,
-        uploading: false,
-        imageSelectDisabled: false,
-        uploadComplete: false,
-      },
-    };
+   
     this.handlePermission = this.handlePermission.bind(this);
     this.setWebcamRef = this.setWebcamRef.bind(this);
     this.captureWebcam = this.captureWebcam.bind(this);
@@ -37,7 +19,7 @@ class CreateEvent extends Component {
   }
 
   componentWillMount() {
-    this.handlePermission();
+    // this.handlePermission();
   }
 
   handleMediaSuccess(response) {
@@ -143,6 +125,7 @@ class CreateEvent extends Component {
         <Tab />
         <MapTab />
         <FormTab />
+        <ImageTab />
 
       </Container>
 

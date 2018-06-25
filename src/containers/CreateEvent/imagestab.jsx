@@ -43,7 +43,7 @@ class ImagesTab extends Component {
       newFormData.append('base64', image.base64);
 
 
-      return fetch(UPLOAD_IMAGES, {
+      return fetch('UPLOAD_IMAGES', {
         method: 'post',
         body: newFormData,
       }).then(resp => resp.json())
@@ -73,7 +73,7 @@ class ImagesTab extends Component {
       });
       // Navigate to view events
     }).then(() => {
-      history.push(`/view/${this.state.reportForm.eventID}`)
+      // history.push(`/view/${this.state.reportForm.eventID}`)
     });
   }
   render() {
@@ -86,7 +86,7 @@ class ImagesTab extends Component {
 
           <Grid columns={2} divided>
             <Grid.Row>
-              <Grid.Column>
+              <Grid.Column textAlign="center">
                 <p>Use device camera</p>
                 <Modal
                   trigger={<Button
@@ -98,7 +98,7 @@ class ImagesTab extends Component {
                     style={{
                       marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
                       }}
-                    disabled={this.state.reportForm.imageSelectDisabled}
+                    // disabled={this.state.reportForm.imageSelectDisabled}
                   />}
                   closeIcon
                 >
@@ -125,7 +125,7 @@ class ImagesTab extends Component {
                               basic
                               color="green"
                               onClick={this.captureWebcam}
-                              disabled={this.state.reportForm.imageSelectDisabled}
+                              // disabled={this.state.reportForm.imageSelectDisabled}
                             />
                           </Grid.Column>
                           <Grid.Column />
@@ -137,7 +137,7 @@ class ImagesTab extends Component {
                 </Modal>
 
               </Grid.Column>
-              <Grid.Column>
+              <Grid.Column textAlign="center">
                 <Dropzone
                   ref={(node) => { this.dropzoneRef = node; }}
                   onDrop={this.handleFileSelect}
@@ -154,7 +154,7 @@ class ImagesTab extends Component {
                     marginTop: '5vh', marginBottom: '5vh', paddingTop: '8vh', paddingBottom: '8vh',
                     }}
                   onClick={() => { this.dropzoneRef.open(); }}
-                  disabled={this.state.reportForm.imageSelectDisabled}
+                  // disabled={this.state.reportForm.imageSelectDisabled}
                 />
               </Grid.Column>
             </Grid.Row>
@@ -165,7 +165,7 @@ class ImagesTab extends Component {
             <Grid.Row>
               <Grid.Column>
                 <SemanticImage.Group size="tiny">
-                  {
+                  {/* {
                       this.state.eventFormData.images.map(image => (
                         <Image
                           base64={image.base64}
@@ -173,13 +173,13 @@ class ImagesTab extends Component {
                           isTrusted={image.isVerified}
                         />
                       ))
-                    }
+                    } */}
                 </SemanticImage.Group>
               </Grid.Column>
             </Grid.Row>
             <Grid.Row>
               <Grid.Column>
-                {
+                {/* {
                     this.state.eventFormData.images.length ?
                       <Button
                         color="brown"
@@ -192,7 +192,7 @@ class ImagesTab extends Component {
                         Upload
                       </Button>
                     : null
-                  }
+                  } */}
               </Grid.Column>
             </Grid.Row>
           </Grid>

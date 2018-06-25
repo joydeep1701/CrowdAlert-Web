@@ -7,6 +7,9 @@ import {
   CREATE_EVENTS_FORM_VALIDATE_FORM,
   CREATE_EVENTS_FORM_VALIDATION_ERRORS,
   CREATE_EVENTS_FORM_VALIDATION_SUCCESS,
+  CREATE_EVENTS_FORM_SUBMIT,
+  CREATE_EVENTS_FORM_SUBMIT_SUCCESS,
+  CREATE_EVENTS_FORM_SUBMIT_ERROR,
 } from './actionTypes';
 
 export function changeTabCreateEventsForm(tabIndex) {
@@ -66,6 +69,42 @@ export function validateFormCreateEvents(payload = {}) {
 export function acceptFormCreateEvents(payload = {}) {
   return {
     type: CREATE_EVENTS_FORM_VALIDATION_SUCCESS,
+    payload,
+  };
+}
+export function submitFormCreateEvents({ location, details }) {
+  const eventData = {
+    category: details.eventType,
+    description: details.description,
+    local_assistance: details.help,
+    title: details.title,
+    public: {
+      view: details.public,
+      share: details.help,
+    },
+    location: {
+      coords: {
+        latitude: location.lat,
+        longitude: location.lng,
+      },
+    },
+  };
+  return {
+    type: CREATE_EVENTS_FORM_SUBMIT,
+    payload: {
+      eventData,
+    },
+  };
+}
+export function submitFormSuccessCreateEvents(payload = {}) {
+  return {
+    type: CREATE_EVENTS_FORM_SUBMIT_SUCCESS,
+    payload,
+  };
+}
+export function submitFormErrorCreateEvents(payload = {}) {
+  return {
+    type: CREATE_EVENTS_FORM_SUBMIT_ERROR,
     payload,
   };
 }
