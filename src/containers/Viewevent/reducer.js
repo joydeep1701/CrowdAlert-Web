@@ -1,7 +1,7 @@
 import {
   EVENT_FETCH_EVENT_DATA,
-  EVENT_FETCH_EVENT_DATA_CANCEL,
   EVENT_FETCH_EVENT_DATA_FINISHED,
+  EVENT_FETCH_REVERSE_GEOCODE_FINISHED,
 } from './actionTypes';
 
 const initialState = {
@@ -23,6 +23,12 @@ function fetchEventDataReducer(state = initialState, action) {
       ...state,
       data: payload,
       isLoading: false,
+    };
+  }
+  if (action.type === EVENT_FETCH_REVERSE_GEOCODE_FINISHED) {
+    return {
+      ...state,
+      reverse_geocode: action.payload,
     };
   }
 

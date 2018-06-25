@@ -1,5 +1,5 @@
 import { FEED_FETCH_USER_LOCATION_FINISHED } from './actionTypes';
-import { MAP_UPDATE_CENTER } from '../../components/Map/actionTypes';
+import { MAP_UPDATE_CENTER, MAP_UPDATE_ZOOM } from '../../components/Map/actionTypes';
 import distanceCoordinates from '../../utils/gps';
 import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
 import { fetchEventsByLocation } from './actions';
@@ -42,7 +42,7 @@ const updateLocationMiddleware = ({ dispatch }) => next => (action) => {
 };
 
 const fetchEventsOnMapUpdateMiddleware = ({ dispatch }) => next => (action) => {
-  if (action.type === MAP_UPDATE_CENTER) {
+  if (action.type === MAP_UPDATE_CENTER || action.type === MAP_UPDATE_ZOOM) {
     const lat = parseFloat(action.payload.lat);
     const lng = parseFloat(action.payload.lng);
     const { zoom } = action.payload;

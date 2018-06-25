@@ -19,20 +19,22 @@ const EventPreviewCard = (props) => {
   return (
     <div>
       <Responsive minWidth={900}>
-        <Transition style={style.widescreen} visible={props.eventPreview.isOpen} animation="fade up" duration={1000}>        
-          <Segment color={getEventColor(props.eventPreview.event.category)}>
-            <div>
-              <Header as="h3" floated="left">{props.eventPreview.event.category.toLocaleUpperCase()}</Header>
-              <Header as="p" floated="right" onClick={() => props.closeEventPreview()}>
-                <Icon name="close" size="mini" fitted />
-              </Header>
-            </div>
-            <br />
-            <Header as="h4">{props.eventPreview.event.title}</Header>
-            <p>{calcAge(props.eventPreview.event.datetime)}</p>
-            <Link to={`/view/${props.eventPreview.event.key}`} onClick={() => props.closeEventPreview()}>View Incident</Link>
-          </Segment>
-        </Transition>
+        <div style={style.widescreen}>
+          <Transition style={style.widescreen} visible={props.eventPreview.isOpen} animation="fly up" duration={1000}>
+            <Segment color={getEventColor(props.eventPreview.event.category)}>
+              <div>
+                <Header as="h3" floated="left">{props.eventPreview.event.category.toLocaleUpperCase()}</Header>
+                <Header as="p" floated="right" onClick={() => props.closeEventPreview()}>
+                  <Icon name="close" size="mini" fitted />
+                </Header>
+              </div>
+              <br />
+              <Header as="h4">{props.eventPreview.event.title}</Header>
+              <p>{calcAge(props.eventPreview.event.datetime)}</p>
+              <Link to={`/view/${props.eventPreview.event.key}`} onClick={() => props.closeEventPreview()}>View Incident</Link>
+            </Segment>
+          </Transition>
+        </div>
       </Responsive>
       <Responsive maxWidth={900}>
         

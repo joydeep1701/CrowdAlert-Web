@@ -20,9 +20,6 @@ import {
 
 import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
 import { fetchEventData } from './actions';
-import {
-  REVERSE_GEOCODE,
-} from '../../utils/apipaths';
 
 import styleSheet from './style';
 
@@ -132,7 +129,7 @@ class Viewevent extends Component {
     // Fetch the json data for the given event id
     const lat = this.state.event.location.coords.latitude;
     const long = this.state.event.location.coords.longitude;        
-    fetch(`${REVERSE_GEOCODE}?lat=${lat}&long=${long}`)
+    fetch()
       .then((response) => {
         this.setState({
           ...this.state,
@@ -166,7 +163,7 @@ class Viewevent extends Component {
                 title={this.props.event.data.title}
                 description={this.props.event.data.description}
                 images={this.props.event.data.images}
-                reverse_geocode={this.state.reverse_geocode}
+                reverse_geocode={this.props.event.reverse_geocode}
                 eventType={this.props.event.data.category}
               />
           }
@@ -198,7 +195,7 @@ class Viewevent extends Component {
                           title={this.props.event.data.title}
                           description={this.props.event.data.description}
                           images={this.props.event.data.images}
-                          reverse_geocode={this.state.reverse_geocode}
+                          reverse_geocode={this.props.event.reverse_geocode}
                           eventType={this.props.event.data.category}
                         />
                     }

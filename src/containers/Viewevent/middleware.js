@@ -1,5 +1,6 @@
 import { EVENT_FETCH_EVENT_DATA_FINISHED } from './actionTypes';
 import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
+import { fetchReverseGeocode } from './actions';
 
 const fetchEventDataMiddleware = ({ dispatch }) => next => (action) => {
   if (action.type === EVENT_FETCH_EVENT_DATA_FINISHED) {
@@ -36,7 +37,7 @@ const fetchEventDataMiddleware = ({ dispatch }) => next => (action) => {
       fetch: false,
     }));
     // Dipatch reverse geocode
-
+    dispatch(fetchReverseGeocode(lat, lng));
 
     next(newAction);
   } else {
