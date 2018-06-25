@@ -1,5 +1,6 @@
 import React from 'react';
-import { Responsive, Transition, Segment, Header, Grid, Icon } from 'semantic-ui-react';
+import { Responsive, Segment, Grid, Icon } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import styleSheet from './style';
 
 const BottomBar = props => (
@@ -11,7 +12,9 @@ const BottomBar = props => (
             <Icon circular color="teal" name="map outline" />
           </Grid.Column>
           <Grid.Column>
-            <Icon circular inverted color="teal" name="camera" />
+            <Link to="/create/">
+              <Icon circular inverted color="teal" name="camera" />
+            </Link>
           </Grid.Column>
           <Grid.Column>
             <Icon circular color="teal" name="bell" />

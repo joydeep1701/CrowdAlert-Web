@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import {
   Menu,
   Sidebar,
+  BottomBar,
 } from '../../components';
 import Viewevent from '../Viewevent';
 import Feed from '../Feed';
@@ -28,6 +29,8 @@ class App extends Component {
         <Route exact path="/view/:eventid" component={Viewevent} />
         <Route exact path="/create" component={CreateEvent} />
         <Route exact path="/" component={Feed} />
+        
+
       </Sidebar>
     );
   }
