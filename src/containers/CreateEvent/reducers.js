@@ -139,7 +139,7 @@ function reportFormReducer(state = reportFormInitialState, action) {
       validationErrors: false,
     };
   }
-  if (action.type === CREATE_EVENTS_FORM_SUBMIT_ERROR) {
+  if (action.type === CREATE_EVENTS_FORM_SUBMIT_ERROR) {    
     return {
       ...state,
       validationErrors: true,

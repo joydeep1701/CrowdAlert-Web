@@ -31,42 +31,7 @@ export default ({ details, tabs }) => {
     validationErrors: false,
   };
 };
-// this.setState({
-//   ...this.state,
-//   reportForm: {
-//     ...this.state.reportForm,
-//     loading: true,
-//     validationErrors: false,
-//   },
-//   eventFormData: {
-//     ...this.state.eventFormData,
-//     details: {
-//       ...this.state.eventFormData.details,
-//       isValid: true,
-//       isFreezed: true,
-//     },
-//   },
-// });
 
-
-// const eventData = {
-//   category: eventFormData.details.eventType,
-//   description: eventFormData.details.description,
-//   local_assistance: eventFormData.details.help,
-//   title: eventFormData.details.title,
-//   public: {
-//     view: eventFormData.details.public,
-//     share: eventFormData.details.help,
-//   },
-//   location: {
-//     coords: {
-//       latitude: eventFormData.location.lat,
-//       longitude: eventFormData.location.lng,
-//     },
-//   },
-// };
-// const newFormData = new FormData();
-// newFormData.append('eventData', JSON.stringify(eventData));
 // fetch(GET_EVENT_BY_ID, {
 //   method: 'post',
 //   body: newFormData,

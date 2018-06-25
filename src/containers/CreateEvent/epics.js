@@ -1,9 +1,15 @@
 import { ajax } from 'rxjs/observable/dom/ajax';
+import { of } from 'rxjs/observable/of';
 import { ofType, combineEpics } from 'redux-observable';
-import { mergeMap, map, takeUntil, debounceTime } from 'rxjs/operators';
-import { REVERSE_GEOCODE } from '../../utils/apipaths';
+import { mergeMap, map, takeUntil, debounceTime, catchError } from 'rxjs/operators';
+import { REVERSE_GEOCODE, GET_EVENT_BY_ID } from '../../utils/apipaths';
 import { MAP_ONCLICK } from '../../components/Map/actionTypes';
-import { createEventsUpdateLocationText } from './actions';
+import { CREATE_EVENTS_FORM_SUBMIT } from './actionTypes';
+import {
+  createEventsUpdateLocationText,
+  submitFormSuccessCreateEvents,
+  submitFormErrorCreateEvents,
+} from './actions';
 
 const fetchReverseGeocodeEpic = action$ =>
   action$.pipe(
@@ -19,6 +25,18 @@ const fetchReverseGeocodeEpic = action$ =>
     }),
   );
 
-const epics = combineEpics(fetchReverseGeocodeEpic);
+const submitEventEpic = action$ =>
+  action$.pipe(
+    ofType(CREATE_EVENTS_FORM_SUBMIT),
+    mergeMap(action => ajax.post(GET_EVENT_BY_ID, {
+      eventData: JSON.stringify(action.payload.eventData),
+    }).pipe(
+      map(response => submitFormSuccessCreateEvents(response)),
+      catchError(error => of(submitFormErrorCreateEvents(error))),
+    )),
+  );
+
+
+const epics = combineEpics(fetchReverseGeocodeEpic, submitEventEpic);
 
 export default epics;

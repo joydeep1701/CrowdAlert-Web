@@ -96,15 +96,26 @@ export function submitFormCreateEvents({ location, details }) {
     },
   };
 }
-export function submitFormSuccessCreateEvents(payload = {}) {
+export function submitFormSuccessCreateEvents({ response }) {
   return {
     type: CREATE_EVENTS_FORM_SUBMIT_SUCCESS,
-    payload,
+    payload: response,
   };
 }
-export function submitFormErrorCreateEvents(payload = {}) {
+export function submitFormErrorCreateEvents(error = {}) {
+  if (error.status >= 400) {
+    return {
+      type: CREATE_EVENTS_FORM_SUBMIT_ERROR,
+      payload: {
+        message: {
+          header: 'Unable to process your request',
+          payload: error.response,
+        },
+      },
+    };
+  }
   return {
     type: CREATE_EVENTS_FORM_SUBMIT_ERROR,
-    payload,
+    error,
   };
 }
