@@ -80,7 +80,7 @@ class Feed extends Component {
         ));
     return (
       <div style={style}>
-        <MapWrapper>
+        <MapWrapper shouldFetch>
           { Markers }
         </MapWrapper>
         <EventPreviewCard />
