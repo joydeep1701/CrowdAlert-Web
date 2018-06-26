@@ -1,11 +1,12 @@
 import React from 'react';
-import { Responsive, Menu, Icon, Image } from 'semantic-ui-react';
+import { Responsive, Menu, Icon, Image, Item } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { toggleSidebarVisibility } from '../Sidebar/actions';
+import LoginButton from '../../containers/Auth/Loginbutton';
 
 import logo from '../../logo.png';
 
@@ -50,18 +51,23 @@ const MenuBar = props => (
         </Link>
       </Responsive>
     </Menu.Menu>
-    <div className="ui transparent icon input">
-      <input className="prompt" type="text" placeholder="Search ..." />
-    </div>
     <Menu.Menu position="right">
+      <Responsive as={Menu.Item} minWidth={992}>
+        <LoginButton login />
+      </Responsive>
+      <Responsive as={Menu.Item} minWidth={992}>
+        <LoginButton signup />
+      </Responsive>
       <Responsive as={Menu.Item} {...Responsive.onlyMobile}>
         <Icon name="search" />
       </Responsive>
       <Responsive as={Menu.Item} {...Responsive.onlyTablet}>
-        Tablet
+        <LoginButton login />
       </Responsive>
-      <Responsive as={Menu.Item} {...Responsive.onlyLargeScreen}>Large Screen</Responsive>
-      <Responsive as={Menu.Item} {...Responsive.onlyWidescreen}>Widescreen</Responsive>
+      {/* <Responsive {...Responsive.onlyLargeScreen}>
+      </Responsive>
+      <Responsive as={Menu.Item} {...Responsive.onlyWidescreen}>
+      </Responsive> */}
     </Menu.Menu>
   </Menu>
 );
