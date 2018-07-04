@@ -1,5 +1,5 @@
 import React from 'react';
-import { Responsive, Menu, Icon, Image, Item } from 'semantic-ui-react';
+import { Responsive, Menu, Icon, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 
 import { toggleSidebarVisibility } from '../Sidebar/actions';
 import LoginButton from '../../containers/Auth/Loginbutton';
-
+import { UserSettingsMenu } from '../';
 import logo from '../../logo.png';
 
 /**
@@ -53,17 +53,37 @@ const MenuBar = props => (
     </Menu.Menu>
     <Menu.Menu position="right">
       <Responsive as={Menu.Item} minWidth={992}>
-        <LoginButton login />
+        {props.isLoggedIn ?
+          <p>Logged IN</p>
+          :
+          <Link to="/login">
+            <LoginButton login />
+          </Link>
+        }
       </Responsive>
       <Responsive as={Menu.Item} minWidth={992}>
-        <LoginButton signup />
+        {props.isLoggedIn ?
+          <UserSettingsMenu />
+          :
+          <Link to="/signup">
+            <LoginButton signup />
+          </Link>
+        }
       </Responsive>
+      <Responsive as={Menu.Item} {...Responsive.onlyTablet}>
+        {props.isLoggedIn ?
+          <p>Logged IN</p>
+          :
+          <Link to="/login">
+            <LoginButton login />
+          </Link>
+        }
+      </Responsive>
+
       <Responsive as={Menu.Item} {...Responsive.onlyMobile}>
         <Icon name="search" />
       </Responsive>
-      <Responsive as={Menu.Item} {...Responsive.onlyTablet}>
-        <LoginButton login />
-      </Responsive>
+
       {/* <Responsive {...Responsive.onlyLargeScreen}>
       </Responsive>
       <Responsive as={Menu.Item} {...Responsive.onlyWidescreen}>
@@ -76,9 +96,12 @@ MenuBar.propTypes = {
   toggleSidebarVisibility: propTypes.func.isRequired,
 };
 
-const mapStateToProps = state => (
-  state
-);
+const mapStateToProps = (state) => {
+  const { isLoggedIn } = state.auth;
+  return {
+    isLoggedIn,
+  };
+};
 const mapDispatchToProps = dispatch => (
   bindActionCreators({
     toggleSidebarVisibility,
