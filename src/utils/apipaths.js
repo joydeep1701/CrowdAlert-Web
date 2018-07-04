@@ -2,7 +2,10 @@
  * Contains API paths, which can be imported as required
  */
 const domainName = 'https://crowdalert.herokuapp.com';
-const domainNameL = 'https://127.0.0.1:8000';
+// const domainNameL = 'https://127.0.0.1:8000';
+// const domainNameL = 'https://192.168.0.4:8000';
+const domainNameL = domainName;
+
 /**
  * [GET_LOCATION_BY_IP: request to get approximate location information]
  * @type {String}
@@ -33,6 +36,8 @@ const REVERSE_GEOCODE = `${domainNameL}/api/location/reverse_geocode`;
  */
 const GET_EVENTS_BY_LOCATION = `${domainNameL}/api/events/geteventsbylocation`;
 
+const STATIC_IMAGES = `${domainNameL}/static/images`;
+
 export {
   GET_LOCATION_BY_IP,
   GET_EVENT_BY_ID,
@@ -40,4 +45,5 @@ export {
   REVERSE_GEOCODE,
   GET_EVENTS_BY_LOCATION,
   UPLOAD_IMAGES,
+  STATIC_IMAGES,
 };
