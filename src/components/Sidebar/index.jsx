@@ -6,6 +6,7 @@ import {
   Menu,
   Icon,
   Image,
+  Label,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -13,7 +14,8 @@ import { bindActionCreators } from 'redux';
 import logo from '../../logo.png';
 import styles from './styles';
 import { removeSidebarVisibility } from './actions';
-// import { dispatch } from 'rxjs/internal/observable/pairs';
+import { logoutUserAuthencation } from '../../containers/Auth/actions';
+
 
 /**
  * [LeftSidebar LeftSidebar for the app]
@@ -46,24 +48,69 @@ const LeftSidebar = props => (
             Report
           </Menu.Item>
         </Link>
-        <Menu.Item name="user">
-          <Icon name="user circle" />
-          Profile
-        </Menu.Item>
-        <Link to="/view/-L6MrTH7NgTawjN-LOsd" onClick={props.removeSidebarVisibility}>
-          <Menu.Item name="user">
-            <Icon name="browser" />
-              Sample Incident
+        {props.isLoggedIn ?
+          <Menu.Item name="avatar">
+            <Image
+              avatar
+              src={props.user.photoURL}
+              floated="right"
+              style={{ position: 'fixed', right: '0px', marginRight: '0.7rem', marginTop: '-0.5rem' }}
+            />
+            {props.user.displayName}
+            <Menu.Menu icon="labeled">
+              <Menu.Item />
+              <Menu.Item name="settings">
+                <Icon name="settings" />
+                Settings
+              </Menu.Item>
+              <Menu.Item name="add">
+                <Icon name="user" />
+                Your Profile
+              </Menu.Item>
+              <Menu.Item name="add">
+                <Icon name="tasks" />
+                Your Reports
+              </Menu.Item>
+              <Menu.Item name="add">
+                <Icon name="privacy" />
+                Privacy Policy
+              </Menu.Item>
+            </Menu.Menu>
           </Menu.Item>
-        </Link>
-        <Menu.Item name="logout">
-          <Icon name="sign out" />
-          Sign out
-        </Menu.Item>
+        :
+        null
+        }
+        {props.isLoggedIn ?
+          <Menu.Item
+            name="logout"
+            onClick={() => {
+              props.removeSidebarVisibility();
+              props.signOut();
+            }}
+          >
+            <Icon name="sign out" />
+            Sign out
+          </Menu.Item>
+        :
+          <div>
+            <Link to="/login" onClick={props.removeSidebarVisibility}>
+              <Menu.Item name="logout">
+                <Icon name="sign in" />
+                Login
+              </Menu.Item>
+            </Link>
+            <Link to="/signup" onClick={props.removeSidebarVisibility}>
+              <Menu.Item name="logout">
+                <Icon name="signup" />
+                Sign up
+              </Menu.Item>
+            </Link>
+          </div>
+        }
       </Sidebar>
       <Sidebar.Pusher
         onClick={props.isVisible ? props.removeSidebarVisibility : null}
-        dimmed={props.animation === 'scale down' && props.isVisible? true : false}
+        dimmed={!!(props.animation === 'scale down' && props.isVisible)}
       >
         {props.children}
       </Sidebar.Pusher>
@@ -79,11 +126,18 @@ LeftSidebar.propTypes = {
   children: propTypes.node.isRequired,
 };
 
-const mapStateToProps = state => (
-  state.sidebar
-);
+const mapStateToProps = (state) => {
+  const { user, isLoggedIn } = state.auth;
+  return {
+    ...state.sidebar,
+    isLoggedIn,
+    user,
+  };
+};
+
 const mapDispatchToProps = dispatch => (
   bindActionCreators({
+    signOut: logoutUserAuthencation,
     removeSidebarVisibility,
   }, dispatch)
 );
