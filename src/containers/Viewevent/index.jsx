@@ -45,7 +45,7 @@ MapwithSonar.propTypes = {
 const EventCard = props => (
   <Card style={styleSheet[props.viewmode].cardContainer}>
     <Event.Header
-      user_id={props.user_id}
+      reportedBy={props.reportedBy}
       dateTime={props.datetime}
       reverse_geocode={props.reverse_geocode}
     />
@@ -71,7 +71,7 @@ const EventCard = props => (
 );
 EventCard.propTypes = {
   viewmode: propTypes.string.isRequired,
-  user_id: propTypes.string.isRequired,
+  // reportedBy: propTypes..isRequired,
   datetime: propTypes.number.isRequired,
   title: propTypes.string.isRequired,
   description: propTypes.string,
@@ -123,7 +123,7 @@ class Viewevent extends Component {
   render() {
     console.log('ViewEvent Props', this.props);
     return (
-      <div style={{ paddingTop: '2.5rem', marginBottom: '6rem' }}>
+      <div style={{ paddingTop: '2rem', marginBottom: '6rem' }}>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
             <MapwithSonar
@@ -141,7 +141,7 @@ class Viewevent extends Component {
               :
               <EventCard
                 viewmode="mobile"
-                user_id={this.props.event.data.user_id}
+                reportedBy={this.props.event.data.reportedBy}
                 datetime={this.props.event.data.datetime}
                 title={this.props.event.data.title}
                 description={this.props.event.data.description}
@@ -173,7 +173,7 @@ class Viewevent extends Component {
                         :
                         <EventCard
                           viewmode="desktop"
-                          user_id={this.props.event.data.user_id}
+                          reportedBy={this.props.event.data.reportedBy}
                           datetime={this.props.event.data.datetime}
                           title={this.props.event.data.title}
                           description={this.props.event.data.description}
