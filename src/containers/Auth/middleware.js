@@ -46,6 +46,11 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
             providerData,
           },
         }));
+        // Token is used only in ajax requests
+        Auth.currentUser.getIdToken().then((token) => {
+          console.log("Token Saved");
+          window.sessionStorage.setItem('token', token);
+        });
         console.log('User Logged IN');
       } else {
         window.localStorage.setItem('shouldBeLoggedIn', false);
@@ -71,7 +76,7 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
     };
     Auth.currentUser.sendEmailVerification(actionCodeSettings)
       .then(() => {
-        console.log("Email Sent")
+        console.log('Email Sent');
       })
       .catch((err) => {
         console.log(err);
@@ -97,7 +102,7 @@ const emailPasswordAuthMiddleware = ({ dispatch }) => next => (action) => {
     Auth.signOut()
       .then(() => {
         dispatch(checkUserAuthenticationStatus());
-        history.push("/login/")
+        history.push('/login/');
       })
       .catch((err) => { console.log('Error sign out', err); });
   }
