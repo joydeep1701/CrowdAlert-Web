@@ -179,10 +179,22 @@ CORS_ORIGIN_WHITELIST = (
     'crowdalert.herokuapp.com',
     'crowdalert-dev.herokuapp.com',
     'localhost:3000',
+    '127.0.0.1:3000'
     '127.0.0.1:8000',
     '192.168.0.4:8000' # Should use a regex
 )
-
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'token',
+)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
