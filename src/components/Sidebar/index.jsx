@@ -23,14 +23,14 @@ import { logoutUserAuthencation } from '../../containers/Auth/actions';
  */
 const LeftSidebar = props => (
   <div style={styles.fitContainer}>
-    <Sidebar.Pushable as={Segment}>
+    <Sidebar.Pushable>
       <Sidebar
         as={Menu}
         animation={props.animation}
         visible={props.isVisible}
         vertical
-        style={styles.sidebar}
         inverted
+        style={styles.sidebar}
       >
         <Menu.Item name="logo">
           <Image src={logo} size="small" bordered centered />
@@ -111,6 +111,7 @@ const LeftSidebar = props => (
       <Sidebar.Pusher
         onClick={props.isVisible ? props.removeSidebarVisibility : null}
         dimmed={!!(props.animation === 'scale down' && props.isVisible)}
+        
       >
         {props.children}
       </Sidebar.Pusher>

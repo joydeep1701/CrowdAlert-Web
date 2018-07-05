@@ -114,33 +114,16 @@ class Viewevent extends Component {
     };
   }
   componentWillMount() {
-    const eventid = this.props.match.params.eventid;
+    const { eventid } = this.props.match.params;
     const shouldRefresh =
       this.props.match.params.eventid !== this.props.event.data.eventid;
 
     this.props.fetchEventData({ eventid, shouldRefresh });
-    //this.getEventData();
-  }
-  /**
-   * [getEventData Issue fetch requests to server to get data]
-   * @return {[none]}
-   */
-  getEventData() {
-    // Fetch the json data for the given event id
-    const lat = this.state.event.location.coords.latitude;
-    const long = this.state.event.location.coords.longitude;        
-    fetch()
-      .then((response) => {
-        this.setState({
-          ...this.state,
-          reverse_geocode: response,
-        });
-      })
   }
   render() {
     console.log('ViewEvent Props', this.props);
     return (
-      <div>
+      <div style={{ paddingTop: '2.5rem', marginBottom: '6rem' }}>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
             <MapwithSonar
