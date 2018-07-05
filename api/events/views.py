@@ -37,7 +37,14 @@ class EventView(APIView):
         query = request.GET.get('id','')
         if query == '':
             return HttpResponseBadRequest("Bad request: No Id specified")
+
         data = db.child('incidents').child(query).get().val()
+        for key in data['reportedBy']:
+            udata = db.child('users').child(data['reportedBy'][key]).get().val()
+            data['reportedBy'][key] = {
+                'displayName': udata['displayName'],
+                'photoURL': udata['photoURL'],
+            }
         return JsonResponse(data, safe=False)
 
     def post(self, request):    
@@ -48,8 +55,7 @@ class EventView(APIView):
             Location validation
             Spam classification
         """
-
-        eventData = request.POST.get('eventData','')
+        eventData = json.loads(request.body.decode()).get('eventData','')
         if eventData == '':
             return HttpResponseBadRequest("Bad request")
         decoded_json = json.loads(eventData)
@@ -57,10 +63,11 @@ class EventView(APIView):
         decoded_json['comments'] = ''
         decoded_json['images'] = {}
         decoded_json['upvotes'] = 0
-        decoded_json['user_email'] = "digital0signature@gmail.com"
-        decoded_json['user_id'] = "digital0signature@gmailcom"
         data = db.child('incidents').push(decoded_json)
         key = data['name']
+        uid = str(request.user)
+        db.child('incidents/' + str(key) + '/reportedBy/').push(uid)
+        db.child('users/' + uid + '/incidents/').push(key)
         return JsonResponse({"eventId":str(key)}) 
 
 class MultipleEventsView(APIView):
