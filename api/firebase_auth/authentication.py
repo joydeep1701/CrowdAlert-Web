@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import auth
 from rest_framework import exceptions
 from django.conf import settings
-import os
+from api.firebase_auth.users import FirebaseUser
 
 class TokenAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
@@ -11,7 +11,7 @@ class TokenAuthentication(authentication.BaseAuthentication):
             token = request.META.get('HTTP_TOKEN', False)
             if not token:
                 return None
-            user = auth.verify_id_token(token)
+            user = FirebaseUser(auth.verify_id_token(token))
         except Exception as e:
             print(e)
             raise exceptions.AuthenticationFailed('Authentication Failed')
