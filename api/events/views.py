@@ -4,6 +4,9 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from api.location.gps import distance
 from rest_framework.views import APIView
+from rest_framework import permissions
+from api.firebase_auth.authentication import TokenAuthentication
+from api.firebase_auth.permissions import FirebasePermissions
 import json
 import time
 
@@ -12,7 +15,10 @@ db = settings.FIREBASE.database()
 class EventView(APIView):
     """API view class for events
     """
-    # authentication_classes = (authentication.FIREBASE_AUTH)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (FirebasePermissions,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
     def get(self,request):
         """Returns events within a certain radius for a given location
         
