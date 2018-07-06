@@ -9,8 +9,6 @@ import { GET_IMAGE_URLS } from '../../utils/apipaths';
  * @param {[type]} props [description]
  */
 
-const undefinedURL = 'https://firebasestorage.googleapis.com/v0/b/crowdalert-4fa46.appspot.com/o/images%2Fundefined?alt=media';
-
 export default class ImageModal extends Component {
   constructor(props) {
     super(props);
@@ -22,20 +20,14 @@ export default class ImageModal extends Component {
   }
   componentWillMount() {
     if (this.state.uuid) {
-      fetch(`${GET_IMAGE_URLS}?uuid=${this.state.uuid}`)
-      // Decode json
-        .then(response => response.json())
-        .then((response) => {
-          // reject if something bad happens
-          if (response === null) {
-            throw Error('Image not found');
-          }
-          this.setState({
-            ...this.state,
-            imageUrls: response,
-            loading: false,
-          });
-        });
+      this.setState({
+        ...this.state,
+        imageUrls: {
+          url: `${GET_IMAGE_URLS}?uuid=${this.state.uuid}`,
+          thumbnail: `${GET_IMAGE_URLS}?uuid=${this.state.uuid}&mode=thumbnail`,
+        },
+        loading: false,
+      });
     } else if (!!this.state.base64 === true) {
       this.setState({
         ...this.state,
@@ -50,8 +42,7 @@ export default class ImageModal extends Component {
   render() {
     // console.log(props.imageUrls.url,undefinedURL, props.imageUrls.url === undefinedURL);
     if (this.state.loading !== true
-      && this.state.imageUrls.url !== ''
-      && this.state.imageUrls.url !== undefinedURL) {
+      && this.state.imageUrls.url !== '') {
       return (
         <Modal
           trigger={
@@ -61,7 +52,7 @@ export default class ImageModal extends Component {
                 ? this.state.imageUrls.url
                 : this.state.imageUrls.thumbnail}`}
               size="small"
-              style={{ height: '10rem', backgroundImage: `url(${this.state.imageUrls.thumbnail})` }}
+              style={{ height: '10vh', backgroundImage: `url(${this.state.imageUrls.thumbnail})` }}
             />
           }
           closeIcon

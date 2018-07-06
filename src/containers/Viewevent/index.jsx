@@ -16,6 +16,8 @@ import {
   MapWrapper,
   LoadingCard,
   Sonar,
+  CommentsSection,
+  ImagesBox,
 } from '../../components';
 
 import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
@@ -130,9 +132,9 @@ class Viewevent extends Component {
               latitude={this.props.map.lat}
               longitude={this.props.map.lng}
               type={this.state.event.category}
-              id={this.state.eventid} 
+              id={this.state.eventid}
             />
-        
+
           </div>
           <Item style={styleSheet.mobile.itemContainer}>
             {
@@ -150,6 +152,8 @@ class Viewevent extends Component {
                 eventType={this.props.event.data.category}
               />
           }
+            <CommentsSection />
+
           </Item>
         </Responsive>
         <Responsive minWidth={901}>
@@ -182,6 +186,7 @@ class Viewevent extends Component {
                           eventType={this.props.event.data.category}
                         />
                     }
+                    <CommentsSection />
                   </Item>
                 </Grid.Column>
               </Grid.Row>
@@ -206,10 +211,8 @@ const mapDispatchToProps = dispatch => (
     fetchEventData,
   }, dispatch)
 );
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = (state) => ({
     map: state.map,
     event: state.event,
-  };
-};
+  });
 export default connect(mapStateToProps, mapDispatchToProps)(Viewevent);
