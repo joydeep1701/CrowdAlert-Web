@@ -5,6 +5,9 @@ import {
   AUTH_LOGIN_SUCCESS_EMAIL_PASSWORD,
   AUTH_LOGIN_ERROR_EMAIL_PASSWORD,
   AUTH_CHECK_USER_STATUS,
+  AUTH_SIGNUP_EMAIL_PASSWORD,
+  AUTH_SIGNUP_EMAIL_PASSWORD_ERROR,
+  AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS,
 } from './actionTypes';
 
 const initialState = {
@@ -77,6 +80,33 @@ function authenticationReducer(state = initialState, action) {
       return {
         ...state,
         authenticating: true,
+      };
+    case AUTH_SIGNUP_EMAIL_PASSWORD:
+      return {
+        ...state,
+        signupForm: {
+          ...state.signupForm,
+          loading: true,
+          errors: false,
+        },
+      };
+    case AUTH_SIGNUP_EMAIL_PASSWORD_ERROR:
+      return {
+        ...state,
+        signupForm: {
+          ...state.signupForm,
+          loading: false,
+          errors: true,
+          message: action.payload.message,
+        },
+      };
+    case AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        signupForm: {
+          ...state.signupForm,
+          loading: false,
+        },
       };
     default:
       break;

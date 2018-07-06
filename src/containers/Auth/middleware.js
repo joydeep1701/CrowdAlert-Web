@@ -1,6 +1,8 @@
 /* global window */
 import {
   AUTH_LOGIN_SUBMIT_EMAIL_PASSWORD,
+  AUTH_SIGNUP_EMAIL_PASSWORD,
+  AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS,
   AUTH_LOGOUT_SUBMIT,
   AUTH_CHECK_USER_STATUS,
   AUTH_SEND_VERIFICATION_EMAIL,
@@ -11,6 +13,9 @@ import {
   updateUserAuthenticationData,
   successEmailPasswordAuthentication,
   errorEmailPasswordAuthentication,
+  signUpEmailPasswordError,
+  signUpEmailPasswordSuccess,
+  sendEmailVerificationAuth,
 } from './actions';
 import history from '../../';
 import {
@@ -84,6 +89,7 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
   }
   next(action);
 };
+
 const emailPasswordAuthMiddleware = ({ dispatch }) => next => (action) => {
   if (action.type === AUTH_LOGIN_SUBMIT_EMAIL_PASSWORD) {
     const { email } = action.payload;
@@ -97,6 +103,23 @@ const emailPasswordAuthMiddleware = ({ dispatch }) => next => (action) => {
       .catch((err) => {
         dispatch(errorEmailPasswordAuthentication(err.message));
       });
+  }
+  if (action.type === AUTH_SIGNUP_EMAIL_PASSWORD) {
+    const { email, password, fullname } = action.payload;
+    dispatch(checkUserAuthenticationStatus());
+    Auth.createUserWithEmailAndPassword(email, password).then((user) => {
+      dispatch(sendEmailVerificationAuth(email));
+      // dispatch(signUpEmailPasswordSuccess(fullname));
+      user.updateProfile({
+        displayName: fullname,
+      });
+    }).catch((err) => {
+      console.log(err.message);
+      dispatch(signUpEmailPasswordError(err.message));
+    });
+  }
+  if (action.type === AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS) {
+    // Auth.currentUser
   }
   if (action.type === AUTH_LOGOUT_SUBMIT) {
     Auth.signOut()

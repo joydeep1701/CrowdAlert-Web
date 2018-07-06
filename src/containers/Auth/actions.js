@@ -2,6 +2,9 @@ import {
   AUTH_LOGIN_SUBMIT_EMAIL_PASSWORD,
   AUTH_LOGIN_SUCCESS_EMAIL_PASSWORD,
   AUTH_LOGIN_ERROR_EMAIL_PASSWORD,
+  AUTH_SIGNUP_EMAIL_PASSWORD,
+  AUTH_SIGNUP_EMAIL_PASSWORD_ERROR,
+  AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS,
   AUTH_CHECK_USER_STATUS,
   AUTH_LOGOUT_SUBMIT,
   AUTH_LOGOUT_SUCCESS,
@@ -102,6 +105,9 @@ export function verifyEmailAuthSuccess() {
 export function verifyEmailAuthError(message) {
   return {
     type: AUTH_VERIFY_EMAIL_LINK_ERROR,
+    payload: {
+      message,
+    },
   };
 }
 export function signInOAuth(provider) {
@@ -123,5 +129,31 @@ export function signInOAuthError(message) {
 export function signInOAuthSuccess() {
   return {
     type: AUTH_OAUTH_SIGNIN_SUCCESS,
+  };
+}
+export function signUpEmailPassword(email, fullname, password) {
+  return {
+    type: AUTH_SIGNUP_EMAIL_PASSWORD,
+    payload: {
+      fullname,
+      email,
+      password,
+    },
+  };
+}
+export function signUpEmailPasswordSuccess(fullname) {
+  return {
+    type: AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS,
+    payload: {
+      fullname,
+    },
+  };
+}
+export function signUpEmailPasswordError(message) {
+  return {
+    type: AUTH_SIGNUP_EMAIL_PASSWORD_ERROR,
+    payload: {
+      message,
+    },
   };
 }
