@@ -23,6 +23,7 @@ const styleSheet = {
       width: '100%',
       height: '90vh',
       left: '0px',
+      padding: '0.8rem',
     },
     itemContainer: {
       margin: '10px',

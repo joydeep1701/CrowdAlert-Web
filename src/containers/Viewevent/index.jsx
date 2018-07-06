@@ -123,7 +123,7 @@ class Viewevent extends Component {
   render() {
     console.log('ViewEvent Props', this.props);
     return (
-      <div style={{ paddingTop: '2rem', marginBottom: '6rem' }}>
+      <div style={{ paddingTop: '1rem', marginBottom: '6rem' }}>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
             <MapwithSonar
