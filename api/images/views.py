@@ -7,7 +7,7 @@ from threading import Thread
 import os
 from uuid import uuid4
 import base64
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
 import time
 
 storage = settings.FIREBASE.storage()
@@ -50,6 +50,7 @@ class ImagesView(APIView):
 
         GET request parameters:
             uuid: uuid of the image whose urls are to be fetched. [Required]
+            mode: type of image, either of image or thumbnail
         
         Arguments:
             request {[type]} -- [ Contains the django request object]
@@ -61,11 +62,15 @@ class ImagesView(APIView):
         """
         
         uuid = request.GET.get('uuid','')
+        mode = request.GET.get('mode', 'image')
         if uuid == '':
             return HttpResponseBadRequest("Bad request: Specify the image uuid")
-        url = storage.child('images').child(uuid).get_url('')
-        thumbnail_url = storage.child('thumbnails').child(uuid.split('.')[0]+'.svg').get_url('')
-        return JsonResponse({'url': url, 'thumbnail': thumbnail_url})
+
+        if mode == 'image':
+            url = storage.child('images').child(uuid).get_url('')
+        elif mode == 'thumbnail':
+            url = storage.child('thumbnails').child(uuid.split('.')[0]+'.svg').get_url('')
+        return HttpResponseRedirect(url)
 
     def post(self, request):
         """Allow users to post images i.e upload images to cloud storage.
