@@ -54,7 +54,7 @@ const EmailSent = props => (
       content="In order to prevent spam, we need to verify your email address"
     />
     <Segment attached>
-      <p>An email was sent to your registered email ID.</p>
+      <p>An email was sent to your registered email ID {props.user.email}.</p>
       <p>Click on the link to verify your account.</p>
     </Segment>
     <Segment attached textAlign="right">
@@ -155,6 +155,7 @@ class ConfirmEmail extends PureComponent {
               {!isEmailLink ?
                 <EmailSent
                   sendEmailVerification={this.props.sendEmailVerificationAuth}
+                  user={this. props.user}
                 />
               : null}
 
@@ -171,8 +172,10 @@ ConfirmEmail.propTypes = {
 };
 const mapStateToProps = (state) => {
   const { confirmEmailForm } = state.auth;
+  const { user } = state.auth;
   return {
     confirmEmailForm,
+    user,
   };
 };
 const mapDispatchToProps = dispatch => (
