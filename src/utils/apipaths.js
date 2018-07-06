@@ -38,6 +38,8 @@ const GET_EVENTS_BY_LOCATION = `${domainNameL}/api/events/geteventsbylocation`;
 
 const STATIC_IMAGES = `${domainNameL}/static/images`;
 
+const USER_PROFILES = `${domainNameL}/api/users/user`;
+
 export {
   GET_LOCATION_BY_IP,
   GET_EVENT_BY_ID,
@@ -46,4 +48,5 @@ export {
   GET_EVENTS_BY_LOCATION,
   UPLOAD_IMAGES,
   STATIC_IMAGES,
+  USER_PROFILES,
 };
