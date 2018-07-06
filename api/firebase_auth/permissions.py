@@ -12,7 +12,7 @@ class FirebasePermissions(permissions.BasePermission):
             return True
         elif request.method == 'POST':
             # Make sure email is verified
-            if request.user and request.user.is_authenticated:
+            if request.user and request.user.is_authenticated and request.user.is_email_verified:
                 return True
             return False
 

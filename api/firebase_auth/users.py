@@ -6,5 +6,6 @@ class FirebaseUser(User):
         self.uid = firebase_data.get('user_id')
         self.name = firebase_data.get('name')
         # Allow activity from verified email
-        User.is_authenticated = firebase_data.get('email_verified', False)
+        User.is_authenticated = True
+        User.is_email_verified = firebase_data.get('email_verified', False)
         print("Logged in as", self.name)
