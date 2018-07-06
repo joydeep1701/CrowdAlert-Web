@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, Form, Message } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import PropTypes from 'prop-types';
 import { submitEmailPasswordAuthentication } from './actions';
 class LoginForm extends Component {
@@ -62,7 +61,12 @@ class LoginForm extends Component {
             />
           </Form.Field>
           <Form.Field>
-            <Button primary fluid loading={this.props.loginForm.loading} disabled={this.props.loginForm.loading}>
+            <Button
+              primary
+              fluid
+              loading={this.props.loginForm.loading}
+              disabled={this.props.loginForm.loading}
+            >
               Login
             </Button>
           </Form.Field>
