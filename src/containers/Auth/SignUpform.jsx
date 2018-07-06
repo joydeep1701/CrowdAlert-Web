@@ -9,9 +9,9 @@ class SignUpForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      email: 'joydeep.mukherjee1701@gmail.com',
-      fullname: 'Joydeep',
-      password: 'joydeep127',
+      email: '',
+      fullname: '',
+      password: '',
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);

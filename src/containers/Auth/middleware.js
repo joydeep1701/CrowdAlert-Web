@@ -2,7 +2,6 @@
 import {
   AUTH_LOGIN_SUBMIT_EMAIL_PASSWORD,
   AUTH_SIGNUP_EMAIL_PASSWORD,
-  AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS,
   AUTH_LOGOUT_SUBMIT,
   AUTH_CHECK_USER_STATUS,
   AUTH_SEND_VERIFICATION_EMAIL,
@@ -17,6 +16,7 @@ import {
   signUpEmailPasswordSuccess,
   sendEmailVerificationAuth,
 } from './actions';
+import { updateUserData } from '../User/actions';
 import history from '../../';
 import {
   FacebookAuth,
@@ -108,18 +108,22 @@ const emailPasswordAuthMiddleware = ({ dispatch }) => next => (action) => {
     const { email, password, fullname } = action.payload;
     dispatch(checkUserAuthenticationStatus());
     Auth.createUserWithEmailAndPassword(email, password).then((user) => {
+      // Send a verificaiton mail
       dispatch(sendEmailVerificationAuth(email));
-      // dispatch(signUpEmailPasswordSuccess(fullname));
+      // Update the firebase profile
       user.updateProfile({
         displayName: fullname,
+      });
+      // Make sure that we have the token before dispatching an async action
+      user.getIdToken().then((token) => {
+        window.sessionStorage.setItem('token', token);
+        dispatch(updateUserData({ userData: { displayName: fullname } }));
       });
     }).catch((err) => {
       console.log(err.message);
       dispatch(signUpEmailPasswordError(err.message));
     });
-  }
-  if (action.type === AUTH_SIGNUP_EMAIL_PASSWORD_SUCCESS) {
-    // Auth.currentUser
+    dispatch(signUpEmailPasswordSuccess(fullname));
   }
   if (action.type === AUTH_LOGOUT_SUBMIT) {
     Auth.signOut()
