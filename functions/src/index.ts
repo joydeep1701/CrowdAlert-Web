@@ -4,11 +4,10 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 
 export const updateUserData = functions.auth.user().onCreate((user) => { // eslint-disable-line import/prefer-default-export
-  const {
-    uid,
-    photoURL,
-    displayName,
-  } = user;
+  const { uid } = user;
+  const photoURL = user.photoURL || false;
+  const displayName = user.displayName || " ";
+
   return admin.database().ref(`/users/${uid}`).update({
     displayName,
     photoURL,
