@@ -7,7 +7,7 @@ import {
 } from 'semantic-ui-react';
 import eventStyles from './styleSheet';
 import calcAge from '../../utils/time';
-
+import { STATIC_IMAGES } from '../../utils/apipaths';
 /**
  * [EventHeader description]
  * @param {[type]} props [description]
@@ -21,7 +21,7 @@ const EventHeader = (props) => {
       <Feed.Event>
         <Feed.Label>
           <Image
-            src={reporters[0].photoURL}
+            src={reporters[0].photoURL || `${STATIC_IMAGES}/meerkat.svg`}
           />
         </Feed.Label>
         <Feed.Content>
@@ -29,7 +29,6 @@ const EventHeader = (props) => {
             {calcAge(props.dateTime)}
           </Feed.Date>
           <Feed.Summary>
-            
             <p>{reporters[0].displayName } reported an incident</p>
           </Feed.Summary>
           <br />
