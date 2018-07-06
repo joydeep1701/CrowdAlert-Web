@@ -110,7 +110,7 @@ export function submitFormErrorCreateEvents(error = {}) {
     payload: {
       message: {
         header: 'Unable to process your request',
-        payload: error.response,
+        body: error.response.detail,
       },
     },
   };
