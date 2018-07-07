@@ -1,11 +1,16 @@
 import {
   COMMENTS_FETCH_THREAD,
   COMMENTS_FETCH_THREAD_SUCCESS,
+  COMMENTS_POST_TO_THREAD,
+  COMMENTS_POST_TO_THREAD_ERROR,
 } from './actionTypes';
 
 const initialState = {
   threadId: null,
   loading: true,
+  commentButtonLoading: false,
+  errors: false,
+  message: null,
   comments: {},
   userData: {},
 };
@@ -25,12 +30,26 @@ function commentsReducer(state = initialState, action) {
       key,
       ...objComments[key],
     }));
-    console.log(comments);
     return {
       ...state,
       loading: false,
       comments,
       userData: action.payload.userData,
+      commentButtonLoading: false,
+    };
+  }
+  if (action.type === COMMENTS_POST_TO_THREAD) {
+    return {
+      ...state,
+      commentButtonLoading: true,
+    };
+  }
+  if (action.type === COMMENTS_POST_TO_THREAD_ERROR) {
+    return {
+      ...state,
+      commentButtonLoading: false,
+      errors: true,
+      message: action.payload.detail,
     };
   }
   return state;
