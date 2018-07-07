@@ -6,7 +6,7 @@ const styles = {
     height: '100vh',
   },
   sidebar: {
-    width: '300px',
+    // width: '300px',
   },
   bottomBar: {
     width: '100%',
