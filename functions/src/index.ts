@@ -5,8 +5,8 @@ admin.initializeApp();
 
 export const updateUserData = functions.auth.user().onCreate((user) => { // eslint-disable-line import/prefer-default-export
   const { uid } = user;
-  const photoURL = user.photoURL || false;
-  const displayName = user.displayName || " ";
+  const photoURL = user.photoURL || "https://crowdalert.herokuapp.com/static/images/meerkat.svg";
+  const displayName = user.displayName || "Anonymous Meerkat";
 
   return admin.database().ref(`/users/${uid}`).update({
     displayName,

@@ -45,6 +45,7 @@ class LoginForm extends Component {
               placeholder="Email"
               label="Email"
               name="email"
+              type="email"
               value={this.state.email}
               onChange={this.handleInputChange}
               autoComplete="off"
