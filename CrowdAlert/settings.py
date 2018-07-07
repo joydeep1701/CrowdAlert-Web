@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     'api.events',
     'api.location',
     'api.images',
+    'api.users',
+    'api.comments',
     'corsheaders',
     'api.firebase_auth',
 ]
