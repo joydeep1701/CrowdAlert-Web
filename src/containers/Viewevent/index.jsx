@@ -17,7 +17,6 @@ import {
   LoadingCard,
   Sonar,
   CommentsSection,
-  ImagesBox,
 } from '../../components';
 
 import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
@@ -107,14 +106,6 @@ EventCard.defaultProps = {
  * @type {Object}
  */
 class Viewevent extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...this.props.match.params,
-      loading: true,
-      event: {},
-    };
-  }
   componentWillMount() {
     const { eventid } = this.props.match.params;
     const shouldRefresh =
@@ -131,8 +122,7 @@ class Viewevent extends Component {
             <MapwithSonar
               latitude={this.props.map.lat}
               longitude={this.props.map.lng}
-              type={this.state.event.category}
-              id={this.state.eventid}
+              type={this.props.event.data.category}
             />
 
           </div>
@@ -152,8 +142,11 @@ class Viewevent extends Component {
                 eventType={this.props.event.data.category}
               />
           }
-            <CommentsSection />
-
+            {!this.props.event.isLoading ?
+              <CommentsSection
+                threadId={this.props.match.params.eventid}
+              />
+            : null }
           </Item>
         </Responsive>
         <Responsive minWidth={901}>
@@ -186,7 +179,11 @@ class Viewevent extends Component {
                           eventType={this.props.event.data.category}
                         />
                     }
-                    <CommentsSection />
+                    {!this.props.event.isLoading ?
+                      <CommentsSection
+                        threadId={this.props.match.params.eventid}
+                      />
+                    : null }
                   </Item>
                 </Grid.Column>
               </Grid.Row>
@@ -211,8 +208,8 @@ const mapDispatchToProps = dispatch => (
     fetchEventData,
   }, dispatch)
 );
-const mapStateToProps = (state) => ({
-    map: state.map,
-    event: state.event,
-  });
+const mapStateToProps = state => ({
+  map: state.map,
+  event: state.event,
+});
 export default connect(mapStateToProps, mapDispatchToProps)(Viewevent);
