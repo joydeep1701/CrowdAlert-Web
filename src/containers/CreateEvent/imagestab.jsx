@@ -9,6 +9,7 @@ import {
   Image as SemanticImage,
   Icon,
   Progress,
+  Header,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -116,9 +117,6 @@ class ImagesTab extends Component {
     });
   }
   render() {
-    if (this.props.tabs.activeTab !== 2) {
-      return null;
-    }
     let uploaded = 0;
     const total = Object.keys(this.state.images).length;
 
@@ -129,6 +127,19 @@ class ImagesTab extends Component {
           <Loader />
         </Dimmer>
         <Segment attached color="brown">
+          <Header as="h3" dividing>
+            <Icon name="camera" />
+            <Header.Content>
+              Upload Images
+              <Header.Subheader>
+                Uploading images gives your report credibility
+              </Header.Subheader>
+              <Header.Subheader>
+                <br />
+              </Header.Subheader>
+
+            </Header.Content>
+          </Header>
 
           <Grid columns={2} divided>
             <Grid.Row>
@@ -234,7 +245,7 @@ class ImagesTab extends Component {
                           />
                         </Image>
                       );
- })
+                    })
                   }
                 </SemanticImage.Group>
               </Grid.Column>
