@@ -73,19 +73,19 @@ class MapWrapper extends Component {
       lat,
       lng,
       zoom,
+      fetch: this.props.shouldFetch,
     });
   }
   onCenterChanged() {
     const lat = this.state.mapRef.getCenter().lat();
     const lng = this.state.mapRef.getCenter().lng();
     const zoom = this.state.mapRef.getZoom();
-    if (this.props.shouldFetch) {
-      this.props.updateMapCenter({
-        lat,
-        lng,
-        zoom,
-      });
-    }
+    this.props.updateMapCenter({
+      lat,
+      lng,
+      zoom,
+      fetch: this.props.shouldFetch,
+    });
   }
   handleOnClick(e) {
     const lat = e.latLng.lat();

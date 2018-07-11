@@ -5,6 +5,9 @@ import {
   Segment,
   Grid,
   Button,
+  Header,
+  Icon,
+  Progress,
 } from 'semantic-ui-react';
 import {
   MapWrapper,
@@ -16,35 +19,57 @@ import {
 } from './actions';
 
 const MapTab = (props) => {
-  if (props.tabs.activeTab !== 0) {
-    return null;
-  }
   return (
-    <Segment attached color="yellow">    
+    <Segment attached color="yellow">
+      <Progress percent={33} attached='top' />
       <Grid>
         <Grid.Row>
-          <div
-            style={{
-              width: '100%',
-              height: '50vh',
-              left: '0px',
-            }}
-          >
-            <MapWrapper
-              dispatchOnClick
-              shouldFetch={false}
-            >
-              <Sonar
-                lat={props.location.mapCenter.lat || props.map.lat}
-                lng={props.location.mapCenter.lng || props.map.lng}
-                id={null}
-              />
-            </MapWrapper>
-          </div>
+          <Grid.Column>
+            <Header as='h3'>
+              <Icon name='marker' />
+              <Header.Content>
+                Location Information
+                <Header.Subheader>Update the incident location by clicking on the map</Header.Subheader>
+              </Header.Content>
+            </Header>
+          </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column>
-            <p>{props.location.text}</p>           
+            <div
+              style={{
+                width: '100%',
+                height: '50vh',
+                left: '0px',
+              }}
+            >
+              <MapWrapper
+                dispatchOnClick
+                shouldFetch={false}
+              >
+                {props.location.mapCenter.lat?
+                  <Sonar
+                    lat={props.location.mapCenter.lat || props.map.lat}
+                    lng={props.location.mapCenter.lng || props.map.lng}
+                    id={null}
+                  />
+                : null }
+
+              </MapWrapper>
+            </div>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Header as='h4'>
+              <Icon name='bullseye' />
+              <Header.Content>
+                Current Map Location
+                <Header.Subheader>
+                  {props.location.text}
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
             <GeoLocator
               static
               fetchOnLoad={!props.tabs.isValid.location}
@@ -60,8 +85,11 @@ const MapTab = (props) => {
                 props.location.disabled
                 || false} 
               onClick={() => props.handleSaveLocation()}
+              icon
+              labelPosition='right'
             >
-              Save Location
+              <Icon name='right arrow' />
+              Proceed
             </Button>
           </Grid.Column>
         </Grid.Row>
