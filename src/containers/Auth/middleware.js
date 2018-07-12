@@ -26,6 +26,19 @@ import {
 
 const authMiddleware = ({ dispatch }) => next => (action) => {
   if (action.type === AUTH_CHECK_USER_STATUS) {
+    // Make sure we are forwarding the action & then doing the async suff
+    // in the background
+    next(action);
+
+    const localStorageUserData = JSON.parse(window.localStorage.getItem('user'));
+
+    if (localStorageUserData) {
+      dispatch(updateUserAuthenticationData({
+        loggedIn: true,
+        user: localStorageUserData,
+      }));
+    }
+
     Auth.onAuthStateChanged((user) => {
       if (user) {
         const {
@@ -36,10 +49,9 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
           uid,
           providerData,
         } = user;
+        // Hint the app on the next load to fetch the user data
         window.localStorage.setItem('shouldBeLoggedIn', true);
-        if (!emailVerified) {
-          history.push('/auth/confirmEmail');
-        }
+        // Update the store
         dispatch(updateUserAuthenticationData({
           loggedIn: true,
           user: {
@@ -51,6 +63,21 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
             providerData,
           },
         }));
+        // Save the user data in localStorage so that we can retrieve it
+        // when the app loads up next
+        window.localStorage.setItem('user', JSON.stringify({
+          displayName,
+          email,
+          emailVerified,
+          photoURL,
+          uid,
+          providerData,
+        }));
+        if (!emailVerified) {
+          // Make sure we are not trying to authenticate on next load
+          window.localStorage.setItem('shouldBeLoggedIn', false);
+          history.push('/auth/confirmEmail');
+        }
         // Token is used only in ajax requests
         Auth.currentUser.getIdToken().then((token) => {
           console.log("Token Saved");
@@ -59,6 +86,7 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
         console.log('User Logged IN');
       } else {
         window.localStorage.setItem('shouldBeLoggedIn', false);
+        window.localStorage.removeItem('user');
         window.sessionStorage.removeItem('token');
         dispatch(updateUserAuthenticationData({
           loggedIn: false,
@@ -67,6 +95,7 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
         console.log('Not Logged IN');
       }
     });
+    return;
   }
   if (action.type === AUTH_SEND_VERIFICATION_EMAIL) {
     const actionCodeSettings = {
@@ -92,9 +121,12 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
 };
 
 const emailPasswordAuthMiddleware = ({ dispatch }) => next => (action) => {
+  // Proceed to next middleware as there are no dependencies
+  next(action);
+  // Then manage the async stuff
   if (action.type === AUTH_LOGIN_SUBMIT_EMAIL_PASSWORD) {
-    const { email } = action.payload;
-    const { password } = action.payload;
+    const { email, password } = action.payload;
+
     Auth.signInWithEmailAndPassword(email, password)
       .then(() => {
         dispatch(successEmailPasswordAuthentication());
@@ -135,9 +167,8 @@ const emailPasswordAuthMiddleware = ({ dispatch }) => next => (action) => {
       })
       .catch((err) => { console.log('Error sign out', err); });
   }
-  next(action);
 };
-const oAuthMiddleware = ({ dispatch }) => next => (action) => {
+const oAuthMiddleware = () => next => (action) => {
   if (action.type === AUTH_OAUTH_SIGNIN) {
     window.localStorage.setItem('shouldBeLoggedIn', true);
     switch (action.payload.provider) {

@@ -13,7 +13,7 @@ import {
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import getEventColor from '../../utils/eventcolors';
 import getEventIcon from '../../utils/eventicon';
 
@@ -32,6 +32,9 @@ const eventOptions = [
 ];
 
 const FormTab = (props) => {
+  if (props.reportForm.isFreezed && !props.reportForm.loading) {
+    return (<Redirect to="/create/images" />);
+  }
   return (
     <Segment>
       <Progress
