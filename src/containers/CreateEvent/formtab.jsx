@@ -166,11 +166,11 @@ const FormTab = (props) => {
               <Form.Field disabled={props.reportForm.isFreezed}>
                 <Checkbox
                   label={{ children: 'Report incident anonymously' }}
-                  checked={props.details.public}
+                  checked={props.details.anonymous}
                   onChange={() => props.handleInputChange({
                       target: {
-                        checked: !props.details.public,
-                        name: 'public',
+                        checked: !props.details.anonymous,
+                        name: 'anonymous',
                         type: 'checkbox',
                       },
                     })}
@@ -197,8 +197,8 @@ const FormTab = (props) => {
                 floated="right"
                 color="orange"
                 onClick={(e) => {
-                  e.preventDefault();
-                  props.handleSubmit();
+                    e.preventDefault();
+                    props.handleSubmit();
                   }
                 }
                 disabled={
