@@ -45,10 +45,10 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
           displayName,
           email,
           emailVerified,
-          photoURL,
           uid,
           providerData,
         } = user;
+        const photoURL = user.photoURL || 'https://crowdalert.herokuapp.com/static/images/meerkat.svg';
         // Hint the app on the next load to fetch the user data
         window.localStorage.setItem('shouldBeLoggedIn', true);
         // Update the store
@@ -80,7 +80,6 @@ const authMiddleware = ({ dispatch }) => next => (action) => {
         }
         // Token is used only in ajax requests
         Auth.currentUser.getIdToken().then((token) => {
-          console.log("Token Saved");
           window.sessionStorage.setItem('token', token);
         });
         console.log('User Logged IN');
