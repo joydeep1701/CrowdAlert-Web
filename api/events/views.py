@@ -47,7 +47,7 @@ class EventView(APIView):
                 }
             else:
                 user_id = data['reportedBy'][key]['userId']
-                udata = db.child('users' + user_id).get().val()
+                udata = db.child('users/' + user_id).get().val()
                 data['reportedBy'][key] = {
                     'displayName': udata['displayName'],
                     'photoURL': udata['photoURL'],
