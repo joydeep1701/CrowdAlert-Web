@@ -19,7 +19,6 @@ import {
   CommentsSection,
 } from '../../components';
 
-import { updateMapCenter, updateMapZoom } from '../../components/Map/actions';
 import { fetchEventData } from './actions';
 
 import styleSheet from './style';
@@ -46,8 +45,11 @@ const MapwithSonar = props => (
 MapwithSonar.propTypes = {
   latitude: propTypes.number.isRequired,
   longitude: propTypes.number.isRequired,
-  type: propTypes.string.isRequired,
+  type: propTypes.string,
   loading: propTypes.bool.isRequired,
+};
+MapwithSonar.defaultProps = {
+  type: undefined,
 };
 /**
  * [EventCard Combines the all the three parts of event cards to form a single
@@ -106,10 +108,6 @@ EventCard.defaultProps = {
   reverse_geocode: { name: '', admin2: '', admin1: '' },
   description: '',
   eventType: 'N/A',
-  imageUrls: {
-    thumbnail: '',
-    url: '',
-  },
 };
 /**
  * [Viewevents Responsive Viewevents component. Fetches data & renders the
@@ -121,7 +119,6 @@ class Viewevent extends Component {
     const { eventid } = this.props.match.params;
     const shouldRefresh =
       this.props.match.params.eventid !== this.props.event.data.eventid;
-
     this.props.fetchEventData({ eventid, shouldRefresh });
   }
   render() {
@@ -130,7 +127,7 @@ class Viewevent extends Component {
     if (this.props.event.isLoading) {
       ({ lat, lng } = this.props.map);
     } else {
-      ({latitude: lat, longitude: lng } = this.props.event.data.location.coords);
+      ({ latitude: lat, longitude: lng } = this.props.event.data.location.coords);
     }
     return (
       <div style={{ paddingTop: '1rem', marginBottom: '6rem' }}>
@@ -219,11 +216,11 @@ Viewevent.propTypes = {
       eventid: propTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
+  fetchEventData: propTypes.func.isRequired,
 };
+
 const mapDispatchToProps = dispatch => (
   bindActionCreators({
-    updateMapCenter,
-    updateMapZoom,
     fetchEventData,
   }, dispatch)
 );
