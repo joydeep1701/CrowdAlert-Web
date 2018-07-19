@@ -31,12 +31,23 @@ import styleSheet from './style';
  */
 const MapwithSonar = props => (
   <MapWrapper>
-    <Sonar lat={props.latitude} lng={props.longitude} id={null} type={props.type} />
+    {!props.loading ?
+      <Sonar
+        lat={props.latitude}
+        lng={props.longitude}
+        id={null}
+        type={props.type}
+      />
+      : null}
   </MapWrapper>
+
+
 );
 MapwithSonar.propTypes = {
   latitude: propTypes.number.isRequired,
   longitude: propTypes.number.isRequired,
+  type: propTypes.string.isRequired,
+  loading: propTypes.bool.isRequired,
 };
 /**
  * [EventCard Combines the all the three parts of event cards to form a single
@@ -114,15 +125,22 @@ class Viewevent extends Component {
     this.props.fetchEventData({ eventid, shouldRefresh });
   }
   render() {
-    console.log('ViewEvent Props', this.props);
+    let lat = 0;
+    let lng = 0;
+    if (this.props.event.isLoading) {
+      ({ lat, lng } = this.props.map);
+    } else {
+      ({latitude: lat, longitude: lng } = this.props.event.data.location.coords);
+    }
     return (
       <div style={{ paddingTop: '1rem', marginBottom: '6rem' }}>
         <Responsive maxWidth={900}>
           <div style={styleSheet.mobile.mapContainer}>
             <MapwithSonar
-              latitude={this.props.map.lat}
-              longitude={this.props.map.lng}
+              latitude={lat}
+              longitude={lng}
               type={this.props.event.data.category}
+              loading={this.props.event.isLoading}
             />
 
           </div>
@@ -156,9 +174,10 @@ class Viewevent extends Component {
                 <Grid.Column>
                   <div style={styleSheet.desktop.mapContainer}>
                     <MapwithSonar
-                      latitude={this.props.map.lat}
-                      longitude={this.props.map.lng}
+                      latitude={lat}
+                      longitude={lng}
                       type={this.props.event.data.category}
+                      loading={this.props.event.isLoading}
                     />
                   </div>
                 </Grid.Column>
