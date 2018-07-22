@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Comment, Image, Card, Icon, Feed, Form, Responsive, Message } from 'semantic-ui-react';
+import { Comment, Image, Card, Icon, Feed, Form, Responsive, Message, Button, Label } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
-import { LoadingCard } from '../';
+import {
+  LoadingCard,
+  UpvoteButton,
+} from '../';
 import {
   fetchCommentsThread,
   fetchCommentsThreadCancel,
@@ -127,13 +130,14 @@ class CommentsSection extends Component {
                   </Comment.Metadata>
                   <Comment.Text>{comment.text}</Comment.Text>
                   <Comment.Actions>
-                    <a><Icon name="like" /></a>
-                    <a><Icon name="flag" /></a>
+                    <UpvoteButton basic uuid={comment.key} />
+                    <Button as={Label} basic size="tiny">
+                      <Icon name="flag" fitted />
+                    </Button>
                   </Comment.Actions>
                 </Comment.Content>
               </Comment>
-            ))}
-            
+            ))}            
             {this.props.comments.comments.length ?
               null
             :

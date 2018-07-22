@@ -80,7 +80,7 @@ const EventCard = props => (
         }
       </SemanticImage.Group>
     </Event.Body>
-    <Event.Footer title={props.title} />
+    <Event.Footer title={props.title} uuid={props.uuid} />
   </Card>
 );
 EventCard.propTypes = {
@@ -155,6 +155,7 @@ class Viewevent extends Component {
                 images={this.props.event.data.images}
                 reverse_geocode={this.props.event.reverse_geocode}
                 eventType={this.props.event.data.category}
+                uuid={this.props.match.params.eventid}
               />
           }
             {!this.props.event.isLoading ?
@@ -193,6 +194,7 @@ class Viewevent extends Component {
                           images={this.props.event.data.images}
                           reverse_geocode={this.props.event.reverse_geocode}
                           eventType={this.props.event.data.category}
+                          uuid={this.props.match.params.eventid}
                         />
                     }
                     {!this.props.event.isLoading ?
