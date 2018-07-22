@@ -3,6 +3,7 @@ from rest_framework import permissions
 from api.firebase_auth.authentication import TokenAuthentication
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.conf import settings
+import json
 
 db = settings.FIREBASE.database()
 
@@ -44,9 +45,9 @@ class UpvoteView(APIView):
     def post(self, request):
         """Lets a user to upvote a specific uuid
         """
-        try:
-            uuid = request.POST.get('uuid')
-        except:
+
+        uuid = request.GET.get('uuid')
+        if not uuid:
             return HttpResponseBadRequest("BadRequest: uuid not specified")
         
         user_id = str(request.user)
@@ -55,6 +56,9 @@ class UpvoteView(APIView):
         user_upvote_path = path + '/upvoters/' + user_id
         # Get the uuid data
         count = db.child(path + '/count').get().val()
+        # Make sure to initialize count
+        if not count:
+            count = 0
         has_upvoted = db.child(user_upvote_path + '/has_upvoted').get().val()
         # If the user has not upvoted the event, update the user entry
         # Else decrease the count
@@ -79,6 +83,7 @@ class UpvoteView(APIView):
         return JsonResponse({
             'uuid': uuid,
             'count': new_count,
+            'has_upvoted': not has_upvoted,
         }, safe=False)
 
 
