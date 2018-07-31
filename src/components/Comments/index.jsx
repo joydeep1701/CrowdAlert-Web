@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import {
   LoadingCard,
   UpvoteButton,
+  SafeText,
+  SpamReport,
 } from '../';
 import {
   fetchCommentsThread,
@@ -128,16 +130,18 @@ class CommentsSection extends Component {
                   <Comment.Metadata as="a">
                     <span>{calcAge(comment.timestamp)}</span>
                   </Comment.Metadata>
-                  <Comment.Text>{comment.text}</Comment.Text>
+                  <Comment.Text>
+                    <SafeText spam={comment.spam}>
+                      {comment.text}
+                    </SafeText>
+                  </Comment.Text>
                   <Comment.Actions>
                     <UpvoteButton basic uuid={comment.key} />
-                    <Button as={Label} basic size="tiny">
-                      <Icon name="flag" fitted />
-                    </Button>
+                    <SpamReport.Flag basic uuid={comment.key} />
                   </Comment.Actions>
                 </Comment.Content>
               </Comment>
-            ))}            
+            ))}
             {this.props.comments.comments.length ?
               null
             :

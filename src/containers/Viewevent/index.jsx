@@ -63,9 +63,13 @@ const EventCard = props => (
       dateTime={props.datetime}
       reverse_geocode={props.reverse_geocode}
     />
+    {(props.spam.count > 2) ?
+      <Event.SpamAlert />
+    : null}
     <Event.Body
       title={props.title}
       description={props.description}
+      spam={props.spam}
       eventType={props.eventType}
     >
       <SemanticImage.Group size={props.viewmode === 'desktop' ? 'small' : 'tiny'}>
@@ -84,6 +88,8 @@ const EventCard = props => (
   </Card>
 );
 EventCard.propTypes = {
+  reportedBy: propTypes.object.isRequired,
+  spam: propTypes.object.isRequired,
   viewmode: propTypes.string.isRequired,
   // reportedBy: propTypes..isRequired,
   datetime: propTypes.number.isRequired,
@@ -156,6 +162,7 @@ class Viewevent extends Component {
                 reverse_geocode={this.props.event.reverse_geocode}
                 eventType={this.props.event.data.category}
                 uuid={this.props.match.params.eventid}
+                spam={this.props.event.data.spam}
               />
           }
             {!this.props.event.isLoading ?
@@ -194,6 +201,7 @@ class Viewevent extends Component {
                           images={this.props.event.data.images}
                           reverse_geocode={this.props.event.reverse_geocode}
                           eventType={this.props.event.data.category}
+                          spam={this.props.event.data.spam}
                           uuid={this.props.match.params.eventid}
                         />
                     }
