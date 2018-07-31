@@ -10,6 +10,7 @@ import createEventsReducer from './containers/CreateEvent/reducers';
 import authenticationReducer from './containers/Auth/reducers';
 import commentsReducer from './components/Comments/reducers';
 import upvotesReducer from './components/Upvote/reducers';
+import SpamReducer from './components/SpamReport/reducers';
 
 const rootReducer = combineReducers({
   router: routerReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   auth: authenticationReducer,
   comments: commentsReducer,
   upvotes: upvotesReducer,
+  spam: SpamReducer,
 });
 
 export default rootReducer;
