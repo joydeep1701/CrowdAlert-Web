@@ -44,6 +44,8 @@ const COMMENTS = `${domainNameL}/api/comments/comment`;
 
 const UPVOTE = `${domainNameL}/api/upvote/upvote`;
 
+const SPAM_REPORT = `${domainNameL}/api/spam/report`;
+
 export {
   GET_LOCATION_BY_IP,
   GET_EVENT_BY_ID,
@@ -55,4 +57,5 @@ export {
   USER_PROFILES,
   COMMENTS,
   UPVOTE,
+  SPAM_REPORT,
 };
