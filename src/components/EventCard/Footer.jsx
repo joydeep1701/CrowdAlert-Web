@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Icon } from 'semantic-ui-react';
-import { ShareModal, UpvoteButton } from '../';
+import { ShareModal, UpvoteButton, SpamReport } from '../';
 
 /**
  * [EventFooter Footer Bar component for Events Card ]
@@ -9,18 +9,14 @@ import { ShareModal, UpvoteButton } from '../';
  */
 const EventFooter = props => (
   <Button.Group widths={3} basic fluid>
-    <UpvoteButton uuid={props.uuid} />
-    <Button>
-      <ShareModal title={props.title}>
-        <div>
-          <Icon color="black" name="external share" />
-              Share
-        </div>
-      </ShareModal>
-    </Button>
-    <Button>
-      <Icon color="black" name="flag" /> Flag
-    </Button>
+    <UpvoteButton uuid={props.uuid} />    
+    <ShareModal title={props.title}>
+      <Button>
+        <Icon color="black" name="external share" />
+            Share
+      </Button>
+    </ShareModal>
+    <SpamReport.Flag uuid={props.uuid} />
   </Button.Group>
 );
 EventFooter.propTypes = {
