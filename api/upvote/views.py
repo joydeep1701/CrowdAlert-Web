@@ -39,9 +39,6 @@ class UpvoteView(APIView):
             'has_upvoted': has_upvoted,
         })
         
-        
-        return JsonResponse("OK", safe=False)
-
     def post(self, request):
         """Lets a user to upvote a specific uuid
         """
@@ -70,7 +67,7 @@ class UpvoteView(APIView):
             db.child(path).update({
                 'count': count + 1,
             })
-            new_count += 1 
+            new_count += 1
         else:
             db.child(user_upvote_path).update({
                 'has_upvoted': False,
