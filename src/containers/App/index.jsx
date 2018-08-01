@@ -11,6 +11,7 @@ import {
   Sidebar,
   BottomBar,
   SpamReport,
+  Notifications,
 } from '../../components';
 import Viewevent from '../Viewevent';
 import Feed from '../Feed';
@@ -68,6 +69,7 @@ class App extends Component {
         </Sidebar>
         <BottomBar />
         <SpamReport.SpamReportModal />
+        <Notifications.NotificationsModal />
       </div>
 
     );
