@@ -34,6 +34,10 @@ urlpatterns = [
         template_name="service-worker.js",
         content_type='application/javascript',
     ), name='service-worker.js'),
+    re_path(r'^firebase-messaging-sw.js', TemplateView.as_view(
+        template_name="firebase-messaging-sw.js",
+        content_type='application/javascript',
+    ), name='firebase-messaging-sw.js'),
     re_path(r'^manifest.json', TemplateView.as_view(
         template_name="manifest.json",
     ), name='manifest.json'),
