@@ -5,6 +5,9 @@ import {
   NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_GRANTED,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_DENIED,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_CLOSE,
+  NOTIFICATIONS_SEND_TOKEN_TO_SERVER,
+  NOTIFICATIONS_SEND_TOKEN_TO_SERVER_SUCCESS,
+  NOTIFICATIONS_SEND_TOKEN_TO_SERVER_ERROR,
 } from './actionTypes';
 
 export function receivedNewNotification({ data }) {
@@ -38,5 +41,26 @@ export function showNotificationPermissionDenied() {
 export function showNotificationPermissionClose() {
   return {
     type: NOTIFICATIONS_SHOW_NOTIFICATIONS_CLOSE,
+  };
+}
+export function sendFCMTokenToServer(fcmtoken) {
+  return {
+    type: NOTIFICATIONS_SEND_TOKEN_TO_SERVER,
+    payload: {
+      fcmtoken,
+    },
+  };
+}
+export function sendFCMTokenToServerSuccess() {
+  return {
+    type: NOTIFICATIONS_SEND_TOKEN_TO_SERVER_SUCCESS,
+  };
+}
+export function sendFCMTokenToServerError(error) {
+  return {
+    type: NOTIFICATIONS_SEND_TOKEN_TO_SERVER_ERROR,
+    payload: {
+      error,
+    },
   };
 }

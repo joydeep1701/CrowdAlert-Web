@@ -14,7 +14,9 @@ const BottomBar = (props) => {
             <Grid columns="equal" inverted>
               <Grid.Row textAlign="center">
                 <Grid.Column>
-                  <Icon circular color="teal" name="map outline" />
+                  <Link to="/">
+                    <Icon circular color="teal" name="map outline" />
+                  </Link>
                 </Grid.Column>
                 <Grid.Column>
                   <Link to="/create/">
@@ -22,7 +24,12 @@ const BottomBar = (props) => {
                   </Link>
                 </Grid.Column>
                 <Grid.Column>
-                  <Icon circular color="teal" name="bell" />
+                  <Icon circular>
+                    <Icon.Group >
+                      <Icon name='bell' color='teal'/>
+                      <Icon corner name='circle' color='red'/>
+                    </Icon.Group>
+                  </Icon>
                 </Grid.Column>
               </Grid.Row>
             </Grid>

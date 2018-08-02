@@ -10,6 +10,7 @@ import {
   showNotificationPermissionGranted,
   showNotificationPermissionDenied,
   showNotificationPermissionClose,
+  sendFCMTokenToServer,
 } from './actions';
 
 import { messaging } from '../../utils/firebase';
@@ -19,10 +20,10 @@ const notificationsMiddleware = ({ dispatch }) => next => (action) => {
     console.log("Struck Here")
 
     // Check if fcm token is not present
-    if (!window.localStorage.getItem('fcmtoken')) {
+    // if (!window.localStorage.getItem('fcmtoken')) {
       // Show modal to promt the user to subscribe to notificaitons
       dispatch(showNotificationPermissionInit());
-    }
+    // }
   }
   if (action.type === NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_ASK) {
     // Continue to the next middleware
@@ -38,6 +39,8 @@ const notificationsMiddleware = ({ dispatch }) => next => (action) => {
         // Save the token
         window.localStorage.setItem('fcmtoken', token);
         // Send the new token to server
+        dispatch(sendFCMTokenToServer(token));
+        // Save as permission granted
         dispatch(showNotificationPermissionGranted(token));
         console.log(token);
       })
