@@ -8,6 +8,7 @@ import {
   NOTIFICATIONS_SEND_TOKEN_TO_SERVER,
   NOTIFICATIONS_SEND_TOKEN_TO_SERVER_SUCCESS,
   NOTIFICATIONS_SEND_TOKEN_TO_SERVER_ERROR,
+  NOTIFICATIONS_MARK_AS_READ,
 } from './actionTypes';
 
 export function receivedNewNotification({ data }) {
@@ -62,5 +63,10 @@ export function sendFCMTokenToServerError(error) {
     payload: {
       error,
     },
+  };
+}
+export function markNotificationAsRead() {
+  return {
+    type: NOTIFICATIONS_MARK_AS_READ,
   };
 }

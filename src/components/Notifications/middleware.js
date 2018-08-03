@@ -1,10 +1,10 @@
+/* global window */
 import {
   NOTIFICATIONS_RECIEVIED_NEW_MESSAGE,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_ASK,
 } from './actionTypes';
-import {
-  AUTH_CHECK_USER_STATUS,
-} from '../../containers/Auth/actionTypes';
+import { AUTH_CHECK_USER_STATUS } from '../../containers/Auth/actionTypes';
+import { fetchEventsByLocationFinished } from '../../containers/Feed/actions';
 import {
   showNotificationPermissionInit,
   showNotificationPermissionGranted,
@@ -15,15 +15,36 @@ import {
 
 import { messaging } from '../../utils/firebase';
 
-const notificationsMiddleware = ({ dispatch }) => next => (action) => {
+const notificationsMiddleware = store => next => (action) => {
+  const { dispatch } = store;
   if (action.type === AUTH_CHECK_USER_STATUS) {
-    console.log("Struck Here")
-
     // Check if fcm token is not present
-    // if (!window.localStorage.getItem('fcmtoken')) {
+    if (!window.localStorage.getItem('fcmtoken')) {
       // Show modal to promt the user to subscribe to notificaitons
       dispatch(showNotificationPermissionInit());
-    // }
+    }
+  }
+  if (action.type === NOTIFICATIONS_RECIEVIED_NEW_MESSAGE) {
+    next(action);
+    const state = store.getState();
+    const { zoom } = state.map;
+    const { data } = action.payload;
+
+    if (data['gcm.notification.type'] === 'incident') {
+      dispatch(fetchEventsByLocationFinished({
+        payload: {
+          zoom,
+        },
+        response: [{
+          key: data['gcm.notification.uuid'],
+          lat: parseFloat(data['gcm.notification.lat']),
+          long: parseFloat(data['gcm.notification.long']),
+          category: data['gcm.notification.category'],
+          title: data['gcm.notification.user_text'],
+          datetime: parseInt(data['gcm.notification.datetime'], 10),
+        }],
+      }));
+    }
   }
   if (action.type === NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_ASK) {
     // Continue to the next middleware
@@ -51,7 +72,6 @@ const notificationsMiddleware = ({ dispatch }) => next => (action) => {
       });
   }
   next(action);
-
 };
 
 export default notificationsMiddleware;

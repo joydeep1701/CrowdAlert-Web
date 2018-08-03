@@ -1,8 +1,10 @@
 import {
+  NOTIFICATIONS_RECIEVIED_NEW_MESSAGE,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_INIT,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_GRANTED,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_DENIED,
   NOTIFICATIONS_SHOW_NOTIFICATIONS_CLOSE,
+  NOTIFICATIONS_MARK_AS_READ,
 } from './actionTypes';
 
 const modalText = {
@@ -25,6 +27,7 @@ const modalText = {
 
 const initialState = {
   permission: null,
+  unread: true,
   modal: {
     open: false,
     text: null,
@@ -34,6 +37,28 @@ const initialState = {
 };
 
 function notificationsReducer(state = initialState, action) {
+  if (action.type === NOTIFICATIONS_RECIEVIED_NEW_MESSAGE) {
+    const { data } = action.payload;
+    return {
+      ...state,
+      unread: true,
+      notifications: {
+        ...state.notifications,
+        [data['gcm.notification.uuid']]: {
+          key: data['gcm.notification.uuid'],
+          link: data['gcm.notification.link'],
+          lat: parseFloat(data['gcm.notification.lat']),
+          long: parseFloat(data['gcm.notification.long']),
+          category: data['gcm.notification.category'],
+          title: data['gcm.notification.user_text'],
+          type: data['gcm.notification.type'],
+          datetime: parseInt(data['gcm.notification.datetime'], 10),
+          userName: data['gcm.notification.user_name'],
+          userPicture: data['gcm.notification.user_picture'],
+        },
+      },
+    };
+  }
   if (action.type === NOTIFICATIONS_SHOW_NOTIFICATIONS_PERMISSION_INIT) {
     return {
       ...state,
@@ -71,8 +96,14 @@ function notificationsReducer(state = initialState, action) {
       modal: {
         ...state.modal,
         open: false,
-      }
-    }
+      },
+    };
+  }
+  if (action.type === NOTIFICATIONS_MARK_AS_READ) {
+    return {
+      ...state,
+      unread: false,
+    };
   }
   return state;
 }
