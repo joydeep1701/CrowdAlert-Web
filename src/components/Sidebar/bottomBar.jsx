@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import styleSheet from './styles';
 import LoginButton from '../../containers/Auth/Loginbutton';
+import { Notifications } from '../';
 
 const BottomBar = (props) => {
   if (props.bottomBarIsVisible) {
@@ -24,12 +25,9 @@ const BottomBar = (props) => {
                   </Link>
                 </Grid.Column>
                 <Grid.Column>
-                  <Icon circular>
-                    <Icon.Group >
-                      <Icon name='bell' color='teal'/>
-                      <Icon corner name='circle' color='red'/>
-                    </Icon.Group>
-                  </Icon>
+                  <Link to="/notifications">
+                    <Notifications.NotificationIcon />
+                  </Link>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
