@@ -78,6 +78,7 @@ def notify_incident(sender_uid, datetime, event_id, event_type, lat, lng, \
 
     return
 
+@asyncfunc
 def notify_comment(sender_uid, datetime, event_id, user_text, \
     user_name, user_picture):
 

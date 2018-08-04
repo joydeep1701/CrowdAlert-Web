@@ -27,7 +27,7 @@ const modalText = {
 
 const initialState = {
   permission: null,
-  unread: true,
+  unread: false,
   modal: {
     open: false,
     text: null,

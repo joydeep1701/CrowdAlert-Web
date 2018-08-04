@@ -19,11 +19,13 @@ const NotificationHeader = (type, userName, category = null) => {
   return `${userName} notified you`;
 };
 
+const altpic = 'https://crowdalert.herokuapp.com/static/images/meerkat.svg';
+
 const NotificationItem = (props) => {
   const { data } = props;
   return (
     <List.Item>
-      <Image avatar src={data.userPicture} />
+      <Image avatar src={data.userPicture || altpic} />
       <List.Content>
         <Link to={`${data.link}`}>
           <List.Header>
@@ -37,8 +39,7 @@ const NotificationItem = (props) => {
         </Link>
       </List.Content>
       <List.Content floated="left" verticalAlign="bottom">
-        <List.Description>
-        </List.Description>
+        <List.Description />
       </List.Content>
     </List.Item>
   );
