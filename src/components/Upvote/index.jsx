@@ -20,9 +20,9 @@ const UpvoteButton = (props) => {
   return (
     <Button active={hasUpvoted} onClick={props.click}>
       {hasUpvoted ?
-        <Icon color="red" name="thumbs up" fitted />
+        <Icon color="red" name="arrow up" fitted />
         :
-        <Icon name="thumbs up outline" />
+        <Icon name="arrow up" />
       }
       {props.count? props.count : null}
     </Button>
@@ -40,9 +40,9 @@ const UpvoteButtonBasic = (props) => {
       onClick={props.click}
     >
       {hasUpvoted ?
-        <Icon color="red" name="like" />
+        <Icon color="red" name="arrow up" />
         :
-        <Icon color="grey" name="like" />
+        <Icon color="grey" name="arrow up" />
       }
       {props.count?
         <Label.Detail>
