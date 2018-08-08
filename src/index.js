@@ -82,7 +82,7 @@ registerServiceWorker();
       document.body.removeChild(dimmer);
       document.body.setAttribute('class', '');
       window.removeEventListener('load', removeDimmer);
-      // alert("Production Build: 04-Aug");
+      alert("Production Build: 09-Aug");
     }, delay);
   }
   
