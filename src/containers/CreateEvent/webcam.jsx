@@ -241,6 +241,7 @@ export default class Webcam extends Component {
         ref={(ref) => {
           this.video = ref;
         }}
+        style={{maxHeight: '75vh'}}
       />
     );
   }
