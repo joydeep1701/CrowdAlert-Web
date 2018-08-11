@@ -91,6 +91,7 @@ def notify_comment(sender_uid, datetime, event_id, user_text, \
             "click_action":  "https://crowdalert.herokuapp.com/view/" + event_id,
             "link": "/view/" + event_id,
             "uuid": str(uuid.uuid4()),
+            "thread_id": event_id,
             "type": "comment",
             "user_text": user_text,
             "datetime": datetime,
