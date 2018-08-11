@@ -108,7 +108,6 @@ const LeftSidebar = props => (
     <Sidebar.Pusher
       onClick={props.isVisible ? props.removeSidebarVisibility : null}
       dimmed={!!(props.animation === 'scale down' && props.isVisible)}
-      
     >
       {props.children}
     </Sidebar.Pusher>

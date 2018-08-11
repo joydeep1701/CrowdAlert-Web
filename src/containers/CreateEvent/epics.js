@@ -1,3 +1,4 @@
+/* global window */
 import { ajax } from 'rxjs/observable/dom/ajax';
 import { of } from 'rxjs/observable/of';
 import { ofType, combineEpics } from 'redux-observable';
@@ -24,7 +25,7 @@ const fetchReverseGeocodeEpic = action$ =>
           map(response =>
             createEventsUpdateLocationText(response[0].formatted_address)),
           catchError(() =>
-            of(createEventsUpdateLocationText('Google denied to reverse geocode this location without a credit card'))),
+            of(createEventsUpdateLocationText('Location information is unavailable'))),
         );
     }),
   );
